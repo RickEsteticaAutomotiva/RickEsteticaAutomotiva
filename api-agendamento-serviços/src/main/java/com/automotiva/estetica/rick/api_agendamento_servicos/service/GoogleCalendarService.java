@@ -79,26 +79,43 @@ public class GoogleCalendarService {
     public Event createEvent(CalendarEventRequest request) throws IOException {
         try {
             Event event = new Event()
-                    .setSummary(request.getSummary())
-                    .setDescription(request.getDescription())
-                    .setLocation(request.getLocation());
+                    .setSummary(request.getTitulo())
+                    .setDescription(request.getDescricao())
+                    .setLocation(request.getLocalizacao());
 
             // Converte para o formato RFC 3339 correto
-            String startRfc3339 = convertToRfc3339(request.getStartDateTime(), request.getTimeZone());
-            String endRfc3339 = convertToRfc3339(request.getEndDateTime(), request.getTimeZone());
+            String startRfc3339 = convertToRfc3339(request.getDataHoraInicio(), request.getFusoHorario());
+            String endRfc3339 = convertToRfc3339(request.getDataHoraFim(), request.getFusoHorario());
 
             EventDateTime start = new EventDateTime()
                     .setDateTime(new com.google.api.client.util.DateTime(startRfc3339))
-                    .setTimeZone(request.getTimeZone());
+                    .setTimeZone(request.getFusoHorario());
             event.setStart(start);
 
             EventDateTime end = new EventDateTime()
                     .setDateTime(new com.google.api.client.util.DateTime(endRfc3339))
-                    .setTimeZone(request.getTimeZone());
+                    .setTimeZone(request.getFusoHorario());
             event.setEnd(end);
 
-            if (request.getAttendeeEmails() != null && !request.getAttendeeEmails().isEmpty()) {
-                List<EventAttendee> attendees = request.getAttendeeEmails().stream()
+            // Novos campos adicionados
+            if (request.getVisibilidade() != null) {
+                event.setVisibility(request.getVisibilidade());
+            }
+
+            if (request.getConvidadosPodemVerOutrosConvidados() != null) {
+                event.setGuestsCanSeeOtherGuests(request.getConvidadosPodemVerOutrosConvidados());
+            }
+
+            if (request.getConvidadosPodemConvidarOutros() != null) {
+                event.setGuestsCanInviteOthers(request.getConvidadosPodemConvidarOutros());
+            }
+
+            if (request.getTransparencia() != null) {
+                event.setTransparency(request.getTransparencia());
+            }
+
+            if (request.getEmailsParticipantes() != null && !request.getEmailsParticipantes().isEmpty()) {
+                List<EventAttendee> attendees = request.getEmailsParticipantes().stream()
                         .map(email -> new EventAttendee().setEmail(email))
                         .collect(Collectors.toList());
                 event.setAttendees(attendees);
@@ -141,25 +158,61 @@ public class GoogleCalendarService {
         try {
             Event existingEvent = calendarService.events().get("primary", eventId).execute();
 
-            existingEvent.setSummary(request.getSummary())
-                    .setDescription(request.getDescription())
-                    .setLocation(request.getLocation());
+            // Atualiza campos básicos
+            existingEvent.setSummary(request.getTitulo())
+                    .setDescription(request.getDescricao())
+                    .setLocation(request.getLocalizacao());
 
-            // Converte para o formato RFC 3339 correto
-            String startRfc3339 = convertToRfc3339(request.getStartDateTime(), request.getTimeZone());
-            String endRfc3339 = convertToRfc3339(request.getEndDateTime(), request.getTimeZone());
+            // Atualiza novos campos de configuração
+            if (request.getVisibilidade() != null) {
+                existingEvent.setVisibility(request.getVisibilidade());
+            }
 
-            EventDateTime start = new EventDateTime()
-                    .setDateTime(new com.google.api.client.util.DateTime(startRfc3339))
-                    .setTimeZone(request.getTimeZone());
-            existingEvent.setStart(start);
+            if (request.getConvidadosPodemVerOutrosConvidados() != null) {
+                existingEvent.setGuestsCanSeeOtherGuests(request.getConvidadosPodemVerOutrosConvidados());
+            }
 
-            EventDateTime end = new EventDateTime()
-                    .setDateTime(new com.google.api.client.util.DateTime(endRfc3339))
-                    .setTimeZone(request.getTimeZone());
-            existingEvent.setEnd(end);
+            if (request.getConvidadosPodemConvidarOutros() != null) {
+                existingEvent.setGuestsCanInviteOthers(request.getConvidadosPodemConvidarOutros());
+            }
+
+            if (request.getTransparencia() != null) {
+                existingEvent.setTransparency(request.getTransparencia());
+            }
+
+            // Atualiza datas e horários
+            if (request.getDataHoraInicio() != null && request.getFusoHorario() != null) {
+                String startRfc3339 = convertToRfc3339(request.getDataHoraInicio(), request.getFusoHorario());
+                EventDateTime start = new EventDateTime()
+                        .setDateTime(new com.google.api.client.util.DateTime(startRfc3339))
+                        .setTimeZone(request.getFusoHorario());
+                existingEvent.setStart(start);
+            }
+
+            if (request.getDataHoraFim() != null && request.getFusoHorario() != null) {
+                String endRfc3339 = convertToRfc3339(request.getDataHoraFim(), request.getFusoHorario());
+                EventDateTime end = new EventDateTime()
+                        .setDateTime(new com.google.api.client.util.DateTime(endRfc3339))
+                        .setTimeZone(request.getFusoHorario());
+                existingEvent.setEnd(end);
+            }
+
+            // Atualiza participantes
+            if (request.getEmailsParticipantes() != null) {
+                if (request.getEmailsParticipantes().isEmpty()) {
+                    // Se lista vazia, remove todos os participantes
+                    existingEvent.setAttendees(null);
+                } else {
+                    // Atualiza com nova lista de participantes
+                    List<EventAttendee> attendees = request.getEmailsParticipantes().stream()
+                            .map(email -> new EventAttendee().setEmail(email))
+                            .collect(Collectors.toList());
+                    existingEvent.setAttendees(attendees);
+                }
+            }
 
             return calendarService.events().update("primary", eventId, existingEvent).execute();
+
         } catch (IOException e) {
             log.error("Error updating calendar event: {}", eventId, e);
             throw e;

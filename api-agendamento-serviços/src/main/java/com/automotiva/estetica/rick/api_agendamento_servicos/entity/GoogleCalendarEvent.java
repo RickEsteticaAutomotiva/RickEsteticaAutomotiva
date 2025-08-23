@@ -7,31 +7,64 @@ import java.util.List;
 
 @Data
 public class GoogleCalendarEvent {
+
+    @JsonProperty("id")
     private String id;
-    private String summary;
-    private String description;
-    private String location;
+
+    @JsonProperty("summary")
+    private String titulo;
+
+    @JsonProperty("description")
+    private String descricao;
+
+    @JsonProperty("location")
+    private String localizacao;
 
     @JsonProperty("start")
-    private EventDateTime startDateTime;
+    private EventDateTime dataHoraInicio;
 
     @JsonProperty("end")
-    private EventDateTime endDateTime;
+    private EventDateTime dataHoraFim;
 
-    private List<EventAttendee> attendees;
+    @JsonProperty("attendees")
+    private List<EventAttendee> participantes;
+
+    @JsonProperty("status")
     private String status;
-    private String htmlLink;
+
+    @JsonProperty("htmlLink")
+    private String linkHtml;
+
+    @JsonProperty("visibility")
+    private String visibilidade;
+
+    @JsonProperty("guestsCanSeeOtherGuests")
+    private Boolean convidadosPodemVerOutrosConvidados;
+
+    @JsonProperty("guestsCanInviteOthers")
+    private Boolean convidadosPodemConvidarOutros;
+
+    @JsonProperty("transparency")
+    private String transparencia;
 
     @Data
     public static class EventDateTime {
-        private LocalDateTime dateTime;
-        private String timeZone;
+        @JsonProperty("dateTime")
+        private LocalDateTime dataHora;
+
+        @JsonProperty("timeZone")
+        private String fusoHorario;
     }
 
     @Data
     public static class EventAttendee {
+        @JsonProperty("email")
         private String email;
-        private String displayName;
-        private Boolean optional;
+
+        @JsonProperty("displayName")
+        private String nomeExibicao;
+
+        @JsonProperty("optional")
+        private Boolean opcional;
     }
 }

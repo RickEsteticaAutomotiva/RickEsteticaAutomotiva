@@ -1,18 +1,43 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 public class CalendarEventRequest {
-    private String summary;
-    private String description;
-    private String location;
-    private Instant startDateTime;
-    private Instant  endDateTime;
-    private String timeZone;
-    private List<String> attendeeEmails;
+
+    @JsonProperty("summary")
+    private String titulo;
+
+    @JsonProperty("description")
+    private String descricao;
+
+    @JsonProperty("location")
+    private String localizacao;
+
+    @JsonProperty("startDateTime")
+    private Instant dataHoraInicio;
+
+    @JsonProperty("endDateTime")
+    private Instant dataHoraFim;
+
+    @JsonProperty("timeZone")
+    private String fusoHorario;
+
+    @JsonProperty("attendeeEmails")
+    private List<String> emailsParticipantes;
+
+    @JsonProperty("visibility")
+    private String visibilidade;
+
+    @JsonProperty("guestsCanSeeOtherGuests")
+    private Boolean convidadosPodemVerOutrosConvidados;
+
+    @JsonProperty("guestsCanInviteOthers")
+    private Boolean convidadosPodemConvidarOutros;
+
+    @JsonProperty("transparency")
+    private String transparencia;
 }
