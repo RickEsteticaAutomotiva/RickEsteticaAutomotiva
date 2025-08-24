@@ -1,17 +1,21 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CalendarEventRequest;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.EventAttendee;
-import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.GoogleCredentials;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,15 +23,16 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -35,11 +40,14 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class GoogleCalendarService {
 
-    @Value("${google.calendar.credentials.file:classpath:credentials.json}")
+    @Value("${google.calendar.credentials.file:classpath:credentials-oauth.json}")
     private String credentialsFile;
 
     @Value("${google.calendar.application.name:ApiAgendamentoServices}")
     private String applicationName;
+
+    @Value("${google.calendar.tokens.directory.path:tokens}")
+    private String tokensDirectoryPath;
 
     private Calendar calendarService;
 
@@ -51,29 +59,50 @@ public class GoogleCalendarService {
     public void init() {
         try {
             this.calendarService = createCalendarService();
-            log.info("Google Calendar Service initialized successfully");
+            log.info("Google Calendar Service initialized successfully with OAuth 2.0");
         } catch (IOException | GeneralSecurityException e) {
             log.error("Failed to initialize Google Calendar Service", e);
             throw new RuntimeException("Failed to initialize Google Calendar Service", e);
         }
     }
 
-    private Calendar createCalendarService() throws IOException, GeneralSecurityException {
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-
+    private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+        // Carrega o arquivo de credenciais do cliente
         Resource resource = new ClassPathResource(credentialsFile.replace("classpath:", ""));
         if (!resource.exists()) {
             throw new IOException("Credentials file not found: " + credentialsFile);
         }
 
-        try (InputStream credentialsStream = resource.getInputStream()) {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsStream)
-                    .createScoped(SCOPES);
-
-            return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpCredentialsAdapter(credentials))
-                    .setApplicationName(applicationName)
-                    .build();
+        GoogleClientSecrets clientSecrets;
+        try (InputStream in = resource.getInputStream()) {
+            clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
         }
+
+        // Configura o fluxo de autorização
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+                .setDataStoreFactory(new FileDataStoreFactory(new File(tokensDirectoryPath)))
+                .setAccessType("offline")
+                .build();
+
+        // Configura o receptor local para receber o código de autorização
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder()
+                .setPort(8080)
+                .setCallbackPath("/oauth2callback")
+                .build();
+
+        // Autoriza e retorna as credenciais
+        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+    }
+
+    private Calendar createCalendarService() throws IOException, GeneralSecurityException {
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+
+        Credential credential = getCredentials(HTTP_TRANSPORT);
+
+        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+                .setApplicationName(applicationName)
+                .build();
     }
 
     public Event createEvent(CalendarEventRequest request) throws IOException {
@@ -97,7 +126,7 @@ public class GoogleCalendarService {
                     .setTimeZone(request.getFusoHorario());
             event.setEnd(end);
 
-            // Novos campos adicionados
+            // Configura propriedades adicionais
             if (request.getVisibilidade() != null) {
                 event.setVisibility(request.getVisibilidade());
             }
@@ -163,7 +192,7 @@ public class GoogleCalendarService {
                     .setDescription(request.getDescricao())
                     .setLocation(request.getLocalizacao());
 
-            // Atualiza novos campos de configuração
+            // Atualiza configurações
             if (request.getVisibilidade() != null) {
                 existingEvent.setVisibility(request.getVisibilidade());
             }
@@ -200,10 +229,8 @@ public class GoogleCalendarService {
             // Atualiza participantes
             if (request.getEmailsParticipantes() != null) {
                 if (request.getEmailsParticipantes().isEmpty()) {
-                    // Se lista vazia, remove todos os participantes
                     existingEvent.setAttendees(null);
                 } else {
-                    // Atualiza com nova lista de participantes
                     List<EventAttendee> attendees = request.getEmailsParticipantes().stream()
                             .map(email -> new EventAttendee().setEmail(email))
                             .collect(Collectors.toList());
@@ -230,5 +257,14 @@ public class GoogleCalendarService {
 
     public boolean isServiceAvailable() {
         return calendarService != null;
+    }
+
+    /**
+     * Força a renovação das credenciais (útil se houver problemas de autenticação)
+     */
+    public void refreshCredentials() throws IOException, GeneralSecurityException {
+        log.info("Refreshing Google Calendar credentials...");
+        this.calendarService = createCalendarService();
+        log.info("Credentials refreshed successfully");
     }
 }
