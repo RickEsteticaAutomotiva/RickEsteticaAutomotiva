@@ -15,6 +15,8 @@ import java.time.LocalDate;
 public class PessoaDto {
     private Long id;
     private String nome;
+    private String cpf;
     private String email;
+    private String telefone;
     private LocalDate dataNascimento;
 }

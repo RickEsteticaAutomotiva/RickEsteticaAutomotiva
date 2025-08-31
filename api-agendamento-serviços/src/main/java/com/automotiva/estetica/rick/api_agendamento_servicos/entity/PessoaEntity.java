@@ -14,11 +14,18 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Table(name = "pessoa")
 public class PessoaEntity extends BaseEntity {
+
     @Column(name = "nome", length = 100)
     private String nome;
 
+    @Column(name = "cpf", length = 11, unique = true)
+    private String cpf;
+
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "telefone", length = 20)
+    private String telefone;
 
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
