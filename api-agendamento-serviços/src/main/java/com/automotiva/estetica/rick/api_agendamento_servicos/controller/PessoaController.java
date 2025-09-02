@@ -57,7 +57,7 @@ public class PessoaController extends BaseController {
         return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity criarPessoa(@RequestBody PessoaCadastroDto pessoaCadastroDto) {
         var resposta = pessoaService.criarPessoa(pessoaCadastroDto);
         return definirRetorno(resposta.getStatusCode(), null, resposta.getMensagem());
