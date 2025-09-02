@@ -23,24 +23,27 @@ public class TesteConfig implements CommandLineRunner {
                 .nome("Maria Silva")
                 .email("maria@email.com")
                 .dataNascimento(LocalDate.of(1990, 5, 10))
-                .quantidade(5)
-                .taxa(new BigDecimal("123.45"))
+//                .quantidade(5)
+//                .taxa(new BigDecimal("123.45"))
+                .senha("123456")
                 .build();
 
         var pessoa2 = PessoaEntity.builder()
                 .nome("João Souza")
                 .email("joao@email.com")
                 .dataNascimento(LocalDate.of(1985, 8, 20))
-                .quantidade(10)
-                .taxa(new BigDecimal("87.50"))
+//                .quantidade(10)
+//                .taxa(new BigDecimal("87.50"))
+                .senha("123456")
                 .build();
 
         var pessoa3 = PessoaEntity.builder()
                 .nome("Ana Lima")
                 .email("ana@email.com")
                 .dataNascimento(LocalDate.of(2000, 1, 15))
-                .quantidade(2)
-                .taxa(new BigDecimal("45.90"))
+//                .quantidade(2)
+//                .taxa(new BigDecimal("45.90"))
+                .senha("123456")
                 .build();
 
 

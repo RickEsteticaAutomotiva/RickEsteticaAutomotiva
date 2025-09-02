@@ -8,6 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RetornoSemObjeto {
-    private Integer statusCose;
+    private Integer statusCode;
     private String mensagem;
 }
