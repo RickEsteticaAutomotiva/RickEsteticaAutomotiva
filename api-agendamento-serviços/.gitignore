@@ -1,4 +1,4 @@
-README.md
+credentials-oauth.json
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+/src/main/resources/credentials.json
+/src/main/resources/credentials-oauth.json
+/tokens/StoredCredential

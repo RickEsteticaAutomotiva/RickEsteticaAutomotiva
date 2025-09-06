@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.dto;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class PessoaCadastroDto {
     private String nome;
+    private String cpf;
     private String email;
+    private String telefone;
     private LocalDate dataNascimento;
     private String senha;
 }

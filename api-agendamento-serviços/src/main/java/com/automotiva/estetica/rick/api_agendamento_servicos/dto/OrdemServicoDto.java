@@ -1,22 +1,20 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.dto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PessoaDto {
+public class OrdemServicoDto {
     private Long id;
-    private String nome;
-    private String cpf;
-    private String email;
-    private String telefone;
-    private LocalDate dataNascimento;
+    private Date dtConclusao;
+    private String observacoes;
+    private String status;
 }
