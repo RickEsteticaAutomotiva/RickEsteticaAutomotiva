@@ -164,6 +164,7 @@ public class OrdemServicoService {
                 .dtConclusao(entity.getDtConclusao())
                 .observacoes(entity.getObservacoes())
                 .status(entity.getStatus())
+                .idAgendamento(entity.getIdAgendamento())
                 .build();
     }
 //
@@ -178,6 +179,7 @@ public class OrdemServicoService {
                 .dtConclusao(dto.getDtConclusao())
                 .observacoes(dto.getObservacoes())
                 .status(dto.getStatus())
+                .idAgendamento(dto.getIdAgendamento())
                 .build();
     }
 

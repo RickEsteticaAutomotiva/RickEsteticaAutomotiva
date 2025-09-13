@@ -25,4 +25,7 @@ public class OrdemServicoEntity extends BaseEntity {
 
     @Column(name = "status", length = 40, nullable = false)
     private String status;
+
+    @Column(name = "fkAgendamento",nullable = false)
+    private Long idAgendamento;
 }

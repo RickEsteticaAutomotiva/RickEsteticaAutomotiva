@@ -5,17 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrdemServicoDto {
+public class ServicoDto {
     private Long id;
-    private Date dtConclusao;
-    private String observacoes;
-    private String status;
-    private Long idAgendamento;
+    private BigDecimal preco;
+    private String descricao;
+    private String nome;
 }
