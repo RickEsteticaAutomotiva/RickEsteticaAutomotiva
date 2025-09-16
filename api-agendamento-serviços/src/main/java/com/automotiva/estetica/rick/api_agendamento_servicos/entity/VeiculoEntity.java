@@ -1,0 +1,62 @@
+package com.automotiva.estetica.rick.api_agendamento_servicos.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
+@Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "veiculo")
+public class VeiculoEntity extends BaseEntity {
+
+    private String placa;
+
+    private String modelo;
+
+    private String marca;
+
+    private String porte;
+
+    private String cor;
+
+    @Size(min = 4, max = 4)
+    @Pattern(regexp = "\\d{4}")
+    private String ano;
+
+    @ManyToOne
+    @JoinColumn(name = "fkUsuario")
+    private PessoaEntity pessoa; // TODO TROCAR DEPOIS PARA USUARIO
+
+    public String getPlaca() {
+        return placa;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public String getPorte() {
+        return porte;
+    }
+
+    public String getCor() {
+        return cor;
+    }
+
+    public String getAno() {
+        return ano;
+    }
+
+    public PessoaEntity getPessoa() {
+        return pessoa;
+    }
+}
