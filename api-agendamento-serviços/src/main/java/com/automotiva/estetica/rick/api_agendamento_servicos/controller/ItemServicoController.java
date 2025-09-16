@@ -17,11 +17,11 @@ public class ItemServicoController extends BaseController{
     @Autowired
     ItemServicoService itemServicoService;
 
-    @GetMapping
-    public ResponseEntity buscarTodos() {
-        var pessoas = itemServicoService.buscarTodos();
-        return definirRetorno(pessoas.getStatusCode(), pessoas.getObjeto(), pessoas.getMensagem());
-    }
+//    @GetMapping("/ordemServico")
+//    public ResponseEntity buscarTodos() {
+//        var pessoas = itemServicoService.buscarTodos();
+//        return definirRetorno(pessoas.getStatusCode(), pessoas.getObjeto(), pessoas.getMensagem());
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity buscarPessoaPorId(@PathVariable Long id) {
@@ -35,9 +35,22 @@ public class ItemServicoController extends BaseController{
         return definirRetorno(resposta.getStatusCode(), null, resposta.getMensagem());
     }
 
-
     @GetMapping("/{idOrdem}/itens")
     public List<ItemServicoDto> listarItens(@PathVariable Long idOrdem) {
         return itemServicoService.listarPorOrdem(idOrdem);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity atualizarItemServico(
+            @PathVariable Long id,
+            @RequestBody ItemServicoDto preco) {
+        var retorno = itemServicoService.atualizarItemServico(id, preco);
+        return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deletarItemServico(@PathVariable Long id) {
+        var retorno = itemServicoService.deletarItemServico(id);
+        return definirRetorno(retorno.getStatusCode(), null, retorno.getMensagem());
     }
 }

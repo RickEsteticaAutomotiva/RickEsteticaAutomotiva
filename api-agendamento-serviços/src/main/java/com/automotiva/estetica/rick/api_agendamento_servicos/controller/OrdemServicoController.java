@@ -36,8 +36,8 @@ public class OrdemServicoController extends BaseController {
     @PutMapping("/{id}")
     public ResponseEntity atualizarOrdemServico(
             @PathVariable Long id,
-            @RequestBody OrdemServicoDto pessoa) {
-        var retorno = ordemServicoService.atualizarOrdemServico(id, pessoa);
+            @RequestBody OrdemServicoDto ordemServico) {
+        var retorno = ordemServicoService.atualizarOrdemServico(id, ordemServico);
         return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
     }
 
