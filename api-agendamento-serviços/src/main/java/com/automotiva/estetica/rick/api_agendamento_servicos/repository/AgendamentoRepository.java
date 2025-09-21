@@ -14,9 +14,4 @@ import java.util.List;
 @Repository
 public interface AgendamentoRepository extends JpaRepository<AgendamentoEntity, Long> {
     List<AgendamentoEntity> findByVeiculo_Pessoa_Id(Long idUsuario);
-
-    @Query("UPDATE AgendamentoEntity a SET a.dataHora = :dataHora WHERE a.id = :id")
-    @Modifying
-    @Transactional
-    int agendamentosAtualizados(@Param("id") Long id, @Param("dataHora") LocalDateTime dataHora);
 }
