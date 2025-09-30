@@ -1,40 +1,43 @@
+// src/main/java/com/automotiva/estetica/rick/api_agendamento_servicos/controller/VeiculoController.java
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.VeiculoDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.BaseController;
+
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.VeiculoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/veiculos")
-public class VeiculoController extends BaseController {
+@RequiredArgsConstructor
+public class VeiculoController {
 
-    @Autowired
-    VeiculoService veiculoService;
+    private final VeiculoService veiculoService;
 
-    @PostMapping()
-    public ResponseEntity cadastrarVeiculo(@RequestBody VeiculoDto veiculoDto) {
-        var resposta = veiculoService.cadastrarVeiculo(veiculoDto);
-        return definirRetorno(resposta.getStatusCode(), null, resposta.getMensagem());
+    @PostMapping
+    public ResponseEntity<VeiculoDto> cadastrarVeiculo(@RequestBody VeiculoDto veiculoDto) {
+        VeiculoDto resposta = veiculoService.cadastrarVeiculo(veiculoDto);
+        return ResponseEntity.status(201).body(resposta);
     }
 
-    @GetMapping()
-    public ResponseEntity buscarTodosVeiculos() {
-        var resposta = veiculoService.buscarTodosVeiculos();
-        return definirRetorno(resposta.getStatusCode(), resposta.getObjeto(), resposta.getMensagem());
+    @GetMapping
+    public ResponseEntity<List<VeiculoDto>> buscarTodosVeiculos() {
+        List<VeiculoDto> resposta = veiculoService.buscarTodosVeiculos();
+        return ResponseEntity.ok(resposta);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity buscarVeiculosByPessoaId(@PathVariable Long id) {
-        var resposta = veiculoService.buscarVeiculosByPessoaId(id);
-        return definirRetorno(resposta.getStatusCode(), resposta.getObjeto(), resposta.getMensagem());
+    public ResponseEntity<List<VeiculoDto>> buscarVeiculosByPessoaId(@PathVariable Long id) {
+        List<VeiculoDto> resposta = veiculoService.buscarVeiculosByPessoaId(id);
+        return ResponseEntity.ok(resposta);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deletarVeiculoPorId(@PathVariable Long id) {
-        var resposta = veiculoService.deletarVeiculo(id);
-        return definirRetorno(resposta.getStatusCode(), null, resposta.getMensagem());
+    public ResponseEntity<Void> deletarVeiculoPorId(@PathVariable Long id) {
+        veiculoService.deletarVeiculo(id);
+        return ResponseEntity.noContent().build();
     }
 }
