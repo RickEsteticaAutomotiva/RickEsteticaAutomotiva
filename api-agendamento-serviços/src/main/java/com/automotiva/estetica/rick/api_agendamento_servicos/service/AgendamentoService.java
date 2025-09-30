@@ -118,14 +118,32 @@ public class AgendamentoService {
         var retorno = new RetornoSemObjeto();
 
         try {
-            
-            int atualizados = agendamentoRepository.agendamentosAtualizados(id, agendamentoDto.getDataHora());
-            if (atualizados == 1) {
-                retorno.setStatusCode(200);
-                retorno.setMensagem("Agendamento atualizado com sucesso!");
-            } else {
-                throw new RuntimeException("Agendamento não atualizado!");
+            var agendamento = agendamentoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+
+            if (agendamentoDto.getDataHora() != null) {
+                var inicio = Date.from(agendamentoDto.getDataHora().atZone(ZoneId.systemDefault()).toInstant());
+                var fim = Date.from(agendamentoDto.getDataHora().plusHours(1).atZone(ZoneId.systemDefault()).toInstant());
+
+                eventoGoogleCalendarService.atualizarEvento(
+                        agendamento.getGoogleEventId(),
+                        "Agendamento - " + agendamento.getVeiculo().getModelo(),
+                        "Serviço para o veículo: " + agendamento.getVeiculo().getPlaca(),
+                        inicio,
+                        fim
+                );
+
+                agendamento.setDataHora(agendamentoDto.getDataHora());
             }
+
+            if (agendamentoDto.getStatus() != null) {
+                agendamento.setStatus(agendamentoDto.getStatus());
+            }
+
+            agendamentoRepository.save(agendamento);
+
+           retorno.setStatusCode(200);
+           retorno.setMensagem("Agendamento" + agendamento + "atualizado com sucesso!");
         } catch (Exception e) {
             retorno.setStatusCode(500);
             retorno.setMensagem(e.getMessage());
@@ -137,10 +155,13 @@ public class AgendamentoService {
     public RetornoSemObjeto deletarAgendamentos(Long id) {
         var retorno = new RetornoSemObjeto();
         try{
-            if (!agendamentoRepository.existsById(id)) {
-                throw new RuntimeException("Não é possível deletar, agendamento não encontrado!");
+            var agendamento = agendamentoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Agendamento não encontrado!"));
+            if (agendamento.getGoogleEventId() != null) {
+                eventoGoogleCalendarService.deletarEvento(agendamento.getGoogleEventId());
             }
-            agendamentoRepository.deleteById(id);
+
+            agendamentoRepository.delete(agendamento);
             retorno.setStatusCode(200);
             retorno.setMensagem("Deleção do agendamento: " + id + ", realizada com sucesso!");
         } catch (Exception e) {
