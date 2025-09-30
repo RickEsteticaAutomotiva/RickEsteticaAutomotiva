@@ -1,50 +1,49 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.BaseController;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.RetornoComObjeto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.OrdemServicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/ordem-servico")
-public class OrdemServicoController extends BaseController {
+@RequestMapping("/ordem-servicos")
+public class OrdemServicoController {
 
     @Autowired
     OrdemServicoService ordemServicoService;
 
     @GetMapping
-    public ResponseEntity buscarTodos() {
-        var pessoas = ordemServicoService.buscarTodos();
-        return definirRetorno(pessoas.getStatusCode(), pessoas.getObjeto(), pessoas.getMensagem());
+    public ResponseEntity<List<OrdemServicoDto>> buscarTodos() {
+        List<OrdemServicoDto> ordemServicos = ordemServicoService.buscarTodos();
+        return ResponseEntity.ok(ordemServicos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity buscarPessoaPorId(@PathVariable Long id) {
-        RetornoComObjeto<OrdemServicoDto> retorno = ordemServicoService.buscarPorId(id);
-        return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
+    public ResponseEntity<OrdemServicoDto> buscarPorId(@PathVariable Long id) {
+        OrdemServicoDto ordemServico = ordemServicoService.buscarPorId(id);
+        return ResponseEntity.ok(ordemServico);
     }
 
     @PostMapping
-    public ResponseEntity criarOrdemServico(@RequestBody OrdemServicoDto ordemServicoDto) {
-        var resposta = ordemServicoService.criarOrdemServico(ordemServicoDto);
-        return definirRetorno(resposta.getStatusCode(), null, resposta.getMensagem());
+    public ResponseEntity<OrdemServicoDto> criarOrdemServico(@RequestBody OrdemServicoDto ordemServicoDto) {
+        OrdemServicoDto ordemServico = ordemServicoService.criarOrdemServico(ordemServicoDto);
+        return ResponseEntity.status(201).body(ordemServico);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity atualizarOrdemServico(
+    public ResponseEntity<OrdemServicoDto> atualizarOrdemServico(
             @PathVariable Long id,
             @RequestBody OrdemServicoDto ordemServico) {
-        var retorno = ordemServicoService.atualizarOrdemServico(id, ordemServico);
-        return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
+        OrdemServicoDto ordemServicoAtualizada = ordemServicoService.atualizarOrdemServico(id, ordemServico);
+        return ResponseEntity.ok(ordemServicoAtualizada);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deletarOrdemServico(@PathVariable Long id) {
-        var retorno = ordemServicoService.deletarOrdemServico(id);
-        return definirRetorno(retorno.getStatusCode(), null, retorno.getMensagem());
+    public ResponseEntity<Void> deletarOrdemServico(@PathVariable Long id) {
+        ordemServicoService.deletarOrdemServico(id);
+        return ResponseEntity.noContent().build();
     }
-
 }
