@@ -2,6 +2,7 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.OrdemServicoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,10 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ordem-servicos")
+@RequiredArgsConstructor
 public class OrdemServicoController {
 
-    @Autowired
-    OrdemServicoService ordemServicoService;
+    private final OrdemServicoService ordemServicoService;
 
     @GetMapping
     public ResponseEntity<List<OrdemServicoDto>> buscarTodos() {
