@@ -1,0 +1,15 @@
+meta {
+  name: Buscar Pessoa por ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/pessoas/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

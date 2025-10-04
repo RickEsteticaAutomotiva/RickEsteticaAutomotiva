@@ -1,0 +1,15 @@
+meta {
+  name: Listar Eventos
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/calendario/eventos
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

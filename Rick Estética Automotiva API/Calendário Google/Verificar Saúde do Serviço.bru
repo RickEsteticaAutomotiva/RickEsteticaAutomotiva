@@ -1,0 +1,15 @@
+meta {
+  name: Verificar Saúde do Serviço
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/calendario/eventos/saude
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

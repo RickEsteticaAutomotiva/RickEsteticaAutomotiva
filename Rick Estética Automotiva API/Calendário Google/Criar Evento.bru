@@ -1,0 +1,28 @@
+meta {
+  name: Criar Evento
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/calendario/eventos
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "titulo": "Serviço de Lavagem",
+    "descricao": "Lavagem completa do veículo",
+    "dataInicio": "2024-01-15T10:00:00",
+    "dataFim": "2024-01-15T11:00:00"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
