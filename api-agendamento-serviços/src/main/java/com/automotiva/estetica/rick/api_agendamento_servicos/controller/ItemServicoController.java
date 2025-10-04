@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemServicoController {
 
-    private ItemServicoService itemServicoService;
+    private final ItemServicoService itemServicoService;
 
     @GetMapping
     public ResponseEntity<List<ItemServicoDto>> buscarTodos() {

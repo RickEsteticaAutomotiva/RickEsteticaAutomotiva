@@ -4,10 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
-public class DependenciaNaoEncontradaException extends RuntimeException{
+public class RecursoNaoEncontradaException extends RuntimeException{
     private final String nomeDependencia;
 
-    public DependenciaNaoEncontradaException(String nomeDependencia) {
+    public RecursoNaoEncontradaException(String nomeDependencia) {
         this.nomeDependencia = nomeDependencia;
     }
 

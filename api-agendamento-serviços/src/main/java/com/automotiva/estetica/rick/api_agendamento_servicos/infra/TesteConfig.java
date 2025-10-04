@@ -11,8 +11,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-@Configuration
-@Profile("dev")
+//@Configuration
+//@Profile("dev")
 public class TesteConfig implements CommandLineRunner {
     @Autowired
     private PessoaRepository pessoaRepository;

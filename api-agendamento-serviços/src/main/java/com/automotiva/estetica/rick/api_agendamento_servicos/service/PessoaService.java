@@ -7,7 +7,7 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroD
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
-import com.automotiva.estetica.rick.api_agendamento_servicos.exception.DependenciaNaoEncontradaException;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.PessoaRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.specification.PessoaSpecification;
@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +25,6 @@ public class PessoaService {
 
     private final PessoaRepository pessoaRepository;
     private final PessoaMapper pessoaMapper;
-
 
     public Page<PessoaDto> buscarTodosComFiltro(PessoaPageRequest pageRequest) {
         String ordenarPor = pageRequest.getOrdenarPor();
@@ -48,20 +45,13 @@ public class PessoaService {
         Specification<PessoaEntity> spec = PessoaSpecification.filtroUnico(pageRequest.getFiltro());
         Page<PessoaEntity> paginaPessoas = pessoaRepository.findAll(spec, pageable);
 
-        return paginaPessoas.map(PessoaMapper.INSTANCE::pessoaParaPessoaDto);
+        return paginaPessoas.map(pessoaMapper::pessoaParaPessoaDto);
     }
-
 
     public PessoaDto login(LoginDto loginDto) {
         Optional<PessoaEntity> autenticado = pessoaRepository.findByEmailAndSenha(loginDto.getEmail(), loginDto.getSenha());
         if (autenticado.isPresent()) {
-            PessoaEntity entity = autenticado.get();
-            return PessoaDto.builder()
-                    .id(entity.getId())
-                    .nome(entity.getNome())
-                    .email(entity.getEmail())
-                    .dataNascimento(entity.getDataNascimento())
-                    .build();
+            return pessoaMapper.pessoaParaPessoaDto(autenticado.get());
         }
         throw new RuntimeException("Invalid credentials");
     }
@@ -73,7 +63,7 @@ public class PessoaService {
         if (pessoaRepository.existsByEmail(pessoa.getEmail())) {
             throw new RecursoJaExisteException("Email");
         }
-        PessoaEntity pessoaEntity = converterEntity(pessoa);
+        PessoaEntity pessoaEntity = pessoaMapper.pessoaCadastroDtoParaPessoaEntity(pessoa);
         pessoaEntity.setSenha(pessoa.getSenha());
         pessoaRepository.save(pessoaEntity);
         return pessoa;
@@ -82,15 +72,15 @@ public class PessoaService {
     public PessoaDto buscarPorId(Long id) {
         Optional<PessoaEntity> pessoa = pessoaRepository.findById(id);
         if (pessoa.isEmpty()) {
-            throw new DependenciaNaoEncontradaException("Pessoa");
+            throw new RecursoNaoEncontradaException("Pessoa");
         }
-        return converterParaDto(pessoa.get());
+        return pessoaMapper.pessoaParaPessoaDto(pessoa.get());
     }
 
     public PessoaCadastroDto atualizarPessoa(Long id, PessoaCadastroDto pessoaAtualizada) {
         Optional<PessoaEntity> pessoaExistente = pessoaRepository.findById(id);
         if (pessoaExistente.isEmpty()) {
-            throw new DependenciaNaoEncontradaException("Pessoa");
+            throw new RecursoNaoEncontradaException("Pessoa");
         }
         PessoaEntity pessoa = pessoaExistente.get();
         if (!pessoa.getCpf().equals(pessoaAtualizada.getCpf()) &&
@@ -101,7 +91,7 @@ public class PessoaService {
                 pessoaRepository.existsByEmail(pessoaAtualizada.getEmail())) {
             throw new RecursoJaExisteException("Email");
         }
-        atualizarPessoaEntiry(pessoaAtualizada, pessoa);
+        pessoaMapper.atualizarPessoaEntityFromDto(pessoaAtualizada, pessoa);
         pessoa.setSenha(pessoaAtualizada.getSenha());
         pessoaRepository.save(pessoa);
         return pessoaAtualizada;
@@ -110,43 +100,8 @@ public class PessoaService {
     public void deletarPessoa(Long id) {
         Optional<PessoaEntity> pessoa = pessoaRepository.findById(id);
         if (pessoa.isEmpty()) {
-            throw new DependenciaNaoEncontradaException("Pessoa");
+            throw new RecursoNaoEncontradaException("Pessoa");
         }
         pessoaRepository.deleteById(id);
-    }
-
-    private PessoaDto converterParaDto(PessoaEntity entity) {
-        return PessoaDto.builder()
-                .id(entity.getId())
-                .nome(entity.getNome())
-                .cpf(entity.getCpf())
-                .email(entity.getEmail())
-                .telefone(entity.getTelefone())
-                .dataNascimento(entity.getDataNascimento())
-                .build();
-    }
-
-    private List<PessoaDto> converterListaParaDto(List<PessoaEntity> entities) {
-        return entities.stream()
-                .map(this::converterParaDto)
-                .collect(Collectors.toList());
-    }
-
-    public PessoaEntity converterEntity(PessoaCadastroDto dto) {
-        return PessoaEntity.builder()
-                .nome(dto.getNome())
-                .cpf(dto.getCpf())
-                .email(dto.getEmail())
-                .telefone(dto.getTelefone())
-                .dataNascimento(dto.getDataNascimento())
-                .build();
-    }
-
-    public void atualizarPessoaEntiry(PessoaCadastroDto dto, PessoaEntity entity) {
-        entity.setNome(dto.getNome());
-        entity.setCpf(dto.getCpf());
-        entity.setEmail(dto.getEmail());
-        entity.setTelefone(dto.getTelefone());
-        entity.setDataNascimento(dto.getDataNascimento());
     }
 }
