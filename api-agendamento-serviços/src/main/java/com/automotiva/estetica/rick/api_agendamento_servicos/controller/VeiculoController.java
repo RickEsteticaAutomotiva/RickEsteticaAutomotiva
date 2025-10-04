@@ -1,4 +1,3 @@
-// src/main/java/com/automotiva/estetica/rick/api_agendamento_servicos/controller/VeiculoController.java
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.VeiculoDto;

@@ -1,6 +1,5 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.dto;
 
-import jakarta.persistence.Id;
 import lombok.*;
 
 @Setter
