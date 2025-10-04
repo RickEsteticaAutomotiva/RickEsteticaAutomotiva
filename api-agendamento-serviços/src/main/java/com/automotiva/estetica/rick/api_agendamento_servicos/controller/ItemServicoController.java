@@ -18,6 +18,7 @@ public class ItemServicoController {
 
     @GetMapping
     public ResponseEntity<List<ItemServicoDto>> buscarTodos() {
+        //TODO colocar paginado igual esta na pesssoaController
         List<ItemServicoDto> itens = itemServicoService.buscarTodos();
         return ResponseEntity.ok(itens);
     }

@@ -3,9 +3,10 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.DependenciaNaoEncontradaException;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ServicoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class ServicoService {
     public List<ServicoDto> buscarTodos() {
         List<ServicoEntity> servicos = servicoRepository.findAll();
         if (servicos.isEmpty()) {
-            throw new RuntimeException("Nenhum serviço encontrado.");
+            throw new DependenciaNaoEncontradaException("Serviço");
         }
         return servicos.stream()
                 .map(this::converterParaDto)
@@ -30,7 +31,7 @@ public class ServicoService {
 
     public ServicoDto criarServico(ServicoDto servico) {
         if (servicoRepository.existsById(servico.getId())) {
-            throw new RuntimeException("Serviço já cadastrado.");
+            throw new RecursoJaExisteException("Serviço");
         }
         ServicoEntity servicoEntity = converterEntity(servico);
         servicoRepository.save(servicoEntity);
@@ -40,7 +41,7 @@ public class ServicoService {
     public ServicoDto buscarPorId(Long id) {
         Optional<ServicoEntity> servico = servicoRepository.findById(id);
         if (servico.isEmpty()) {
-            throw new RuntimeException("Serviço não encontrado.");
+            throw new DependenciaNaoEncontradaException("Serviço");
         }
         return converterParaDto(servico.get());
     }
@@ -48,7 +49,7 @@ public class ServicoService {
     public ServicoDto atualizarServico(Long id, ServicoDto servicoAtualizada) {
         Optional<ServicoEntity> servicoExistente = servicoRepository.findById(id);
         if (servicoExistente.isEmpty()) {
-            throw new RuntimeException("Serviço não encontrado.");
+            throw new DependenciaNaoEncontradaException("Serviço");
         }
         ServicoEntity servico = servicoExistente.get();
         atualizarServicoEntity(servicoAtualizada, servico);
@@ -59,7 +60,7 @@ public class ServicoService {
     public void deletarServico(Long id) {
         Optional<ServicoEntity> servico = servicoRepository.findById(id);
         if (servico.isEmpty()) {
-            throw new RuntimeException("Serviço não encontrado.");
+            throw new DependenciaNaoEncontradaException("Serviço");
         }
         servicoRepository.deleteById(id);
     }

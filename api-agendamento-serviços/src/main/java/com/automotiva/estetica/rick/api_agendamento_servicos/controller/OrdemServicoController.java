@@ -18,6 +18,7 @@ public class OrdemServicoController {
 
     @GetMapping
     public ResponseEntity<List<OrdemServicoDto>> buscarTodos() {
+        //TODO colocar paginado igual esta na pesssoaController
         List<OrdemServicoDto> ordemServicos = ordemServicoService.buscarTodos();
         return ResponseEntity.ok(ordemServicos);
     }

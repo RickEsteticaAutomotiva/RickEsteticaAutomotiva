@@ -25,6 +25,7 @@ public class VeiculoController {
 
     @GetMapping
     public ResponseEntity<List<VeiculoDto>> buscarTodosVeiculos() {
+        //TODO colocar paginado igual esta na pesssoaController
         List<VeiculoDto> resposta = veiculoService.buscarTodosVeiculos();
         return ResponseEntity.ok(resposta);
     }

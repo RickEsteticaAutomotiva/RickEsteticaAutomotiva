@@ -1,0 +1,25 @@
+package com.automotiva.estetica.rick.api_agendamento_servicos.automapper;
+
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+public interface PessoaMapper {
+
+    PessoaMapper INSTANCE = Mappers.getMapper( PessoaMapper.class );
+
+    PessoaDto pessoaParaPessoaDto(PessoaEntity pessoa);
+    PessoaEntity pessoaDtoParaPessoa(PessoaDto pessoa);
+    PessoaEntity pessoaCadastroDtoParaPessoaEntity(PessoaCadastroDto dto);
+    PessoaCadastroDto pessoaEntityParaPessoaCadastroDto(PessoaEntity entity);
+    void atualizarPessoaEntityFromDto(PessoaCadastroDto dto, @MappingTarget PessoaEntity entity);
+    List<PessoaDto> pessoasParaPessoasDto(List<PessoaEntity> pessoas);
+    List<PessoaEntity> pessoasDtoParaPessoas(List<PessoaDto> pessoasDto);
+
+}

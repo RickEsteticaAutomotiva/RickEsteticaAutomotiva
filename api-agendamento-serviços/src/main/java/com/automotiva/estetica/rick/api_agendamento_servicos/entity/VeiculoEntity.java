@@ -32,31 +32,4 @@ public class VeiculoEntity extends BaseEntity {
     @JoinColumn(name = "fkUsuario")
     private PessoaEntity pessoa; // TODO TROCAR DEPOIS PARA USUARIO
 
-    public String getPlaca() {
-        return placa;
-    }
-
-    public String getModelo() {
-        return modelo;
-    }
-
-    public String getMarca() {
-        return marca;
-    }
-
-    public String getPorte() {
-        return porte;
-    }
-
-    public String getCor() {
-        return cor;
-    }
-
-    public String getAno() {
-        return ano;
-    }
-
-    public PessoaEntity getPessoa() {
-        return pessoa;
-    }
 }

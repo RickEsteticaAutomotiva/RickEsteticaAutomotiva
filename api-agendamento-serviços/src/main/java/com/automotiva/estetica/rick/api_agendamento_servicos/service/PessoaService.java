@@ -1,13 +1,18 @@
 // src/main/java/com/automotiva/estetica/rick/api_agendamento_servicos/service/PessoaService.java
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
+import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.PessoaMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.DependenciaNaoEncontradaException;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.PessoaRepository;
+import com.automotiva.estetica.rick.api_agendamento_servicos.specification.PessoaSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -21,11 +26,31 @@ import java.util.stream.Collectors;
 public class PessoaService {
 
     private final PessoaRepository pessoaRepository;
+    private final PessoaMapper pessoaMapper;
 
-    public List<PessoaDto> buscarTodos(Pageable pageable) {
-        Page<PessoaEntity> paginaPessoas = pessoaRepository.findAll(pageable);
-        return converterListaParaDto(paginaPessoas.getContent());
+
+    public Page<PessoaDto> buscarTodosComFiltro(PessoaPageRequest pageRequest) {
+        String ordenarPor = pageRequest.getOrdenarPor();
+        if (ordenarPor == null || ordenarPor.isBlank()) {
+            ordenarPor = "id";
+        }
+        String[] camposOrdenacao = ordenarPor.split(",");
+        for (int i = 0; i < camposOrdenacao.length; i++) {
+            camposOrdenacao[i] = camposOrdenacao[i].trim();
+        }
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                pageRequest.getPagina(),
+                pageRequest.getTamanho(),
+                org.springframework.data.domain.Sort.by(camposOrdenacao)
+        );
+
+        Specification<PessoaEntity> spec = PessoaSpecification.filtroUnico(pageRequest.getFiltro());
+        Page<PessoaEntity> paginaPessoas = pessoaRepository.findAll(spec, pageable);
+
+        return paginaPessoas.map(PessoaMapper.INSTANCE::pessoaParaPessoaDto);
     }
+
 
     public PessoaDto login(LoginDto loginDto) {
         Optional<PessoaEntity> autenticado = pessoaRepository.findByEmailAndSenha(loginDto.getEmail(), loginDto.getSenha());
@@ -43,10 +68,10 @@ public class PessoaService {
 
     public PessoaCadastroDto criarPessoa(PessoaCadastroDto pessoa) {
         if (pessoaRepository.existsByCpf(pessoa.getCpf())) {
-            throw new RuntimeException("CPF already registered");
+            throw new RecursoJaExisteException("CPF");
         }
         if (pessoaRepository.existsByEmail(pessoa.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new RecursoJaExisteException("Email");
         }
         PessoaEntity pessoaEntity = converterEntity(pessoa);
         pessoaEntity.setSenha(pessoa.getSenha());
@@ -57,7 +82,7 @@ public class PessoaService {
     public PessoaDto buscarPorId(Long id) {
         Optional<PessoaEntity> pessoa = pessoaRepository.findById(id);
         if (pessoa.isEmpty()) {
-            throw new RuntimeException("Person not found");
+            throw new DependenciaNaoEncontradaException("Pessoa");
         }
         return converterParaDto(pessoa.get());
     }
@@ -65,16 +90,16 @@ public class PessoaService {
     public PessoaCadastroDto atualizarPessoa(Long id, PessoaCadastroDto pessoaAtualizada) {
         Optional<PessoaEntity> pessoaExistente = pessoaRepository.findById(id);
         if (pessoaExistente.isEmpty()) {
-            throw new RuntimeException("Person not found");
+            throw new DependenciaNaoEncontradaException("Pessoa");
         }
         PessoaEntity pessoa = pessoaExistente.get();
         if (!pessoa.getCpf().equals(pessoaAtualizada.getCpf()) &&
                 pessoaRepository.existsByCpf(pessoaAtualizada.getCpf())) {
-            throw new RuntimeException("CPF already registered for another person");
+            throw new RecursoJaExisteException("CPF");
         }
         if (!pessoa.getEmail().equals(pessoaAtualizada.getEmail()) &&
                 pessoaRepository.existsByEmail(pessoaAtualizada.getEmail())) {
-            throw new RuntimeException("Email already registered for another person");
+            throw new RecursoJaExisteException("Email");
         }
         atualizarPessoaEntiry(pessoaAtualizada, pessoa);
         pessoa.setSenha(pessoaAtualizada.getSenha());
@@ -85,7 +110,7 @@ public class PessoaService {
     public void deletarPessoa(Long id) {
         Optional<PessoaEntity> pessoa = pessoaRepository.findById(id);
         if (pessoa.isEmpty()) {
-            throw new RuntimeException("Person not found");
+            throw new DependenciaNaoEncontradaException("Pessoa");
         }
         pessoaRepository.deleteById(id);
     }

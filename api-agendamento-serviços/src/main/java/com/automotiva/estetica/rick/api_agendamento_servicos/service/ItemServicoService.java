@@ -4,11 +4,12 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ItemServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ItemServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.OrdemServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.DependenciaNaoEncontradaException;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ItemServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.OrdemServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ServicoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,22 +21,20 @@ import java.util.stream.Collectors;
 public class ItemServicoService {
 
     private final ItemServicoRepository itemServicoRepository;
-
     private final ServicoRepository servicoRepository;
-
     private final OrdemServicoRepository ordemServicoRepository;
 
     public List<ItemServicoDto> buscarTodos() {
         List<ItemServicoEntity> itens = itemServicoRepository.findAll();
         if (itens.isEmpty()) {
-            throw new RuntimeException("Nenhum item de serviço encontrado.");
+            throw new DependenciaNaoEncontradaException("Item de serviço");
         }
         return itens.stream().map(this::converterParaDto).collect(Collectors.toList());
     }
 
     public ItemServicoDto criarItemServico(ItemServicoDto itemServicoDto) {
         if (itemServicoRepository.existsById(itemServicoDto.getId())) {
-            throw new RuntimeException("Item de serviço já cadastrado.");
+            throw new RecursoJaExisteException("Item de serviço");
         }
         ItemServicoEntity entity = converterEntity(itemServicoDto);
         itemServicoRepository.save(entity);
@@ -45,7 +44,7 @@ public class ItemServicoService {
     public ItemServicoDto buscarPorId(Long id) {
         Optional<ItemServicoEntity> item = itemServicoRepository.findById(id);
         if (item.isEmpty()) {
-            throw new RuntimeException("Item de serviço não encontrado.");
+            throw new DependenciaNaoEncontradaException("Item de serviço");
         }
         return converterParaDto(item.get());
     }
@@ -53,7 +52,7 @@ public class ItemServicoService {
     public ItemServicoDto atualizarItemServico(Long id, ItemServicoDto itemServicoDtoAtualizada) {
         Optional<ItemServicoEntity> existente = itemServicoRepository.findById(id);
         if (existente.isEmpty()) {
-            throw new RuntimeException("Item de serviço não encontrado.");
+            throw new DependenciaNaoEncontradaException("Item de serviço");
         }
         ItemServicoEntity entity = existente.get();
         atualizarItemServicoEntity(itemServicoDtoAtualizada, entity);
@@ -64,7 +63,7 @@ public class ItemServicoService {
     public void deletarItemServico(Long id) {
         Optional<ItemServicoEntity> item = itemServicoRepository.findById(id);
         if (item.isEmpty()) {
-            throw new RuntimeException("Item de serviço não encontrado.");
+            throw new DependenciaNaoEncontradaException("Item de serviço");
         }
         itemServicoRepository.deleteById(id);
     }
