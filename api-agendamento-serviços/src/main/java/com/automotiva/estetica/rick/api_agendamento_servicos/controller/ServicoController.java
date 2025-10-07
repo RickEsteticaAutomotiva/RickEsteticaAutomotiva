@@ -3,7 +3,6 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.ServicoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +17,7 @@ public class ServicoController {
 
     @GetMapping
     public ResponseEntity<List<ServicoDto>> buscarTodos() {
+        //TODO colocar paginado igual esta na pesssoaController
         List<ServicoDto> servicos = servicoService.buscarTodos();
         return ResponseEntity.ok(servicos);
     }

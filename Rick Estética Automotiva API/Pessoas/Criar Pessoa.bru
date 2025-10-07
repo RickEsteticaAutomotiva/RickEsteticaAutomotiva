@@ -1,0 +1,28 @@
+meta {
+  name: Criar Pessoa
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/pessoas
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "nome": "João Silva",
+    "email": "joao@email.com",
+    "telefone": "11999999999",
+    "senha": "senha123"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

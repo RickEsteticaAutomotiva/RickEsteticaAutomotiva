@@ -1,0 +1,15 @@
+meta {
+  name: Buscar Todas Ordens
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/ordem-servicos
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

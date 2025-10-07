@@ -1,0 +1,15 @@
+meta {
+  name: Deletar Ordem de Serviço
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/ordem-servicos/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Rick Estética Automotiva API",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

@@ -1,0 +1,25 @@
+meta {
+  name: Atualizar Item de Serviço
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/itens-servicos/1
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "precoUnitario": 60.00
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -3,7 +3,6 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity

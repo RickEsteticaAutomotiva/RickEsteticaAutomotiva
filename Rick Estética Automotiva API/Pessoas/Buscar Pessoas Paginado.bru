@@ -1,0 +1,21 @@
+meta {
+  name: Buscar Pessoas Paginado
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/pessoas?page=0&size=10&sort=nome,asc
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 0
+  size: 10
+  sort: nome,asc
+}
+
+settings {
+  encodeUrl: true
+}

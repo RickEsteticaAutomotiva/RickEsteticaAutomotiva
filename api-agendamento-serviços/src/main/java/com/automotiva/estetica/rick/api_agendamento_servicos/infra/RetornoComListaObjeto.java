@@ -9,6 +9,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+//TOOD remover essa clase
 public class RetornoComListaObjeto<T> {
     private Integer statusCode;
     private String mensagem;

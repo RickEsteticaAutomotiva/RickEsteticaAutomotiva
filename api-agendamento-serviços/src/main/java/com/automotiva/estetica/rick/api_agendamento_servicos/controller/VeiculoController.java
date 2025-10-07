@@ -1,4 +1,3 @@
-// src/main/java/com/automotiva/estetica/rick/api_agendamento_servicos/controller/VeiculoController.java
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.VeiculoDto;
@@ -13,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/veiculos")
 @RequiredArgsConstructor
+//TODO fazer o atualizar o veiculo o PUT
 public class VeiculoController {
 
     private final VeiculoService veiculoService;
@@ -25,6 +25,7 @@ public class VeiculoController {
 
     @GetMapping
     public ResponseEntity<List<VeiculoDto>> buscarTodosVeiculos() {
+        //TODO colocar paginado igual esta na pesssoaController
         List<VeiculoDto> resposta = veiculoService.buscarTodosVeiculos();
         return ResponseEntity.ok(resposta);
     }

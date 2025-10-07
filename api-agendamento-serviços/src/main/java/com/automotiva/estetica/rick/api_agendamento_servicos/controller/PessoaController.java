@@ -4,16 +4,13 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/pessoas")
@@ -22,14 +19,10 @@ public class PessoaController {
 
     private final PessoaService pessoaService;
 
-    @GetMapping()
-    public ResponseEntity<List<PessoaDto>> buscarTodosPaginado(
-            @RequestParam(defaultValue = "0") int pagina,
-            @RequestParam(defaultValue = "10") int tamanho,
-            @RequestParam(defaultValue = "id") String ordenarPor) {
-
-        Pageable pageable = PageRequest.of(pagina, tamanho, Sort.by(ordenarPor));
-        List<PessoaDto> pessoas = pessoaService.buscarTodos(pageable);
+    // PessoaController.java
+    @GetMapping
+    public ResponseEntity<Page<PessoaDto>> buscarTodosPaginado(@Valid @ModelAttribute PessoaPageRequest pageRequest) {
+        Page<PessoaDto> pessoas = pessoaService.buscarTodosComFiltro(pageRequest);
         return ResponseEntity.ok(pessoas);
     }
 

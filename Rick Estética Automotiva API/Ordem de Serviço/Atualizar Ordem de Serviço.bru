@@ -1,0 +1,25 @@
+meta {
+  name: Atualizar Ordem de Serviço
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/ordem-servicos/1
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "CONCLUIDO"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

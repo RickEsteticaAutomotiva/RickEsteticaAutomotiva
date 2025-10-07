@@ -1,6 +1,5 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.dto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
