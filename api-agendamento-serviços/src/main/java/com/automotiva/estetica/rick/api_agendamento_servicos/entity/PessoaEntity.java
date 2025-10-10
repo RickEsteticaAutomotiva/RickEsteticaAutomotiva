@@ -12,7 +12,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "pessoa")
-public class PessoaEntity extends BaseEntity {
+//public class PessoaEntity extends BaseEntity {
+public class PessoaEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     @Column(name = "nome", length = 100)
     private String nome;

@@ -1,8 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
@@ -14,7 +12,12 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ordem_servico")
-public class OrdemServicoEntity extends BaseEntity {
+//public class OrdemServicoEntity extends BaseEntity {
+public class OrdemServicoEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     @Column(name = "dtConclusao", updatable = true)
     private Date dtConclusao;
