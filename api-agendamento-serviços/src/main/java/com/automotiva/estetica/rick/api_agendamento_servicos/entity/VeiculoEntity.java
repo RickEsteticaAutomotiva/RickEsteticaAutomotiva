@@ -12,7 +12,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "veiculo")
-public class VeiculoEntity extends BaseEntity {
+//public class VeiculoEntity extends BaseEntity {
+public class VeiculoEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     private String placa;
 

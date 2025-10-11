@@ -4,15 +4,19 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-
-@Entity
 @Getter
 @Setter
 @Builder
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "item_servico")
-public class ItemServicoEntity extends BaseEntity {
+//public class ItemServicoEntity extends BaseEntity {
+public class ItemServicoEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "ordem_servico_id", nullable = false)
@@ -24,4 +28,12 @@ public class ItemServicoEntity extends BaseEntity {
 
     @Column(name = "preco", nullable = false)
     private BigDecimal preco;
+
+    public ServicoEntity getServico() {
+        return servico;
+    }
+
+    public void setServico(ServicoEntity servico) {
+        this.servico = servico;
+    }
 }
