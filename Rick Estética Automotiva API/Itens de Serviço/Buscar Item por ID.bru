@@ -1,0 +1,15 @@
+meta {
+  name: Buscar Item por ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/itens-servicos/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

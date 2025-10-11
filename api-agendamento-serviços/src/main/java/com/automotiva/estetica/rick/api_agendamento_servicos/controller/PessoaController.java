@@ -1,79 +1,60 @@
+// src/main/java/com/automotiva/estetica/rick/api_agendamento_servicos/controller/PessoaController.java
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.BaseController;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.RetornoComObjeto;
-import org.springframework.http.HttpHeaders;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/pessoa")
-public class PessoaController extends BaseController {
+@RequestMapping("/pessoas")
+@RequiredArgsConstructor
+public class PessoaController {
 
-    @Autowired
-    PessoaService pessoaService;
+    private final PessoaService pessoaService;
 
-    @GetMapping("/paginado")
-    public ResponseEntity buscarTodosPaginado(
-            @RequestParam(defaultValue = "0") int pagina,
-            @RequestParam(defaultValue = "10") int tamanho,
-            @RequestParam(defaultValue = "id") String ordenarPor) {
-
-        Pageable pageable = PageRequest.of(pagina, tamanho, Sort.by(ordenarPor));
-        var resposta = pessoaService.buscarTodos(pageable);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Pagina-Atual", String.valueOf(resposta.getPaginaAtual()));
-        headers.add("X-Total-Paginas", String.valueOf(resposta.getTotalPaginas()));
-        headers.add("X-Total-Elementos", String.valueOf(resposta.getTotalElementos()));
-        headers.add("X-Tamanho-Pagina", String.valueOf(resposta.getTamanhoPagina()));
-        headers.add("X-Ultima-Pagina", String.valueOf(resposta.isUltimaPagina()));
-        headers.add("X-Primeira-Pagina", String.valueOf(resposta.isPrimeiraPagina()));
-        headers.add("X-Mensagem", resposta.getMensagem());
-
-        var responseEntity = definirRetorno(resposta.getStatusCode(), resposta.getConteudo(), resposta.getMensagem());
-
-        return ResponseEntity.status(responseEntity.getStatusCode())
-                .headers(headers)
-                .body(responseEntity.getBody());
+    // PessoaController.java
+    @GetMapping
+    public ResponseEntity<Page<PessoaDto>> buscarTodosPaginado(@Valid @ModelAttribute PessoaPageRequest pageRequest) {
+        Page<PessoaDto> pessoas = pessoaService.buscarTodosComFiltro(pageRequest);
+        return ResponseEntity.ok(pessoas);
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginDto loginDto) {
-        var resposta = pessoaService.login(loginDto);
-        return definirRetorno(resposta.getStatusCode(), resposta.getObjeto(), resposta.getMensagem());
+    public ResponseEntity<PessoaDto> login(@RequestBody LoginDto loginDto) {
+        PessoaDto pessoa = pessoaService.login(loginDto);
+        return ResponseEntity.ok(pessoa);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity buscarPessoaPorId(@PathVariable Long id) {
-        RetornoComObjeto<PessoaDto> retorno = pessoaService.buscarPorId(id);
-        return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
+    public ResponseEntity<PessoaDto> buscarPessoaPorId(@PathVariable Long id) {
+        PessoaDto pessoa = pessoaService.buscarPorId(id);
+        return ResponseEntity.ok(pessoa);
     }
 
     @PostMapping("")
-    public ResponseEntity criarPessoa(@RequestBody PessoaCadastroDto pessoaCadastroDto) {
-        var resposta = pessoaService.criarPessoa(pessoaCadastroDto);
-        return definirRetorno(resposta.getStatusCode(), null, resposta.getMensagem());
+    public ResponseEntity<PessoaCadastroDto> criarPessoa(@RequestBody PessoaCadastroDto pessoaCadastroDto) {
+        PessoaCadastroDto pessoa = pessoaService.criarPessoa(pessoaCadastroDto);
+        return ResponseEntity.status(201).body(pessoa);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity atualizarPessoa(
+    public ResponseEntity<PessoaCadastroDto> atualizarPessoa(
             @PathVariable Long id,
             @RequestBody PessoaCadastroDto pessoa) {
-        var retorno = pessoaService.atualizarPessoa(id, pessoa);
-        return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
+        PessoaCadastroDto pessoaAtualizada = pessoaService.atualizarPessoa(id, pessoa);
+        return ResponseEntity.ok(pessoaAtualizada);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deletarPessoa(@PathVariable Long id) {
-        var retorno = pessoaService.deletarPessoa(id);
-        return definirRetorno(retorno.getStatusCode(), null, retorno.getMensagem());
+    public ResponseEntity<Void> deletarPessoa(@PathVariable Long id) {
+        pessoaService.deletarPessoa(id);
+        return ResponseEntity.noContent().build();
     }
 }

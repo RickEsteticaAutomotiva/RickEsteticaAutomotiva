@@ -1,0 +1,28 @@
+meta {
+  name: Criar Item de Serviço
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/itens-servicos
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "ordemServicoId": 1,
+    "servicoId": 1,
+    "quantidade": 1,
+    "precoUnitario": 50.00
+  }
+}
+
+settings {
+  encodeUrl: true
+}

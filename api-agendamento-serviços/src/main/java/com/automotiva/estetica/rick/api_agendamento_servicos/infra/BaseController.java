@@ -1,7 +1,7 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.infra;
 
 import org.springframework.http.ResponseEntity;
-
+//TOOD remover essa clase
 public abstract class BaseController {
 
     protected ResponseEntity<?> definirRetorno(Integer statusCode, Object dados, String mensagem) {

@@ -3,7 +3,6 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -13,7 +12,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "pessoa")
-public class PessoaEntity extends BaseEntity {
+//public class PessoaEntity extends BaseEntity {
+public class PessoaEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     @Column(name = "nome", length = 100)
     private String nome;

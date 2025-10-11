@@ -1,0 +1,15 @@
+meta {
+  name: Obter Evento
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/calendario/eventos/evento123
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

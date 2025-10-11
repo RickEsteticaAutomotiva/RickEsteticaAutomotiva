@@ -7,6 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+//TOOD remover essa clase
 public class RetornoComObjeto<T> {
     private Integer statusCode;
     private String mensagem;

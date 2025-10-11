@@ -1,0 +1,28 @@
+meta {
+  name: Atualizar Evento
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/calendario/eventos/evento123
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "titulo": "Serviço Premium",
+    "descricao": "Lavagem completa com cera",
+    "dataInicio": "2024-01-15T10:00:00",
+    "dataFim": "2024-01-15T12:00:00"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Deletar Item de Serviço
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/itens-servicos/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
