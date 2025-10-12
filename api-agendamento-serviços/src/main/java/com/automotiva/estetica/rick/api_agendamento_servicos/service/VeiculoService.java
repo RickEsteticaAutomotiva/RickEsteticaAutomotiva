@@ -50,6 +50,17 @@ public class VeiculoService {
         return veiculoMapper.veiculosParaVeiculosDto(veiculos);
     }
 
+    public void atualizarVeiculo(VeiculoDto veiculoDto) {
+        var veiculo = veiculoRepository.findByPlaca(veiculoDto.getPlaca())
+                .orElseThrow(() -> new RecursoNaoEncontradaException("Veículo"));
+
+        if (veiculo.getCor() != null) {
+            veiculo.setCor(veiculoDto.getCor());
+        }
+
+        veiculoRepository.save(veiculo);
+    }
+
     public void deletarVeiculo(Long id) {
         if (veiculoRepository.existsById(id)) {
             veiculoRepository.deleteById(id);

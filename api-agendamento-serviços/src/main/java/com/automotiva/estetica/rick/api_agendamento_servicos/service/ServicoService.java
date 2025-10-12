@@ -2,14 +2,18 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.ServicoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ServicoRepository;
+import com.automotiva.estetica.rick.api_agendamento_servicos.specification.ServicoSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,12 +23,27 @@ public class ServicoService {
     private final ServicoRepository servicoRepository;
     private final ServicoMapper servicoMapper;
 
-    public List<ServicoDto> buscarTodos() {
-        List<ServicoEntity> servicos = servicoRepository.findAll();
-        if (servicos.isEmpty()) {
-            throw new RecursoNaoEncontradaException("Serviço");
+    public Page<ServicoDto> buscarTodos(ServicoPageRequest servicoPageRequest) {
+        String ordenarPor = servicoPageRequest.getOrdenarPor();
+
+        if (ordenarPor == null || ordenarPor.isBlank()) {
+            ordenarPor = "id";
         }
-        return servicoMapper.servicosParaServicosDto(servicos);
+
+        String[] camposOrdenacao = ordenarPor.split(",");
+        for (int i = 0; i < camposOrdenacao.length; i++) {
+            camposOrdenacao[i] = camposOrdenacao[i].trim();
+        }
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                servicoPageRequest.getPagina(),
+                servicoPageRequest.getTamanho(),
+                org.springframework.data.domain.Sort.by(camposOrdenacao)
+        );
+
+        Specification<ServicoEntity> spec = ServicoSpecification.filtroUnico(servicoPageRequest.getFiltro());
+        Page<ServicoEntity> paginaServicos = servicoRepository.findAll(spec, pageable);
+        return paginaServicos.map(servicoMapper::servicoParaServicoDto);
     }
 
     public ServicoDto criarServico(ServicoDto servico) {
