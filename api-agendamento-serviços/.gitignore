@@ -34,3 +34,4 @@ build/
 /src/main/resources/credentials.json
 /src/main/resources/credentials-oauth.json
 /tokens/StoredCredential
+/src/main/resources/*.properties
