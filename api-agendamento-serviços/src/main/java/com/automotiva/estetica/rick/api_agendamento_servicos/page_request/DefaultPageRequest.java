@@ -1,4 +1,4 @@
-package com.automotiva.estetica.rick.api_agendamento_servicos.dto;
+package com.automotiva.estetica.rick.api_agendamento_servicos.page_request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PessoaPageRequest {
+public class DefaultPageRequest {
     private int pagina = 0;
 
     @Min(1)
@@ -18,3 +18,4 @@ public class PessoaPageRequest {
     private String ordenarPor = "id";
     private String filtro;
 }
+

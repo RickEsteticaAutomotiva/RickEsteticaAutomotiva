@@ -1,7 +1,7 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoPageRequest;
+import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.ServicoService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -17,7 +17,7 @@ public class ServicoController {
     private final ServicoService servicoService;
 
     @GetMapping
-    public ResponseEntity<Page<ServicoDto>> buscarTodos(@Valid @ModelAttribute ServicoPageRequest pageRequest) {
+    public ResponseEntity<Page<ServicoDto>> buscarTodos(@Valid @ModelAttribute DefaultPageRequest pageRequest) {
         Page<ServicoDto> servicos = servicoService.buscarTodos(pageRequest);
         return ResponseEntity.ok(servicos);
     }

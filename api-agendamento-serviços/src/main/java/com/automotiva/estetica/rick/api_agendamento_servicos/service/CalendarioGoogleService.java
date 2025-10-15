@@ -86,7 +86,10 @@ public class CalendarioGoogleService {
                     .getItems();
 
             if (eventos.isEmpty()) {
-                throw new RecursoNaoEncontradaException("Eventos");
+                throw RecursoNaoEncontradaException.builder()
+                        .mensagem("não foram encontrados eventos")
+                        .detalhes("")
+                        .build();
             }
 
             return eventos;

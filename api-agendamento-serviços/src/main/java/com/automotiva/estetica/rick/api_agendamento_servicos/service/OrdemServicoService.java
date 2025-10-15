@@ -51,7 +51,10 @@ public class OrdemServicoService {
                 ordemServico.getVeiculo(),
                 ordemServico.getDataAgendamento()
         )) {
-            throw new RecursoJaExisteException("Já existe uma ordem de serviço para este veículo nesta data e hora.");
+            throw RecursoJaExisteException.builder()
+                    .mensagem("um agendamento já existe nessa hora e data")
+                    .detalhes("")
+                    .build();
         }
         OrdemServicoEntity ordemServicoEntity = ordemServicoMapper.ordemServicoDtoParaOrdemServico(ordemServico);
         ordemServicoRepository.save(ordemServicoEntity);
@@ -61,7 +64,10 @@ public class OrdemServicoService {
     public OrdemServicoDto buscarPorId(Long id) {
         Optional<OrdemServicoEntity> ordemServico = ordemServicoRepository.findById(id);
         if (ordemServico.isEmpty()) {
-            throw new RecursoNaoEncontradaException("Ordem de serviço");
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("a ordem de serviço com id " + id + " não foi encontrado")
+                    .detalhes("")
+                    .build();
         }
         return ordemServicoMapper.ordemServicoParaOrdemServicoDto(ordemServico.get());
     }
@@ -69,7 +75,10 @@ public class OrdemServicoService {
     public OrdemServicoDto atualizarOrdemServico(Long id, OrdemServicoDto ordemServicoAtualizada) {
         Optional<OrdemServicoEntity> ordemServicoExistente = ordemServicoRepository.findById(id);
         if (ordemServicoExistente.isEmpty()) {
-            throw new RecursoNaoEncontradaException("Ordem de serviço");
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("a ordem de serviço com id " + id + " não foi encontrado")
+                    .detalhes("")
+                    .build();
         }
         OrdemServicoEntity ordemServico = ordemServicoExistente.get();
         ordemServicoMapper.atualizarOrdemServicoEntityFromDto(ordemServicoAtualizada, ordemServico);
@@ -80,7 +89,10 @@ public class OrdemServicoService {
     public void deletarOrdemServico(Long id) {
         Optional<OrdemServicoEntity> ordemServico = ordemServicoRepository.findById(id);
         if (ordemServico.isEmpty()) {
-            throw new RecursoNaoEncontradaException("Ordem de serviço");
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("a ordem de serviço com id " + id + " não foi encontrado")
+                    .detalhes("")
+                    .build();
         }
         ordemServicoRepository.deleteById(id);
     }

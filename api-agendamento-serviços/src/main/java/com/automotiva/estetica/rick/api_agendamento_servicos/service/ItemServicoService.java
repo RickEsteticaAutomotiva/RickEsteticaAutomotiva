@@ -28,14 +28,20 @@ public class ItemServicoService {
     public List<ItemServicoDto> buscarTodos() {
         List<ItemServicoEntity> itens = itemServicoRepository.findAll();
         if (itens.isEmpty()) {
-            throw new RecursoNaoEncontradaException("Item de serviço");
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("itens não foram encontrados")
+                    .detalhes("")
+                    .build();
         }
         return itemServicoMapper.itemServicosParaItemServicosDto(itens);
     }
 
     public ItemServicoDto criarItemServico(ItemServicoDto itemServicoDto) {
         if (itemServicoRepository.existsById(itemServicoDto.getId())) {
-            throw new RecursoJaExisteException("Item de serviço");
+            throw RecursoJaExisteException.builder()
+                    .mensagem("o item já existe")
+                    .detalhes("")
+                    .build();
         }
         ItemServicoEntity entity = converterEntity(itemServicoDto);
         itemServicoRepository.save(entity);
@@ -45,7 +51,10 @@ public class ItemServicoService {
     public ItemServicoDto buscarPorId(Long id) {
         Optional<ItemServicoEntity> item = itemServicoRepository.findById(id);
         if (item.isEmpty()) {
-            throw new RecursoNaoEncontradaException("Item de serviço");
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("o item com id" + id + "não foi encontrado")
+                    .detalhes("")
+                    .build();
         }
         return itemServicoMapper.itemServicoParaItemServicoDto(item.get());
     }
@@ -53,7 +62,10 @@ public class ItemServicoService {
     public ItemServicoDto atualizarItemServico(Long id, ItemServicoDto itemServicoDtoAtualizada) {
         Optional<ItemServicoEntity> existente = itemServicoRepository.findById(id);
         if (existente.isEmpty()) {
-            throw new RecursoNaoEncontradaException("Item de serviço");
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("o item com id" + id + "não foi encontrado")
+                    .detalhes("")
+                    .build();
         }
         ItemServicoEntity entity = existente.get();
         itemServicoMapper.atualizarItemServicoEntityFromDto(itemServicoDtoAtualizada, entity);
@@ -64,14 +76,22 @@ public class ItemServicoService {
     public void deletarItemServico(Long id) {
         Optional<ItemServicoEntity> item = itemServicoRepository.findById(id);
         if (item.isEmpty()) {
-            throw new RecursoNaoEncontradaException("Item de serviço");
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("o item com id" + id + "não foi encontrado")
+                    .detalhes("")
+                    .build();
         }
         itemServicoRepository.deleteById(id);
     }
 
     public ItemServicoEntity converterEntity(ItemServicoDto dto) {
         ServicoEntity servico = servicoRepository.findById(dto.getIdServico())
-                .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
+                .orElseThrow(() ->
+                        RecursoNaoEncontradaException.builder()
+                                .mensagem("o servico com id" + dto.getIdServico() + "não foi encontrado")
+                                .detalhes("")
+                                .build()
+                );
         OrdemServicoEntity ordem = ordemServicoRepository.findById(dto.getIdOrdemServico())
                 .orElseThrow(() -> new RuntimeException("Ordem de serviço não encontrada"));
 
