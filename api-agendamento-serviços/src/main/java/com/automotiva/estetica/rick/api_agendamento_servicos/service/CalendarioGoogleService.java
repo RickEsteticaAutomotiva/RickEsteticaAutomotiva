@@ -1,14 +1,14 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CalendarEventRequest;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.RetornoComObjeto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.infra.ServicoConexaoGoogleCalendar;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.EventAttendee;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,15 +21,15 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CalendarioGoogleService {
 
-    @Autowired
-    private ServicoConexaoGoogleCalendar servicoConexao;
+    private final ServicoConexaoGoogleCalendar servicoConexao;
 
     private static final DateTimeFormatter FORMATADOR_RFC3339 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     private static final String CALENDARIO_PRIMARIO = "primary";
 
-    public RetornoComObjeto<Event> criarEvento(CalendarEventRequest request) {
+    public Event criarEvento(CalendarEventRequest request) {
         try {
             Calendar servicoCalendario = servicoConexao.obterServicoCalendario();
 
@@ -53,50 +53,31 @@ public class CalendarioGoogleService {
 
             configurarPropriedadesAdicionais(evento, request);
 
-            Event eventoCriado = servicoCalendario.events().insert(CALENDARIO_PRIMARIO, evento).execute();
-
-            return RetornoComObjeto.<Event>builder()
-                    .statusCode(201)
-                    .mensagem("Evento criado com sucesso")
-                    .objeto(eventoCriado)
-                    .build();
+            return servicoCalendario.events().insert(CALENDARIO_PRIMARIO, evento).execute();
 
         } catch (IOException e) {
             log.error("Erro ao criar evento no calendário", e);
-            return RetornoComObjeto.<Event>builder()
-                    .statusCode(500)
-                    .mensagem("Erro ao criar evento: " + e.getMessage())
-                    .objeto(null)
-                    .build();
+            throw new RuntimeException("Erro ao criar evento");
         }
     }
 
-    public RetornoComObjeto<Event> obterEvento(String idEvento) {
+    public Event obterEvento(String idEvento) {
         try {
             Calendar servicoCalendario = servicoConexao.obterServicoCalendario();
-            Event evento = servicoCalendario.events().get(CALENDARIO_PRIMARIO, idEvento).execute();
 
-            return RetornoComObjeto.<Event>builder()
-                    .statusCode(200)
-                    .mensagem("Evento encontrado com sucesso")
-                    .objeto(evento)
-                    .build();
+            return servicoCalendario.events().get(CALENDARIO_PRIMARIO, idEvento).execute();
 
         } catch (IOException e) {
             log.error("Erro ao obter evento do calendário: {}", idEvento, e);
-            return RetornoComObjeto.<Event>builder()
-                    .statusCode(404)
-                    .mensagem("Evento não encontrado: " + e.getMessage())
-                    .objeto(null)
-                    .build();
+            throw new RuntimeException("Erro ao buscar o calendário!");
         }
     }
 
-    public RetornoComObjeto<List<Event>> listarEventos() {
+    public List<Event> listarEventos() {
         return listarEventos(10);
     }
 
-    public RetornoComObjeto<List<Event>> listarEventos(int maxResultados) {
+    public List<Event> listarEventos(int maxResultados) {
         try {
             Calendar servicoCalendario = servicoConexao.obterServicoCalendario();
             List<Event> eventos = servicoCalendario.events().list(CALENDARIO_PRIMARIO)
@@ -105,37 +86,24 @@ public class CalendarioGoogleService {
                     .getItems();
 
             if (eventos.isEmpty()) {
-                return RetornoComObjeto.<List<Event>>builder()
-                        .statusCode(404)
-                        .mensagem("Nenhum evento encontrado")
-                        .objeto(List.of())
+                throw RecursoNaoEncontradaException.builder()
+                        .mensagem("não foram encontrados eventos")
+                        .detalhes("")
                         .build();
             }
 
-            return RetornoComObjeto.<List<Event>>builder()
-                    .statusCode(200)
-                    .mensagem("Eventos listados com sucesso")
-                    .objeto(eventos)
-                    .build();
+            return eventos;
 
         } catch (IOException e) {
             log.error("Erro ao listar eventos do calendário", e);
-            return RetornoComObjeto.<List<Event>>builder()
-                    .statusCode(500)
-                    .mensagem("Erro ao listar eventos: " + e.getMessage())
-                    .objeto(List.of())
-                    .build();
+            throw new RuntimeException("Erro ao listar eventos");
         }
     }
 
-    public RetornoComObjeto<Event> atualizarEvento(String idEvento, CalendarEventRequest request) {
+    public Event atualizarEvento(String idEvento, CalendarEventRequest request) {
         try {
             Calendar servicoCalendario = servicoConexao.obterServicoCalendario();
             Event eventoExistente = servicoCalendario.events().get(CALENDARIO_PRIMARIO, idEvento).execute();
-
-            eventoExistente.setSummary(request.getTitulo())
-                    .setDescription(request.getDescricao())
-                    .setLocation(request.getLocalizacao());
 
             configurarPropriedadesAdicionais(eventoExistente, request);
 
@@ -155,45 +123,27 @@ public class CalendarioGoogleService {
                 eventoExistente.setEnd(fim);
             }
 
+            if (request.getDescricao() != null) {
+                eventoExistente.setDescription(request.getDescricao());
+            }
+
             atualizarParticipantes(eventoExistente, request);
 
-            Event eventoAtualizado = servicoCalendario.events().update(CALENDARIO_PRIMARIO, idEvento, eventoExistente).execute();
-
-            return RetornoComObjeto.<Event>builder()
-                    .statusCode(200)
-                    .mensagem("Evento atualizado com sucesso")
-                    .objeto(eventoAtualizado)
-                    .build();
+            return servicoCalendario.events().update(CALENDARIO_PRIMARIO, idEvento, eventoExistente).execute();
 
         } catch (IOException e) {
             log.error("Erro ao atualizar evento do calendário: {}", idEvento, e);
-            return RetornoComObjeto.<Event>builder()
-                    .statusCode(500)
-                    .mensagem("Erro ao atualizar evento: " + e.getMessage())
-                    .objeto(null)
-                    .build();
+            throw new RuntimeException("Falha ao tentar atualizar evento");
         }
     }
 
-    public RetornoComObjeto<Void> excluirEvento(String idEvento) {
+    public void excluirEvento(String idEvento) {
         try {
             Calendar servicoCalendario = servicoConexao.obterServicoCalendario();
             servicoCalendario.events().delete(CALENDARIO_PRIMARIO, idEvento).execute();
             log.info("Evento excluído com sucesso: {}", idEvento);
-
-            return RetornoComObjeto.<Void>builder()
-                    .statusCode(204)
-                    .mensagem("Evento excluído com sucesso")
-                    .objeto(null)
-                    .build();
-
         } catch (IOException e) {
             log.error("Erro ao excluir evento do calendário: {}", idEvento, e);
-            return RetornoComObjeto.<Void>builder()
-                    .statusCode(500)
-                    .mensagem("Erro ao excluir evento: " + e.getMessage())
-                    .objeto(null)
-                    .build();
         }
     }
 

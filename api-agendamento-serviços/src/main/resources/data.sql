@@ -22,13 +22,25 @@ INSERT INTO veiculo (id, placa, modelo, marca, porte, cor, ano, fk_usuario) VALU
 (4, 'JKL3456', 'Hilux', 'Toyota', 'Grande', 'Azul', '2022', 4),
 (5, 'MNO7890', 'Onix', 'Chevrolet', 'Pequeno', 'Vermelho', '2020', 5);
 
+-- Dados fictícios para tabela STATUS
+INSERT INTO status (id, descricao) VALUES
+    (1, 'CONCLUIDO'),
+    (2, 'EM_ANDAMENTO'),
+    (3, 'CANCELADO');
+
+-- Dados fictícios para tabela MOTIVO_CANCELAMENTO
+INSERT INTO motivo (id, descricao) VALUES
+    (1, 'DESISTENCIA'),
+    (2, 'PROBLEMA_TECNICO'),
+    (3, 'REAGENDAMENTO');
+
 -- Dados fictícios para tabela ordem_servico
-INSERT INTO ordem_servico (id, dt_conclusao, observacoes, status, fk_agendamento) VALUES
-(1, '2024-01-20', 'Serviço executado conforme solicitado', 'CONCLUIDO', 1),
-(2, NULL, 'Aguardando peças', 'EM_ANDAMENTO', 2),
-(3, '2024-01-22', 'Cliente muito satisfeito', 'CONCLUIDO', 3),
-(4, NULL, 'Iniciado hoje', 'EM_ANDAMENTO', 4),
-(5, '2024-01-25', 'Excelente resultado', 'CONCLUIDO', 5);
+INSERT INTO ordem_servico (id, dt_conclusao, observacoes, data_agendamento, fk_veiculo, fk_status, fk_motivo) VALUES
+    (1, '2024-01-20 15:00:00', 'Serviço executado conforme solicitado', '2024-01-18 10:00:00', 1, 1, NULL),
+    (2, NULL, 'Aguardando peças', '2024-01-19 09:30:00', 2, 3, 1),
+    (3, '2024-01-22 17:15:00', 'Cliente muito satisfeito', '2024-01-20 08:00:00', 3, 1, NULL),
+    (4, NULL, 'Iniciado hoje', '2024-01-21 11:45:00', 4, 2, NULL),
+    (5, '2024-01-25 16:30:00', 'Excelente resultado', '2024-01-23 14:00:00', 5, 1, NULL);
 
 -- Dados fictícios para tabela item_servico
 INSERT INTO item_servico (id, ordem_servico_id, servico_id, preco) VALUES

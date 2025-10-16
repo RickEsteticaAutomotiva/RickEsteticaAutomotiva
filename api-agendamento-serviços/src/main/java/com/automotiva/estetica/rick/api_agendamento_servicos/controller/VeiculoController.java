@@ -12,7 +12,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/veiculos")
 @RequiredArgsConstructor
-//TODO fazer o atualizar o veiculo o PUT
 public class VeiculoController {
 
     private final VeiculoService veiculoService;
@@ -34,6 +33,12 @@ public class VeiculoController {
     public ResponseEntity<List<VeiculoDto>> buscarVeiculosByPessoaId(@PathVariable Long id) {
         List<VeiculoDto> resposta = veiculoService.buscarVeiculosByPessoaId(id);
         return ResponseEntity.ok(resposta);
+    }
+
+    @PatchMapping()
+    public ResponseEntity<Void> atualizarVeiculo(@RequestBody VeiculoDto veiculoDto) {
+        veiculoService.atualizarVeiculo(veiculoDto);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
