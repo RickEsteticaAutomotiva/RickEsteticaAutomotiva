@@ -1,12 +1,13 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.OrdemServicoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/ordem-servicos")
@@ -16,9 +17,8 @@ public class OrdemServicoController {
     private final OrdemServicoService ordemServicoService;
 
     @GetMapping
-    public ResponseEntity<List<OrdemServicoDto>> buscarTodos() {
-        //TODO colocar paginado igual esta na pesssoaController
-        List<OrdemServicoDto> ordemServicos = ordemServicoService.buscarTodos();
+    public ResponseEntity<Page<OrdemServicoDto>> buscarTodosPaginado(@Valid @ModelAttribute OrdemServicoPageRequest pageRequest) {
+        Page<OrdemServicoDto> ordemServicos = ordemServicoService.buscarTodos(pageRequest);
         return ResponseEntity.ok(ordemServicos);
     }
 
@@ -34,7 +34,7 @@ public class OrdemServicoController {
         return ResponseEntity.status(201).body(ordemServico);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<OrdemServicoDto> atualizarOrdemServico(
             @PathVariable Long id,
             @RequestBody OrdemServicoDto ordemServico) {
