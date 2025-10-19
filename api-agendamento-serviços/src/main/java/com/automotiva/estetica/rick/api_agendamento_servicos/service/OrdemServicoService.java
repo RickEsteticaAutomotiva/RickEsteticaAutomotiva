@@ -7,6 +7,8 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.entity.OrdemServico
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.OrdemServicoRepository;
+import com.automotiva.estetica.rick.api_agendamento_servicos.service.observer.EmailObserver;
+import com.automotiva.estetica.rick.api_agendamento_servicos.service.observer.OrdemServicoSubject;
 import com.automotiva.estetica.rick.api_agendamento_servicos.specification.OrdemServicoSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,10 +20,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class OrdemServicoService {
+public class OrdemServicoService extends OrdemServicoSubject {
 
     private final OrdemServicoRepository ordemServicoRepository;
     private final OrdemServicoMapper ordemServicoMapper;
+    private final EmailService emailService;
 
     public Page<OrdemServicoDto> buscarTodos(OrdemServicoPageRequest ordemServicoPageRequest) {
         String ordenarPor = ordemServicoPageRequest.getOrdenarPor();
@@ -56,6 +59,7 @@ public class OrdemServicoService {
                     .detalhes("")
                     .build();
         }
+        //TODO fazer o set do status ordemServico.setStatus(1L);
         OrdemServicoEntity ordemServicoEntity = ordemServicoMapper.ordemServicoDtoParaOrdemServico(ordemServico);
         ordemServicoRepository.save(ordemServicoEntity);
         return ordemServicoMapper.ordemServicoParaOrdemServicoDto(ordemServicoEntity);
@@ -73,16 +77,25 @@ public class OrdemServicoService {
     }
 
     public OrdemServicoDto atualizarOrdemServico(Long id, OrdemServicoDto ordemServicoAtualizada) {
-        Optional<OrdemServicoEntity> ordemServicoExistente = ordemServicoRepository.findById(id);
+        EmailObserver emailObserver = new EmailObserver(emailService);
+        subscribe(emailObserver);
+        Optional<OrdemServicoEntity> ordemServicoExistente = ordemServicoRepository.findOrdemServicoEntityById(id);
         if (ordemServicoExistente.isEmpty()) {
+            unsubscribe(emailObserver);
             throw RecursoNaoEncontradaException.builder()
                     .mensagem("a ordem de serviço com id " + id + " não foi encontrado")
                     .detalhes("")
                     .build();
         }
         OrdemServicoEntity ordemServico = ordemServicoExistente.get();
+        if (ordemServicoAtualizada.getStatus() == 2L || ordemServicoAtualizada.getStatus() == 5L){
+            notifyObservers(ordemServico);
+        }else {
+            unsubscribe(emailObserver);
+        }
         ordemServicoMapper.atualizarOrdemServicoEntityFromDto(ordemServicoAtualizada, ordemServico);
         ordemServicoRepository.save(ordemServico);
+
         return ordemServicoMapper.ordemServicoParaOrdemServicoDto(ordemServico);
     }
 

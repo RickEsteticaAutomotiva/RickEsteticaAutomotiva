@@ -19,24 +19,24 @@ public class OrdemServicoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @Column(name = "dtConclusao", updatable = true)
+    @Column(name = "dt_conclusao", updatable = true)
     private LocalDateTime dtConclusao;
 
     @Column(name = "observacoes", length = 255)
     private String observacoes;
 
-    @Column(name = "dataAgendamento", nullable = false)
+    @Column(name = "data_agendamento", nullable = false)
     private LocalDateTime dataAgendamento;
 
     @ManyToOne
-    @JoinColumn(name = "fkVeiculo", nullable = false)
+    @JoinColumn(name = "fk_veiculo", nullable = false)
     private VeiculoEntity veiculo;
 
     @ManyToOne
-    @JoinColumn(name = "fkStatus", nullable = false)
+    @JoinColumn(name = "fk_status", nullable = false)
     private StatusEntity status;
 
     @ManyToOne
-    @JoinColumn(name = "fkMotivo", nullable = true)
+    @JoinColumn(name = "fk_motivo", nullable = true)
     private MotivoCancelamentoEntity motivoCancelamento;
 }
