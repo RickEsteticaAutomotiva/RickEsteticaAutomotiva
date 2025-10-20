@@ -28,7 +28,7 @@ public class CarrinhoService {
     private final CarrinhoMapper carrinhoMapper;
 
 
-    public CarrinhoEntity adicionarCarrinho(CarrinhoDto carrinhoDto) {
+    public void adicionarCarrinho(CarrinhoDto carrinhoDto) {
         PessoaEntity usuario = pessoaRepository.findById(carrinhoDto.getIdPessoa())
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
                         .mensagem("Usuário não encontrado: " + carrinhoDto.getIdPessoa())
@@ -48,7 +48,7 @@ public class CarrinhoService {
         }
 
         CarrinhoEntity carrinhoEntity = carrinhoMapper.carrinhoDtoParaEntity(carrinhoDto);
-        return carrinhoRepository.save(carrinhoEntity);
+        carrinhoRepository.save(carrinhoEntity);
     }
 
     public void removerCarrinho(CarrinhoDto carrinhoDto) {

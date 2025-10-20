@@ -14,7 +14,7 @@ public class FavoritoEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_usuario", nullable = false)
-    private PessoaEntity usuario;
+    private PessoaEntity pessoa;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_servico", nullable = false)

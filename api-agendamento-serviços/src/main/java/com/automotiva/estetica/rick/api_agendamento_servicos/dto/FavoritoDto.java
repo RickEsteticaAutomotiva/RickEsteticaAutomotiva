@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarrinhoDto {
+public class FavoritoDto {
     @NotNull
     private Long idPessoa;
     @NotNull
