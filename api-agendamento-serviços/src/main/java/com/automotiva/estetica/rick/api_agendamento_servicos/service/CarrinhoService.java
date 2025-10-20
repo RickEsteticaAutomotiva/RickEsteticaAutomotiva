@@ -14,6 +14,7 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.repository.PessoaRe
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ServicoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,9 +51,9 @@ public class CarrinhoService {
         CarrinhoEntity carrinhoEntity = carrinhoMapper.carrinhoDtoParaEntity(carrinhoDto);
         carrinhoRepository.save(carrinhoEntity);
     }
-
+    @Transactional
     public void removerCarrinho(CarrinhoDto carrinhoDto) {
-        PessoaEntity usuario = pessoaRepository.findById(carrinhoDto.getIdServico())
+        PessoaEntity pessoa = pessoaRepository.findById(carrinhoDto.getIdPessoa())
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
                         .mensagem("Usuário não encontrado: " + carrinhoDto.getIdPessoa())
                         .detalhes("")
@@ -61,14 +62,14 @@ public class CarrinhoService {
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado: " + carrinhoDto.getIdServico()));
 
 
-        if (!carrinhoRepository.existsByPessoaAndServico(usuario, servico)) {
+        if (!carrinhoRepository.existsByPessoaAndServico(pessoa, servico)) {
             throw RecursoJaExisteException.builder()
-                    .mensagem("Carinho não encontrado para este usuário e serviço")
+                    .mensagem("Carrinho não encontrado para este usuário e serviço")
                     .detalhes("")
                     .build();
         }
 
-        carrinhoRepository.deleteByPessoaAndServico(usuario, servico);
+        carrinhoRepository.deleteByPessoaAndServico(pessoa, servico);
     }
 
     public List<ServicoDto> listarServicosPessoa(Long idPessoa) {

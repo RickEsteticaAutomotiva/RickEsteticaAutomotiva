@@ -13,7 +13,7 @@ import lombok.*;
 public class CarrinhoEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_usuario", nullable = false)
+    @JoinColumn(name = "fk_pessoa", nullable = false)
     private PessoaEntity pessoa;
 
     @ManyToOne(fetch = FetchType.LAZY)
