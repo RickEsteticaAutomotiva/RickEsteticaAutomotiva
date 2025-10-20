@@ -9,8 +9,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "carinho")
-public class Carinho extends BaseEntity {
+@Table(name = "favorito")
+public class FavoritoEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_usuario", nullable = false)

@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarinhoDto {
+public class CarrinhoDto {
     private Long idPessoa;
     private Long idServico;
 }
