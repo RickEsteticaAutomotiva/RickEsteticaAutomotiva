@@ -13,14 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/emails")
 @AllArgsConstructor
+//TODO clase para teste
 public class EmailController {
 
     private final EmailService emailService;
-
-    @PostMapping("/enviar")
-    public ResponseEntity<String> enviarEmail(@RequestBody EmailEntity email) {
-        return ResponseEntity.ok("Email enviado com sucesso!");
-    }
 
     @PostMapping("/enviar-com-anexos")
     public ResponseEntity<String> enviarEmailComAnexos(

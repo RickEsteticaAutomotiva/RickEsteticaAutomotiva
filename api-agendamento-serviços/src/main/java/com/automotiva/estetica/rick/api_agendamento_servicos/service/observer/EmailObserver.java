@@ -28,6 +28,6 @@ public class EmailObserver implements OrdemServicoObserver {
         ));
         email.setDestinatario(ordemServico.getVeiculo().getPessoa().getEmail());
 
-        emailService.enviarEmail(email);
+        emailService.enviarEmailComAnexos(email,null);
     }
 }

@@ -78,9 +78,4 @@ public class EmailService {
             emailRepository.save(email);
         }
     }
-
-    public void enviarEmail(EmailEntity email) {
-        enviarEmailComAnexos(email, null);
-    }
-
 }
