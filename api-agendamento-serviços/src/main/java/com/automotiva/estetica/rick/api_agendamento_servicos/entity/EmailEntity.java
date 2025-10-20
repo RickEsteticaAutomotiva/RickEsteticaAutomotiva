@@ -1,6 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.entity;
 
-import com.automotiva.estetica.rick.api_agendamento_servicos.enuns.StatusEmailEnum;
+import com.automotiva.estetica.rick.api_agendamento_servicos.enums.StatusEmailEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

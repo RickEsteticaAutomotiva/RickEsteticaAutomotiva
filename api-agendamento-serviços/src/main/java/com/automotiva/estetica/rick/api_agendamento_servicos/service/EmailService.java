@@ -1,7 +1,7 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.EmailEntity;
-import com.automotiva.estetica.rick.api_agendamento_servicos.enuns.StatusEmailEnum;
+import com.automotiva.estetica.rick.api_agendamento_servicos.enums.StatusEmailEnum;
 import com.automotiva.estetica.rick.api_agendamento_servicos.infra.EmailConfig;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.EmailRepository;
 import jakarta.mail.MessagingException;
