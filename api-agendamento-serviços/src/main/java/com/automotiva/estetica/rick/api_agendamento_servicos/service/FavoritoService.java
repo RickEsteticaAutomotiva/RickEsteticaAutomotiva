@@ -3,7 +3,6 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.FavoritoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.ServicoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.FavoritoDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoFavoritoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.FavoritoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
@@ -63,7 +62,7 @@ public class FavoritoService {
         favoritoRepository.deleteById(idFavorito);
     }
 
-    public List<ServicoFavoritoDto> listarServicosPessoa(Long idPessoa) {
+    public List<ServicoFavoritoDto> listarFavoritosPessoa(Long idPessoa) {
         if (!pessoaRepository.existsById(idPessoa)) {
             throw RecursoNaoEncontradaException.builder()
                     .mensagem("Usuário não encontrado: " + idPessoa)
@@ -81,5 +80,4 @@ public class FavoritoService {
                 })
                 .collect(Collectors.toList());
     }
-
 }

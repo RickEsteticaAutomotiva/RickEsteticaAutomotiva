@@ -2,7 +2,6 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CarrinhoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoCarrinhoDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.CarrinhoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,8 @@ public class CarrinhoController {
     }
 
     @GetMapping("/{idPessoa}")
-    public ResponseEntity<List<ServicoCarrinhoDto>> listarServicosPessoa(@PathVariable Long idPessoa) {
-        var servicos = carrinhoService.listarServicosPessoa(idPessoa);
+    public ResponseEntity<List<ServicoCarrinhoDto>> listarCarrinhoPessoa(@PathVariable Long idPessoa) {
+        var servicos = carrinhoService.listarCarrinhoPessoa(idPessoa);
         return ResponseEntity.ok(servicos);
     }
 }

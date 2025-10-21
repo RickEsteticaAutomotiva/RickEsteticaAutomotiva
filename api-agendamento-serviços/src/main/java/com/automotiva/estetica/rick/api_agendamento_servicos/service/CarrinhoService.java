@@ -4,7 +4,6 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.Carrinho
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.ServicoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CarrinhoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoCarrinhoDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.CarrinhoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
@@ -63,7 +62,7 @@ public class CarrinhoService {
         carrinhoRepository.deleteById(idCarrinho);
     }
 
-    public List<ServicoCarrinhoDto> listarServicosPessoa(Long idPessoa) {
+    public List<ServicoCarrinhoDto> listarCarrinhoPessoa(Long idPessoa) {
         PessoaEntity pessoa = pessoaRepository.findById(idPessoa)
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
                         .mensagem("Usuário não encontrado: " + idPessoa)
@@ -72,7 +71,6 @@ public class CarrinhoService {
 
         List<CarrinhoEntity> itens = carrinhoRepository.findByPessoaId(pessoa.getId());
 
-        // Converter cada item do carrinho para ServicoCarrinhoDto mantendo o ID do carrinho
         return itens.stream()
                 .map(carrinho -> {
                     ServicoCarrinhoDto dto = carrinhoMapper.servicoParaServicoCarrinhoDto(carrinho.getServico());
