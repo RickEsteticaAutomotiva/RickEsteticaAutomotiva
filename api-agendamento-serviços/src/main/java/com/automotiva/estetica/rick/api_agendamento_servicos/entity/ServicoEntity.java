@@ -27,4 +27,8 @@ public class ServicoEntity{
 
     @Column(name = "preco", nullable = false)
     private BigDecimal preco;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_categoria")
+    private CategoriaEntity categoria;
 }

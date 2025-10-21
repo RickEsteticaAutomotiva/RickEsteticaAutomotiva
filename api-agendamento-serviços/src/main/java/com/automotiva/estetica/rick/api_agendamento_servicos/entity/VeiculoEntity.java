@@ -34,7 +34,7 @@ public class VeiculoEntity {
     private String ano;
 
     @ManyToOne
-    @JoinColumn(name = "fkUsuario")
+    @JoinColumn(name = "fk_usuario")
     private PessoaEntity pessoa; // TODO TROCAR DEPOIS PARA USUARIO
 
 }
