@@ -1,7 +1,9 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.automapper;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CarrinhoDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoCarrinhoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.CarrinhoEntity;
+import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -14,9 +16,7 @@ public interface CarrinhoMapper {
     @Mapping(target = "servico.id", source = "idServico")
     CarrinhoEntity carrinhoDtoParaEntity(CarrinhoDto dto);
 
-    @Mapping(target = "idPessoa", source = "pessoa.id")
-    @Mapping(target = "idServico", source = "servico.id")
-    CarrinhoDto entityParaCarrinhoDto(CarrinhoEntity entity);
+    @Mapping(target = "idServico", source = "id")
+    ServicoCarrinhoDto servicoParaServicoCarrinhoDto(ServicoEntity entity);
 
-    List<CarrinhoDto> carrinhosParaDtos(List<CarrinhoEntity> entities);
 }

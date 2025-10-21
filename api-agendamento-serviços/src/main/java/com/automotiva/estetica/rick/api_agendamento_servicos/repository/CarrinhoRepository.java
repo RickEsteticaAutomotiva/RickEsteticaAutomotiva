@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface CarrinhoRepository extends JpaRepository<CarrinhoEntity, Long> {
     @EntityGraph(attributePaths = {"servico"})
-    List<CarrinhoEntity> findByPessoa(PessoaEntity pessoa);
+    List<CarrinhoEntity> findByPessoaId(Long idPessoa);
 
     Optional<CarrinhoEntity> findByPessoaAndServico(PessoaEntity pessoa, ServicoEntity servico);
 

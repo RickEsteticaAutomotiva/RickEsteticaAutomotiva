@@ -1,6 +1,7 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CarrinhoDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoCarrinhoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.CarrinhoService;
 import jakarta.validation.Valid;
@@ -22,15 +23,15 @@ public class CarrinhoController {
         return ResponseEntity.status(201).build();
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> removerCarrinho(@RequestBody @Valid CarrinhoDto carrinhoDto) {
-        carrinhoService.removerCarrinho(carrinhoDto);
+    @DeleteMapping("/{idCarrinho}")
+    public ResponseEntity<Void> removerCarrinho(@PathVariable Long idCarrinho) {
+        carrinhoService.removerCarrinho(idCarrinho);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{idPessoa}")
-    public ResponseEntity<List<ServicoDto>> listarServicosPessoa(@PathVariable Long idPessoa) {
-        List<ServicoDto> servicos = carrinhoService.listarServicosPessoa(idPessoa);
+    public ResponseEntity<List<ServicoCarrinhoDto>> listarServicosPessoa(@PathVariable Long idPessoa) {
+        var servicos = carrinhoService.listarServicosPessoa(idPessoa);
         return ResponseEntity.ok(servicos);
     }
 }

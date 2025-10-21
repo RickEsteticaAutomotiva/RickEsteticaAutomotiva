@@ -3,6 +3,7 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.CarrinhoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.ServicoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CarrinhoDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoCarrinhoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.CarrinhoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
@@ -52,39 +53,32 @@ public class CarrinhoService {
         carrinhoRepository.save(carrinhoEntity);
     }
     @Transactional
-    public void removerCarrinho(CarrinhoDto carrinhoDto) {
-        PessoaEntity pessoa = pessoaRepository.findById(carrinhoDto.getIdPessoa())
+    public void removerCarrinho(Long idCarrinho) {
+        carrinhoRepository.findById(idCarrinho)
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
-                        .mensagem("Usuário não encontrado: " + carrinhoDto.getIdPessoa())
-                        .detalhes("")
-                        .build());
-        ServicoEntity servico = servicoRepository.findById(carrinhoDto.getIdServico())
-                .orElseThrow(() -> new RuntimeException("Serviço não encontrado: " + carrinhoDto.getIdServico()));
-
-
-        if (!carrinhoRepository.existsByPessoaAndServico(pessoa, servico)) {
-            throw RecursoJaExisteException.builder()
-                    .mensagem("Carrinho não encontrado para este usuário e serviço")
+                    .mensagem("Carrinho não encontrado para este usuário.")
                     .detalhes("")
-                    .build();
-        }
+                    .build());
 
-        carrinhoRepository.deleteByPessoaAndServico(pessoa, servico);
+        carrinhoRepository.deleteById(idCarrinho);
     }
 
-    public List<ServicoDto> listarServicosPessoa(Long idPessoa) {
-        PessoaEntity usuario = pessoaRepository.findById(idPessoa)
+    public List<ServicoCarrinhoDto> listarServicosPessoa(Long idPessoa) {
+        PessoaEntity pessoa = pessoaRepository.findById(idPessoa)
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
                         .mensagem("Usuário não encontrado: " + idPessoa)
                         .detalhes("")
                         .build());
 
-        List<CarrinhoEntity> itens = carrinhoRepository.findByPessoa(usuario);
-        List<ServicoEntity> servicos = itens.stream()
-                .map(CarrinhoEntity::getServico)
+        List<CarrinhoEntity> itens = carrinhoRepository.findByPessoaId(pessoa.getId());
+
+        // Converter cada item do carrinho para ServicoCarrinhoDto mantendo o ID do carrinho
+        return itens.stream()
+                .map(carrinho -> {
+                    ServicoCarrinhoDto dto = carrinhoMapper.servicoParaServicoCarrinhoDto(carrinho.getServico());
+                    dto.setIdCarrinho(carrinho.getId());
+                    return dto;
+                })
                 .collect(Collectors.toList());
-
-        return servicoMapper.servicosParaServicosDto(servicos);
     }
-
 }

@@ -55,7 +55,7 @@ public class FavoritoService {
     }
 
     public void removerCarinho(FavoritoDto favoritoDto) {
-        PessoaEntity pessoa = pessoaRepository.findById(favoritoDto.getIdServico())
+        PessoaEntity pessoa = pessoaRepository.findById(favoritoDto.getIdPessoa())
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
                         .mensagem("Usuário não encontrado: " + favoritoDto.getIdPessoa())
                         .detalhes("")
