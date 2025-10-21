@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface FavoritoRepository extends JpaRepository<FavoritoEntity, Long> {
     @EntityGraph(attributePaths = {"servico"})
-    List<FavoritoEntity> findByPessoa(PessoaEntity pessoa);
+    List<FavoritoEntity> findByPessoaId(Long idPessoa);
 
     Optional<FavoritoEntity> findByPessoaAndServico(PessoaEntity pessoa, ServicoEntity servico);
 

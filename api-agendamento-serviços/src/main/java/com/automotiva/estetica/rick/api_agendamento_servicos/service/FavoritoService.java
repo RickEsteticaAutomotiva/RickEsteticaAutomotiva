@@ -2,10 +2,9 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.FavoritoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.ServicoMapper;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CarrinhoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.FavoritoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.entity.CarrinhoEntity;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoFavoritoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.FavoritoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
@@ -54,38 +53,33 @@ public class FavoritoService {
         favoritoRepository.save(favoritoEntity);
     }
 
-    public void removerCarinho(FavoritoDto favoritoDto) {
-        PessoaEntity pessoa = pessoaRepository.findById(favoritoDto.getIdPessoa())
-                .orElseThrow(() -> RecursoNaoEncontradaException.builder()
-                        .mensagem("Usuário não encontrado: " + favoritoDto.getIdPessoa())
-                        .detalhes("")
-                        .build());
-        ServicoEntity servico = servicoRepository.findById(favoritoDto.getIdServico())
-                .orElseThrow(() -> new RuntimeException("Serviço não encontrado: " + favoritoDto.getIdServico()));
+    public void removerFavorito(Long idFavorito) {
+        favoritoRepository.findById(idFavorito)
+                .orElseThrow(() -> RecursoJaExisteException.builder()
+                    .mensagem("Favorito não encontrado para este usuário.")
+                    .detalhes("")
+                    .build());
 
+        favoritoRepository.deleteById(idFavorito);
+    }
 
-        if (!favoritoRepository.existsByPessoaAndServico(pessoa, servico)) {
-            throw RecursoJaExisteException.builder()
-                    .mensagem("Favorito não encontrado para este usuário e serviço")
+    public List<ServicoFavoritoDto> listarServicosPessoa(Long idPessoa) {
+        if (!pessoaRepository.existsById(idPessoa)) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("Usuário não encontrado: " + idPessoa)
                     .detalhes("")
                     .build();
         }
 
-        favoritoRepository.deleteByPessoaAndServico(pessoa, servico);
-    }
+        List<FavoritoEntity> itens = favoritoRepository.findByPessoaId(idPessoa);
 
-    public List<ServicoDto> listarServicosPessoa(Long idPessoa) {
-        PessoaEntity usuario = pessoaRepository.findById(idPessoa)
-                .orElseThrow(() -> RecursoNaoEncontradaException.builder()
-                        .mensagem("Usuário não encontrado: " + idPessoa)
-                        .detalhes("")
-                        .build());
-
-        List<FavoritoEntity> itens = favoritoRepository.findByPessoa(usuario);
-        List<ServicoEntity> servicos = itens.stream()
-                .map(FavoritoEntity::getServico)
+        return itens.stream()
+                .map(favorito -> {
+                    ServicoFavoritoDto dto = favoritoMapper.servicoParaServicoFavoritoDto(favorito.getServico());
+                    dto.setIdFavorito(favorito.getId());
+                    return dto;
+                })
                 .collect(Collectors.toList());
-
-        return servicoMapper.servicosParaServicosDto(servicos);
     }
+
 }

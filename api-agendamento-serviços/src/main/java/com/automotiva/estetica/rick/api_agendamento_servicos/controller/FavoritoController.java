@@ -2,6 +2,7 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.FavoritoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoFavoritoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.FavoritoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +24,15 @@ public class FavoritoController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> removerFavorito(@RequestBody @Valid FavoritoDto favoritoDto) {
-        favoritoService.removerCarinho(favoritoDto);
+    @DeleteMapping("/{idFavorito}")
+    public ResponseEntity<Void> removerFavorito(@PathVariable Long idFavorito) {
+        favoritoService.removerFavorito(idFavorito);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/pessoa/{idPessoa}")
-    public ResponseEntity<List<ServicoDto>> listarServicosPessoa(@PathVariable Long idPessoa) {
-        List<ServicoDto> servicos = favoritoService.listarServicosPessoa(idPessoa);
+    @GetMapping("/{idPessoa}")
+    public ResponseEntity<List<ServicoFavoritoDto>> listarFavoritosPessoa(@PathVariable Long idPessoa) {
+        var servicos = favoritoService.listarServicosPessoa(idPessoa);
         return ResponseEntity.ok(servicos);
     }
 }

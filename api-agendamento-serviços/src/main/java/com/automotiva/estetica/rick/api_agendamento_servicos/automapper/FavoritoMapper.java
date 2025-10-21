@@ -1,7 +1,9 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.automapper;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.FavoritoDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoFavoritoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.FavoritoEntity;
+import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -18,7 +20,6 @@ public interface FavoritoMapper {
     @Mapping(target = "idServico", source = "servico.id")
     FavoritoDto entityParaFavoritoDto(FavoritoEntity entity);
 
-    List<FavoritoDto> entidadesParaDtos(List<FavoritoEntity> entities);
-
-    List<FavoritoEntity> dtosParaEntidades(List<FavoritoDto> dtos);
+    @Mapping(target = "idServico", source = "id")
+    ServicoFavoritoDto servicoParaServicoFavoritoDto(ServicoEntity entity);
 }
