@@ -1,10 +1,12 @@
-package config;
+package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,15 +31,16 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@DependsOn("pessoaService")
 public class SecurityConfiguracao {
 
-    @Autowired
+    @Autowired  @Lazy
     private PessoaService pessoaService;
 
     @Autowired
     private AutenticacaoEntryPoint autenticacaoEntryPoint;
 
-    @Autowired
+    @Autowired  @Lazy
     private AutenticacaoProvider autenticacaoProvider;
 
     private static final String[] URLS_PERMITIDAS = {
@@ -54,6 +57,7 @@ public class SecurityConfiguracao {
             "/error/**",
 
             // Login e rotas públicas
+            "/pessoas",
             "/pessoas/login",
             "/users/login",
             "/public/**"

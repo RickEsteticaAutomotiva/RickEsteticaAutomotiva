@@ -1,6 +1,7 @@
-package config;
+package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AutenticacaoProvider implements AuthenticationProvider {
 
-    @Autowired
+    @Autowired @Lazy
     private UserDetailsService userDetailsService;
 
     @Autowired

@@ -1,4 +1,4 @@
-package config;
+package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

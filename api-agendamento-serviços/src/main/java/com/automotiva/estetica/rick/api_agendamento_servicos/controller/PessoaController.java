@@ -1,11 +1,9 @@
 // src/main/java/com/automotiva/estetica/rick/api_agendamento_servicos/controller/PessoaController.java
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaPageRequest;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.*;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,7 +17,7 @@ public class PessoaController {
 
     private final PessoaService pessoaService;
 
-    // PessoaController.java
+    @SecurityRequirement(name = "Bearer")
     @GetMapping
     public ResponseEntity<Page<PessoaDto>> buscarTodosPaginado(@Valid @ModelAttribute PessoaPageRequest pageRequest) {
         Page<PessoaDto> pessoas = pessoaService.buscarTodosComFiltro(pageRequest);
@@ -27,8 +25,8 @@ public class PessoaController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<PessoaDto> login(@RequestBody LoginDto loginDto) {
-        PessoaDto pessoa = pessoaService.login(loginDto);
+    public ResponseEntity<PessoaTokenDto> login(@RequestBody LoginDto loginDto) {
+        PessoaTokenDto pessoa = pessoaService.login(loginDto);
         return ResponseEntity.ok(pessoa);
     }
 
@@ -38,6 +36,7 @@ public class PessoaController {
         return ResponseEntity.ok(pessoa);
     }
 
+    @SecurityRequirement(name = "Bearer")
     @PostMapping("")
     public ResponseEntity<PessoaCadastroDto> criarPessoa(@RequestBody PessoaCadastroDto pessoaCadastroDto) {
         PessoaCadastroDto pessoa = pessoaService.criarPessoa(pessoaCadastroDto);

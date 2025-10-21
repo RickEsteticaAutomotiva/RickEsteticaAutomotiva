@@ -1,4 +1,4 @@
-package config;
+package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

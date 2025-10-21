@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface PessoaRepository extends JpaRepository<PessoaEntity, Long>, JpaSpecificationExecutor<PessoaEntity> {
     Optional<PessoaEntity> findByEmailAndSenha(String email, String senha);
+    Optional<PessoaEntity> findByEmail(String email);
     boolean existsByCpf(String cpf);
     boolean existsByEmail(String email);
 }

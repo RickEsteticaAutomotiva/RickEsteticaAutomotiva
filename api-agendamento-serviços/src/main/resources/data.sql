@@ -1,10 +1,10 @@
 -- Dados fictícios para tabela pessoa
-INSERT INTO pessoa (id, nome, cpf, email, telefone, data_nascimento, senha) VALUES
-(1, 'João Silva', '12345678901', 'joao.silva@email.com', '11987654321', '1990-05-15', 'senha123'),
-(2, 'Maria Santos', '23456789012', 'maria.santos@email.com', '11876543210', '1985-08-20', 'senha123'),
-(3, 'Pedro Oliveira', '34567890123', 'pedro.oliveira@email.com', '11765432109', '1992-12-10', 'senha123'),
-(4, 'Ana Costa', '45678901234', 'ana.costa@email.com', '11654321098', '1988-03-25', 'senha123'),
-(5, 'Carlos Ferreira', '56789012345', 'carlos.ferreira@email.com', '11543210987', '1995-07-08', 'senha123');
+INSERT INTO pessoa (nome, cpf, email, telefone, data_nascimento, senha) VALUES
+('João Silva', '12345678901', 'joao.silva@email.com', '11987654321', '1990-05-15', 'senha123'),
+('Maria Santos', '23456789012', 'maria.santos@email.com', '11876543210', '1985-08-20', 'senha123'),
+('Pedro Oliveira', '34567890123', 'pedro.oliveira@email.com', '11765432109', '1992-12-10', 'senha123'),
+('Ana Costa', '45678901234', 'ana.costa@email.com', '11654321098', '1988-03-25', 'senha123'),
+('Carlos Ferreira', '56789012345', 'carlos.ferreira@email.com', '11543210987', '1995-07-08', 'senha123');
 
 -- Dados fictícios para tabela servico
 INSERT INTO servico (id, nome, descricao, preco) VALUES

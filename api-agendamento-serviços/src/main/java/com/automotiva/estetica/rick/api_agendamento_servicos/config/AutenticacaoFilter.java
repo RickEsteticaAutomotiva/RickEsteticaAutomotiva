@@ -1,4 +1,4 @@
-package config;
+package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
 import io.jsonwebtoken.ExpiredJwtException;

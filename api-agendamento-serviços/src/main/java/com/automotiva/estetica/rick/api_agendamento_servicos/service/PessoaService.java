@@ -2,17 +2,24 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.PessoaMapper;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaPageRequest;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.*;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.PessoaRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.specification.PessoaSpecification;
+import com.automotiva.estetica.rick.api_agendamento_servicos.config.GerenciadorTokenJwt;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -21,10 +28,14 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class PessoaService {
-
+public class PessoaService implements UserDetailsService {
     private final PessoaRepository pessoaRepository;
     private final PessoaMapper pessoaMapper;
+    private final GerenciadorTokenJwt gerenciadorTokenJwt;
+
+    @Autowired
+    @Lazy
+    private AuthenticationManager authenticationManager;
 
     public Page<PessoaDto> buscarTodosComFiltro(PessoaPageRequest pageRequest) {
         String ordenarPor = pageRequest.getOrdenarPor();
@@ -48,12 +59,33 @@ public class PessoaService {
         return paginaPessoas.map(pessoaMapper::pessoaParaPessoaDto);
     }
 
-    public PessoaDto login(LoginDto loginDto) {
-        Optional<PessoaEntity> autenticado = pessoaRepository.findByEmailAndSenha(loginDto.getEmail(), loginDto.getSenha());
-        if (autenticado.isPresent()) {
-            return pessoaMapper.pessoaParaPessoaDto(autenticado.get());
-        }
-        throw new RuntimeException("Invalid credentials");
+//    public PessoaDto login(LoginDto loginDto) {
+//        Optional<PessoaEntity> autenticado = pessoaRepository.findByEmailAndSenha(loginDto.getUsername(), loginDto.getSenha());
+//        if (autenticado.isPresent()) {
+//            return pessoaMapper.pessoaParaPessoaDto(autenticado.get());
+//        }
+//        throw new RuntimeException("Invalid credentials");
+//    }
+
+    public PessoaTokenDto login(LoginDto loginDto) {
+        // 1. Cria as credenciais com email e senha
+        final UsernamePasswordAuthenticationToken credentials =
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getSenha());
+
+        // 2. Autentica as credenciais com Spring Security
+        final Authentication authentication = this.authenticationManager.authenticate(credentials);
+
+        // 3. Define a autenticação no contexto de segurança
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 4. Recupera o usuário autenticado (já validado)
+        PessoaEntity pessoa = (PessoaEntity) authentication.getPrincipal();
+
+        // 5. Gera o token JWT
+        final String token = gerenciadorTokenJwt.generateToken(authentication);
+
+        // 6. Retorna DTO com os dados + token
+        return pessoaMapper.PessoaParaPessoaToken(pessoa, token);
     }
 
     public PessoaCadastroDto criarPessoa(PessoaCadastroDto pessoa) {
@@ -104,4 +136,14 @@ public class PessoaService {
         }
         pessoaRepository.deleteById(id);
     }
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+        Optional<PessoaEntity> pessoaOpt = pessoaRepository.findByEmail(username);
+        if (pessoaOpt.isEmpty()){
+            throw new UsernameNotFoundException(String.format("usuario: %s não encontrado",username));
+        }
+
+        return new PessoaDetalhesDto(pessoaOpt.get());
+    }
+
 }
