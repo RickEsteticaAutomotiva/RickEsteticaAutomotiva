@@ -22,20 +22,5 @@ public class AutenticacaoEntryPoint implements AuthenticationEntryPoint {
         } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Acesso negado");
         }
-//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//        response.setContentType("application/json;charset=UTF-8");
-//
-//        String json = String.format(
-//                "{\"error\": \"Não autorizado\", \"message\": \"%s\"}",
-//                authException.getMessage() != null ? authException.getMessage() : "Acesso negado"
-//        );
-//
-//        try {
-//            response.getWriter().write(json);
-//            response.getWriter().flush();
-//        } catch (IOException e) {
-//            // Log do erro se necessário
-//            e.printStackTrace();
-//        }
     }
 }

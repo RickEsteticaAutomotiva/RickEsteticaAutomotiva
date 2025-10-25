@@ -16,7 +16,6 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.specification.Pesso
 import com.automotiva.estetica.rick.api_agendamento_servicos.config.GerenciadorTokenJwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

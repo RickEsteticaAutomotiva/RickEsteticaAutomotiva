@@ -1,17 +1,14 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.AutenticacaoService;
-import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -102,14 +99,6 @@ public class SecurityConfiguracao {
 
         return http.build();
     }
-
-//    @Bean
-//    public DaoAuthenticationProvider authenticationProvider() {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(autenticacaoService);
-//        authProvider.setPasswordEncoder(passwordEncoder());
-//        return authProvider;
-//    }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {

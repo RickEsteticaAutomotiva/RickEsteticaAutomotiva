@@ -8,7 +8,6 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroD
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -1,7 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.AutenticacaoService;
-import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -34,7 +33,6 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
         final String authorizationHeader = request.getHeader("Authorization");
         String username = null;
         String jwtToken = null;
@@ -48,9 +46,7 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expirado");
             return;
         }
-
     }
-
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             addPessoaInContext(request, username, jwtToken);
         }
