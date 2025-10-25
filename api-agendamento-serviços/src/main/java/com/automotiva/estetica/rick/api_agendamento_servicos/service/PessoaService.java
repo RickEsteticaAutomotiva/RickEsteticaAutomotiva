@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -30,12 +31,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PessoaService implements UserDetailsService {
     private final PessoaRepository pessoaRepository;
-    private final PessoaMapper pessoaMapper;
-    private final GerenciadorTokenJwt gerenciadorTokenJwt;
-
     @Autowired
-    @Lazy
+    private final PessoaMapper pessoaMapper;
+    @Autowired
+    private final GerenciadorTokenJwt gerenciadorTokenJwt;
+    @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
 
     public Page<PessoaDto> buscarTodosComFiltro(PessoaPageRequest pageRequest) {
         String ordenarPor = pageRequest.getOrdenarPor();
@@ -68,23 +73,25 @@ public class PessoaService implements UserDetailsService {
 //    }
 
     public PessoaTokenDto login(LoginDto loginDto) {
-        // 1. Cria as credenciais com email e senha
+        // 1. Cria as credenciais
         final UsernamePasswordAuthenticationToken credentials =
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getSenha());
 
-        // 2. Autentica as credenciais com Spring Security
+        // 2. Autentica
         final Authentication authentication = this.authenticationManager.authenticate(credentials);
-
-        // 3. Define a autenticação no contexto de segurança
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 4. Recupera o usuário autenticado (já validado)
-        PessoaEntity pessoa = (PessoaEntity) authentication.getPrincipal();
+        // 3. Obtém o UserDetails
+        PessoaDetalhesDto pessoaDetalhes = (PessoaDetalhesDto) authentication.getPrincipal();
 
-        // 5. Gera o token JWT
+        // 4. Busca a entidade no banco (necessário para gerar token com dados completos)
+        PessoaEntity pessoa = pessoaRepository.findByEmail(pessoaDetalhes.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado após autenticação"));
+
+        // 5. Gera token
         final String token = gerenciadorTokenJwt.generateToken(authentication);
 
-        // 6. Retorna DTO com os dados + token
+        // 6. Retorna DTO com dados + token
         return pessoaMapper.PessoaParaPessoaToken(pessoa, token);
     }
 
@@ -96,7 +103,8 @@ public class PessoaService implements UserDetailsService {
             throw new RecursoJaExisteException("Email");
         }
         PessoaEntity pessoaEntity = pessoaMapper.pessoaCadastroDtoParaPessoaEntity(pessoa);
-        pessoaEntity.setSenha(pessoa.getSenha());
+        String senhaCodificada = passwordEncoder.encode(pessoa.getSenha());
+        pessoaEntity.setSenha(senhaCodificada);
         pessoaRepository.save(pessoaEntity);
         return pessoa;
     }

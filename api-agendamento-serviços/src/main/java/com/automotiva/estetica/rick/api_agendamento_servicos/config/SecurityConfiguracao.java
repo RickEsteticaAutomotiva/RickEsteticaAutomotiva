@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
+import com.automotiva.estetica.rick.api_agendamento_servicos.service.AutenticacaoService;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +32,11 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@DependsOn("pessoaService")
+//@DependsOn("pessoaService")
 public class SecurityConfiguracao {
 
     @Autowired  @Lazy
-    private PessoaService pessoaService;
+    private AutenticacaoService autenticacaoService;
 
     @Autowired
     private AutenticacaoEntryPoint autenticacaoEntryPoint;
@@ -57,7 +58,7 @@ public class SecurityConfiguracao {
             "/error/**",
 
             // Login e rotas públicas
-            "/pessoas",
+            "/pessoas/criar",
             "/pessoas/login",
             "/users/login",
             "/public/**"
@@ -102,13 +103,13 @@ public class SecurityConfiguracao {
         return http.build();
     }
 
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(pessoaService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+//    @Bean
+//    public DaoAuthenticationProvider authenticationProvider() {
+//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+//        authProvider.setUserDetailsService(autenticacaoService);
+//        authProvider.setPasswordEncoder(passwordEncoder());
+//        return authProvider;
+//    }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
@@ -122,7 +123,7 @@ public class SecurityConfiguracao {
 
     @Bean
     public AutenticacaoFilter jwtAuthenticationFilterBean() {
-        return new AutenticacaoFilter(pessoaService, gerenciadorTokenJwt);
+        return new AutenticacaoFilter(autenticacaoService, gerenciadorTokenJwt);
     }
 
     @Bean

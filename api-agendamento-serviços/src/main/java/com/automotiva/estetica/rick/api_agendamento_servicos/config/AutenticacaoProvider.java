@@ -1,5 +1,7 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
+import com.automotiva.estetica.rick.api_agendamento_servicos.service.AutenticacaoService;
+import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -15,28 +17,33 @@ import org.springframework.stereotype.Component;
 @Component
 public class AutenticacaoProvider implements AuthenticationProvider {
 
-    @Autowired @Lazy
-    private UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+    private final AutenticacaoService autenticacaoService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AutenticacaoProvider(PasswordEncoder passwordEncoder,
+                                AutenticacaoService autenticacaoService) {
+        this.passwordEncoder = passwordEncoder;
+        this.autenticacaoService = autenticacaoService;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = authentication.getName();
-        String senha = authentication.getCredentials().toString();
+        final String username = authentication.getName();
+        final String senha = authentication.getCredentials().toString();
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        UserDetails userDetails = this.autenticacaoService.loadUserByUsername(username);
 
         if (!passwordEncoder.matches(senha, userDetails.getPassword())) {
             throw new BadCredentialsException("Credenciais inválidas");
         }
 
-        return new UsernamePasswordAuthenticationToken(userDetails, senha, userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+        return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 }
+

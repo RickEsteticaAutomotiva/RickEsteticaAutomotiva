@@ -17,9 +17,8 @@ public class PessoaController {
 
     private final PessoaService pessoaService;
 
-    @SecurityRequirement(name = "Bearer")
     @GetMapping
-    public ResponseEntity<Page<PessoaDto>> buscarTodosPaginado(@Valid @ModelAttribute PessoaPageRequest pageRequest) {
+    public ResponseEntity<Page<PessoaDto>> listarPessoas(@Valid @ModelAttribute PessoaPageRequest pageRequest) {
         Page<PessoaDto> pessoas = pessoaService.buscarTodosComFiltro(pageRequest);
         return ResponseEntity.ok(pessoas);
     }
@@ -36,14 +35,13 @@ public class PessoaController {
         return ResponseEntity.ok(pessoa);
     }
 
-    @SecurityRequirement(name = "Bearer")
-    @PostMapping("")
+    @PostMapping("/criar")
     public ResponseEntity<PessoaCadastroDto> criarPessoa(@RequestBody PessoaCadastroDto pessoaCadastroDto) {
         PessoaCadastroDto pessoa = pessoaService.criarPessoa(pessoaCadastroDto);
         return ResponseEntity.status(201).body(pessoa);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/atualizar/{id}")
     public ResponseEntity<PessoaCadastroDto> atualizarPessoa(
             @PathVariable Long id,
             @RequestBody PessoaCadastroDto pessoa) {
@@ -51,7 +49,7 @@ public class PessoaController {
         return ResponseEntity.ok(pessoaAtualizada);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deletar/{id}")
     public ResponseEntity<Void> deletarPessoa(@PathVariable Long id) {
         pessoaService.deletarPessoa(id);
         return ResponseEntity.noContent().build();

@@ -10,13 +10,12 @@ import java.util.Collection;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class PessoaDetalhesDto implements UserDetails {
 
-    private String nome;
-    private String email;
-    private String senha;
+    private final String nome;
+    private final String email;
+    private final String senha;
 
     public PessoaDetalhesDto(PessoaEntity pessoa) {
         this.nome = pessoa.getNome();

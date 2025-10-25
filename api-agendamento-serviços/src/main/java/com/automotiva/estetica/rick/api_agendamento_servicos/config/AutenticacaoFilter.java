@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
+import com.automotiva.estetica.rick.api_agendamento_servicos.service.AutenticacaoService;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -15,30 +16,17 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Objects;
 
 public class AutenticacaoFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AutenticacaoFilter.class);
 
-    private final PessoaService pessoaService;
+    private final AutenticacaoService autenticacaoService;
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
 
-    private static final List<String> PATHS_PUBLICOS = List.of(
-            "/swagger-ui/",
-            "/swagger-ui.html",
-            "/v3/api-docs",
-            "/swagger-resources",
-            "/webjars/",
-            "/h2-console/",
-            "/error/",
-            "/pessoas/login",
-            "/users/login",
-            "/public/"
-    );
-
-    public AutenticacaoFilter(PessoaService pessoaService, GerenciadorTokenJwt gerenciadorTokenJwt) {
-        this.pessoaService = pessoaService;
+    public AutenticacaoFilter(AutenticacaoService autenticacaoService, GerenciadorTokenJwt gerenciadorTokenJwt) {
+        this.autenticacaoService = autenticacaoService;
         this.gerenciadorTokenJwt = gerenciadorTokenJwt;
     }
 
@@ -47,47 +35,41 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String path = request.getServletPath();
-
-        // Ignorar paths públicos
-        if (isPublicPath(path)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         final String authorizationHeader = request.getHeader("Authorization");
         String username = null;
         String jwtToken = null;
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        if (Objects.nonNull(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
             jwtToken = authorizationHeader.substring(7);
             try {
                 username = gerenciadorTokenJwt.getUsernameFromToken(jwtToken);
-            } catch (IllegalArgumentException e) {
-                LOGGER.error("Não foi possível obter o JWT Token: {}", e.getMessage());
             } catch (ExpiredJwtException e) {
-                LOGGER.warn("JWT Token expirado para o usuário: {}", e.getClaims().getSubject());
-            }
+            LOGGER.info("Token expirado: {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expirado");
+            return;
         }
 
+    }
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = pessoaService.loadUserByUsername(username);
-
-            if (gerenciadorTokenJwt.isTokenValido(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            }
+            addPessoaInContext(request, username, jwtToken);
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private boolean isPublicPath(String path) {
-        return PATHS_PUBLICOS.stream().anyMatch(path::startsWith);
+    private void addPessoaInContext(HttpServletRequest request, String username, String jwtToken) {
+        UserDetails userDetails = autenticacaoService.loadUserByUsername(username);
+        if (gerenciadorTokenJwt.isTokenValido(jwtToken, userDetails)) {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        }
+
     }
 }
