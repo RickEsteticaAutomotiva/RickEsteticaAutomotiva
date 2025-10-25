@@ -3,7 +3,7 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -19,15 +19,24 @@ public class OrdemServicoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @Column(name = "dtConclusao", updatable = true)
-    private Date dtConclusao;
+    @Column(name = "dt_conclusao", updatable = true)
+    private LocalDateTime dtConclusao;
 
     @Column(name = "observacoes", length = 255)
     private String observacoes;
 
-    @Column(name = "status", length = 40, nullable = false)
-    private String status;
+    @Column(name = "data_agendamento", nullable = false)
+    private LocalDateTime dataAgendamento;
 
-    @Column(name = "fkAgendamento",nullable = false)
-    private Long idAgendamento;
+    @ManyToOne
+    @JoinColumn(name = "fk_veiculo", nullable = false)
+    private VeiculoEntity veiculo;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_status", nullable = false)
+    private StatusEntity status;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_motivo", nullable = true)
+    private MotivoCancelamentoEntity motivoCancelamento;
 }

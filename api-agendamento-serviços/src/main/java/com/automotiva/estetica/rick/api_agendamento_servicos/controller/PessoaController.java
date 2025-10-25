@@ -1,7 +1,12 @@
 // src/main/java/com/automotiva/estetica/rick/api_agendamento_servicos/controller/PessoaController.java
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
+
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.*;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -18,7 +23,8 @@ public class PessoaController {
     private final PessoaService pessoaService;
 
     @GetMapping
-    public ResponseEntity<Page<PessoaDto>> listarPessoas(@Valid @ModelAttribute PessoaPageRequest pageRequest) {
+
+    public ResponseEntity<Page<PessoaDto>> buscarTodosPaginado(@Valid @ModelAttribute DefaultPageRequest pageRequest) {
         Page<PessoaDto> pessoas = pessoaService.buscarTodosComFiltro(pageRequest);
         return ResponseEntity.ok(pessoas);
     }
