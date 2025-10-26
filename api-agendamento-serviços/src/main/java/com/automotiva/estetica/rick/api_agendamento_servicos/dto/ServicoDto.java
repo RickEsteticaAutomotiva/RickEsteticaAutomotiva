@@ -14,4 +14,5 @@ public class ServicoDto {
     private BigDecimal preco;
     private String descricao;
     private String nome;
+    private CategoriaDto categoria;
 }

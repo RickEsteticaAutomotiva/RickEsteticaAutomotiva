@@ -13,10 +13,13 @@ public class ServicoSpecification {
 
             String likeFiltro = "%" + filtro.toLowerCase() + "%";
 
+            var categoriaJoin = root.join("categoria");
+
             return cb.or(
                     cb.like(cb.lower(root.get("nome")), likeFiltro),
                     cb.like(cb.lower(root.get("descricao")), likeFiltro),
-                    cb.like(cb.lower(cb.function("TO_CHAR", String.class, root.get("preco"), cb.literal("999999.99"))), likeFiltro)
+                    cb.like(cb.lower(cb.function("TO_CHAR", String.class, root.get("preco"), cb.literal("999999.99"))), likeFiltro),
+                    cb.like(cb.lower(categoriaJoin.get("nome")), likeFiltro)
             );
         };
     }

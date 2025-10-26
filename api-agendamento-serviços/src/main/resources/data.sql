@@ -6,13 +6,19 @@ INSERT INTO pessoa (nome, cpf, email, telefone, data_nascimento, senha) VALUES
 ('Ana Costa', '45678901234', 'ana.costa@email.com', '11654321098', '1988-03-25', 'senha123'),
 ('Carlos Ferreira', '56789012345', 'carlos.ferreira@email.com', '11543210987', '1995-07-08', 'senha123');
 
--- Dados fictícios para tabela servico
-INSERT INTO servico (nome, descricao, preco) VALUES
-('Lavagem Simples', 'Lavagem externa básica do veículo', 25.00),
-('Lavagem Completa', 'Lavagem externa e interna completa', 45.00),
-('Enceramento', 'Aplicação de cera protetora na pintura', 80.00),
-('Lavagem + Cera', 'Lavagem completa com enceramento', 120.00),
-('Detalhamento Completo', 'Serviço completo de detalhamento automotivo', 200.00);
+-- Inserir categorias primeiro
+INSERT INTO categoria (id, nome) VALUES
+(1, 'Lavagem'),
+(2, 'Polimento'),
+(3, 'Detalhamento');
+
+-- Depois inserir serviços com as categorias
+INSERT INTO servico (nome, descricao, preco, fk_categoria) VALUES
+('Lavagem Simples', 'Lavagem externa básica do veículo', 25.00, 1),
+('Lavagem Completa', 'Lavagem externa e interna completa', 45.00, 1),
+('Enceramento', 'Aplicação de cera protetora na pintura', 80.00, 2),
+('Lavagem + Cera', 'Lavagem completa com enceramento', 120.00, 2),
+('Detalhamento Completo', 'Serviço completo de detalhamento automotivo', 200.00, 3);
 
 -- Dados fictícios para tabela veiculo
 INSERT INTO veiculo (placa, modelo, marca, porte, cor, ano, fk_usuario) VALUES
