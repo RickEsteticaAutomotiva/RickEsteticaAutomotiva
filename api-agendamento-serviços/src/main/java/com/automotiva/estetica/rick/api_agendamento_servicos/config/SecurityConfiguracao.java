@@ -47,6 +47,8 @@ public class SecurityConfiguracao {
             "/v3/api-docs/**",
             "/swagger-resources/**",
             "/webjars/**",
+            "/pessoas/login",
+            "/pessoas/",
 
             // H2 Console
             "/h2-console/**",
@@ -54,11 +56,6 @@ public class SecurityConfiguracao {
             // Erros
             "/error/**",
 
-            // Login e rotas públicas
-            "/pessoas/criar",
-            "/pessoas/login",
-            "/users/login",
-            "/public/**"
     };
 
     @Bean
