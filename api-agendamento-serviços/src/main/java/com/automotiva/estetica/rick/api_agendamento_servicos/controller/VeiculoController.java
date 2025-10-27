@@ -35,9 +35,9 @@ public class VeiculoController {
         return ResponseEntity.ok(resposta);
     }
 
-    @PatchMapping()
-    public ResponseEntity<Void> atualizarVeiculo(@RequestBody VeiculoDto veiculoDto) {
-        veiculoService.atualizarVeiculo(veiculoDto);
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> atualizarVeiculo(@PathVariable Long id, @RequestBody VeiculoDto veiculoDto) {
+        veiculoService.atualizarVeiculo(id, veiculoDto);
         return ResponseEntity.noContent().build();
     }
 

@@ -2,11 +2,11 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.ItemServicoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ItemServicoDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ItemServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.OrdemServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
-import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ItemServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.OrdemServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ServicoRepository;
@@ -36,23 +36,23 @@ public class ItemServicoService {
         return itemServicoMapper.itemServicosParaItemServicosDto(itens);
     }
 
-    public ItemServicoDto criarItemServico(ItemServicoDto itemServicoDto) {
-        if (itemServicoRepository.existsById(itemServicoDto.getId())) {
-            throw RecursoJaExisteException.builder()
-                    .mensagem("o item já existe")
-                    .detalhes("")
-                    .build();
+    public void criarItemServico(OrdemServicoDto ordemServicoRequest, OrdemServicoEntity ordemServicoSalva) {
+        for(Long id : ordemServicoRequest.getServicos()) {
+            ServicoEntity servico = servicoRepository.findById(id).get();
+            ItemServicoEntity entity = itemServicoMapper.ordemServicoParaItemServicoEntity(
+                    id,
+                    ordemServicoSalva,
+                    servico
+            );
+            itemServicoRepository.save(entity);
         }
-        ItemServicoEntity entity = converterEntity(itemServicoDto);
-        itemServicoRepository.save(entity);
-        return itemServicoMapper.itemServicoParaItemServicoDto(entity);
     }
 
     public ItemServicoDto buscarPorId(Long id) {
         Optional<ItemServicoEntity> item = itemServicoRepository.findById(id);
         if (item.isEmpty()) {
             throw RecursoNaoEncontradaException.builder()
-                    .mensagem("o item com id" + id + "não foi encontrado")
+                    .mensagem("o item com id " + id + " não foi encontrado")
                     .detalhes("")
                     .build();
         }
@@ -84,25 +84,16 @@ public class ItemServicoService {
         itemServicoRepository.deleteById(id);
     }
 
-    public ItemServicoEntity converterEntity(ItemServicoDto dto) {
-        ServicoEntity servico = servicoRepository.findById(dto.getIdServico())
-                .orElseThrow(() ->
-                        RecursoNaoEncontradaException.builder()
-                                .mensagem("o servico com id" + dto.getIdServico() + "não foi encontrado")
-                                .detalhes("")
-                                .build()
-                );
-        OrdemServicoEntity ordem = ordemServicoRepository.findById(dto.getIdOrdemServico())
-                .orElseThrow(() -> new RuntimeException("Ordem de serviço não encontrada"));
-
-        ItemServicoEntity entity = itemServicoMapper.itemServicoDtoParaItemServico(dto);
-        entity.setServico(servico);
-        entity.setOrdemServico(ordem);
-        return entity;
-    }
 
     public List<ItemServicoDto> listarPorOrdem(Long idOrdem) {
         List<ItemServicoEntity> itens = itemServicoRepository.findByOrdemServicoId(idOrdem);
         return itemServicoMapper.itemServicosParaItemServicosDto(itens);
+    }
+
+    public List<Long> buscarServicosPorOrdemServicoId(Long ordemServicoId) {
+        return itemServicoRepository.findByOrdemServicoId(ordemServicoId)
+                .stream()
+                .map(item -> item.getServico().getId())
+                .toList();
     }
 }

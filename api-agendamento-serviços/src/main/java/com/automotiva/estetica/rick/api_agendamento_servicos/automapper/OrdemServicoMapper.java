@@ -5,10 +5,7 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.entity.MotivoCancel
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.OrdemServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.StatusEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.VeiculoEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.*;
 
 import java.util.List;
 @Mapper(componentModel = "spring")
@@ -24,6 +21,7 @@ public interface OrdemServicoMapper {
     @Mapping(source = "motivo", target = "motivoCancelamento")
     OrdemServicoEntity ordemServicoDtoParaOrdemServico(OrdemServicoDto dto);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     void atualizarOrdemServicoEntityFromDto(OrdemServicoDto dto, @MappingTarget OrdemServicoEntity entity);
 
