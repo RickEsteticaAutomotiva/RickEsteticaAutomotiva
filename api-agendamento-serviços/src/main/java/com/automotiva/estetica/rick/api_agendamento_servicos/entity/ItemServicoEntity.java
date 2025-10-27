@@ -19,21 +19,13 @@ public class ItemServicoEntity {
     protected Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "ordem_servico_id", nullable = false)
-    private OrdemServicoEntity ordemServico;
-
-    @ManyToOne(optional = false)
     @JoinColumn(name = "servico_id", nullable = false)
     private ServicoEntity servico;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ordem_servico_id", nullable = false)
+    private OrdemServicoEntity ordemServico;
+
     @Column(name = "preco", nullable = false)
     private BigDecimal preco;
-
-    public ServicoEntity getServico() {
-        return servico;
-    }
-
-    public void setServico(ServicoEntity servico) {
-        this.servico = servico;
-    }
 }
