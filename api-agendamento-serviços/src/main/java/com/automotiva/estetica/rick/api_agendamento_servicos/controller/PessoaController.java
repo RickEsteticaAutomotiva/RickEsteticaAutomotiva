@@ -1,11 +1,14 @@
-// src/main/java/com/automotiva/estetica/rick/api_agendamento_servicos/controller/PessoaController.java
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
+
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.*;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.PessoaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,7 +22,6 @@ public class PessoaController {
 
     private final PessoaService pessoaService;
 
-    // PessoaController.java
     @GetMapping
     public ResponseEntity<Page<PessoaDto>> buscarTodosPaginado(@Valid @ModelAttribute DefaultPageRequest pageRequest) {
         Page<PessoaDto> pessoas = pessoaService.buscarTodosComFiltro(pageRequest);
@@ -27,8 +29,9 @@ public class PessoaController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<PessoaDto> login(@RequestBody LoginDto loginDto) {
-        PessoaDto pessoa = pessoaService.login(loginDto);
+    @SecurityRequirement(name = "")
+    public ResponseEntity<PessoaTokenDto> login(@RequestBody LoginDto loginDto) {
+        PessoaTokenDto pessoa = pessoaService.login(loginDto);
         return ResponseEntity.ok(pessoa);
     }
 
@@ -38,13 +41,15 @@ public class PessoaController {
         return ResponseEntity.ok(pessoa);
     }
 
-    @PostMapping("")
-    public ResponseEntity<PessoaCadastroDto> criarPessoa(@RequestBody PessoaCadastroDto pessoaCadastroDto) {
+    @PostMapping("/")
+    @SecurityRequirement(name = "")
+    @Operation(security = {})
+    public ResponseEntity<Void> criarPessoa(@RequestBody PessoaCadastroDto pessoaCadastroDto) {
         PessoaCadastroDto pessoa = pessoaService.criarPessoa(pessoaCadastroDto);
-        return ResponseEntity.status(201).body(pessoa);
+        return ResponseEntity.status(201).build();
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<PessoaCadastroDto> atualizarPessoa(
             @PathVariable Long id,
             @RequestBody PessoaCadastroDto pessoa) {
