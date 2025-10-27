@@ -1,6 +1,5 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.automapper;
 
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoCarrinhoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
 import org.mapstruct.Mapper;
