@@ -72,7 +72,7 @@ public class EmailService {
         } catch (MailException | MessagingException | IOException e) {
             email.setStatusEmail(StatusEmailEnum.ERROR);
             log.error(e.getMessage());
-            //TODO criar uma exeption de erro
+            // TODO ALTERAR LÒGICA PARA DEFINIR ERROS ESPECÌFICOS
             throw new RuntimeException("Erro ao enviar email: " + e.getMessage());
         } finally {
             emailRepository.save(email);

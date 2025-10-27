@@ -28,12 +28,6 @@ public class ItemServicoController {
         return ResponseEntity.ok(item);
     }
 
-    @PostMapping
-    public ResponseEntity<ItemServicoDto> criarItemServico(@RequestBody ItemServicoDto itemServicoDto) {
-        ItemServicoDto resposta = itemServicoService.criarItemServico(itemServicoDto);
-        return ResponseEntity.status(201).body(resposta);
-    }
-
     @GetMapping("/{idOrdem}/itens")
     public ResponseEntity<List<ItemServicoDto>> listarItens(@PathVariable Long idOrdem) {
         List<ItemServicoDto> itens = itemServicoService.listarPorOrdem(idOrdem);
