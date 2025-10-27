@@ -20,4 +20,5 @@ public interface ServicoMapper {
     void atualizarServicoEntityFromDto(ServicoDto dto, @MappingTarget ServicoEntity entity);
 
     List<ServicoDto> servicosParaServicosDto(List<ServicoEntity> entities);
+
 }
