@@ -66,17 +66,13 @@ public class VeiculoService {
         return veiculoMapper.veiculosParaVeiculosDto(veiculos);
     }
 
-    public void atualizarVeiculo(VeiculoDto veiculoDto) {
-        var veiculo = veiculoRepository.findByPlaca(veiculoDto.getPlaca())
+    public void atualizarVeiculo(Long id, VeiculoDto veiculoDto) {
+        var veiculo = veiculoRepository.findById(id)
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
                 .mensagem("o veículo com a placa " + veiculoDto.getPlaca() + " não foi encontrado")
                 .detalhes("")
                 .build());
-
-        if (veiculo.getCor() != null) {
-            veiculo.setCor(veiculoDto.getCor());
-        }
-
+        veiculoMapper.atualizarVeiculoEntityFromDto(veiculoDto, veiculo);
         veiculoRepository.save(veiculo);
     }
 
