@@ -9,11 +9,10 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServicoDto {
-    private Long id;
+public class ServicoFavoritoDto {
+    private Long idFavorito;
+    private Long idServico;
     private BigDecimal preco;
     private String descricao;
     private String nome;
-    private String imagem;
-    private CategoriaDto categoria;
 }
