@@ -49,6 +49,9 @@ public class SecurityConfiguracao {
             "/webjars/**",
             "/pessoas/login",
             "/pessoas/",
+            "/servicos",
+            "/servicos/**",
+            "/categorias",
 
             // H2 Console
             "/h2-console/**",
