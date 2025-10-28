@@ -8,8 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PessoaTokenDto {
-    private String userId;
+    private Long id;
     private String email;
-    private String senha;
+    private String nome;
     private String token;
 }

@@ -17,11 +17,13 @@ public class PessoaDetalhesDto implements UserDetails {
     private final String nome;
     private final String email;
     private final String senha;
+    private final Long id;
 
     public PessoaDetalhesDto(PessoaEntity pessoa) {
         this.nome = pessoa.getNome();
         this.email = pessoa.getEmail();
         this.senha = pessoa.getSenha();
+        this.id = pessoa.getId();
     }
 
     @Override

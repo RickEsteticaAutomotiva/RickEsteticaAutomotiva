@@ -25,6 +25,5 @@ public interface PessoaMapper {
     List<PessoaDto> pessoasParaPessoasDto(List<PessoaEntity> pessoas);
     List<PessoaEntity> pessoasDtoParaPessoas(List<PessoaDto> pessoasDto);
     PessoaTokenDto PessoaDtoParaPessoaToken(PessoaDto pessoa, String token);
-
     PessoaTokenDto PessoaParaPessoaToken(PessoaEntity pessoa, String token);
 }
