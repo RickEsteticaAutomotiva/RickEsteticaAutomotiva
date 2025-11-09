@@ -2,22 +2,18 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "servico")
-//public class ServicoEntity extends BaseEntity {
-public class ServicoEntity{
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+public class ServicoEntity extends BaseEntity<Long> {
 
     @Column(name = "nome", length = 100, nullable = false)
     private String nome;

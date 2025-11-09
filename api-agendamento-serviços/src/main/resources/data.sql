@@ -4,7 +4,7 @@
 
 -- TABELA: pessoa
 INSERT INTO pessoa (nome, cpf, email, telefone, data_nascimento, senha) VALUES
-('João Silva', '12345678901', 'rodrigoapolodev@gmail.com', '11987654321', '1990-05-15', 'senha123'),
+('Rodrigo Santos', '12345678901', 'rodrigoapolodev@gmail.com', '11987654321', '1990-05-15', '$2a$10$351eVELULypd9x8ong42rOgTIMdw6sitDwqIvRIFGVDHi7cXRIGL2'),
 ('Maria Santos', '23456789012', 'maria.santos@email.com', '11876543210', '1985-08-20', 'senha123'),
 ('Pedro Oliveira', '34567890123', 'pedro.oliveira@email.com', '11765432109', '1992-12-10', 'senha123'),
 ('Ana Costa', '45678901234', 'ana.costa@email.com', '11654321098', '1988-03-25', 'senha123'),

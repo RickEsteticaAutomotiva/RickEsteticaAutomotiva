@@ -1,7 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CalendarEventRequest;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.BaseController;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.CalendarioGoogleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/calendario/eventos")
 @RequiredArgsConstructor
-public class CalendarioGoogleController extends BaseController {
+public class CalendarioGoogleController {
 
     @Autowired
     private final CalendarioGoogleService calendarioService;
