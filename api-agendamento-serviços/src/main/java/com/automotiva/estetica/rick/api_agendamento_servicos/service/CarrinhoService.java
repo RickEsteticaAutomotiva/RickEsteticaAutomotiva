@@ -62,6 +62,26 @@ public class CarrinhoService {
         carrinhoRepository.deleteById(idCarrinho);
     }
 
+    @Transactional
+    public void limparCarrinhoPessoa(Long idPessoa) {
+        PessoaEntity pessoa = pessoaRepository.findById(idPessoa)
+                .orElseThrow(() -> RecursoNaoEncontradaException.builder()
+                        .mensagem("Usuário não encontrado: " + idPessoa)
+                        .detalhes("")
+                        .build());
+
+        List<CarrinhoEntity> itens = carrinhoRepository.findByPessoaId(pessoa.getId());
+
+        if (itens == null || itens.isEmpty()) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("Carrinho não encontrado para este usuário.")
+                    .detalhes("")
+                    .build();
+        }
+
+        carrinhoRepository.deleteAll(itens);
+    }
+
     public List<ServicoCarrinhoDto> listarCarrinhoPessoa(Long idPessoa) {
         PessoaEntity pessoa = pessoaRepository.findById(idPessoa)
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()

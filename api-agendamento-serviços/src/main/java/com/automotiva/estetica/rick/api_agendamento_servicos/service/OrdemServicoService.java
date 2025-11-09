@@ -40,6 +40,7 @@ public class OrdemServicoService extends OrdemServicoSubject {
     private final CalendarioGoogleService calendarioGoogleService;
     private final ServicoRepository servicoRepository;
     private final VeiculoService veiculoService;
+    private final CarrinhoService carrinhoService;
 
     public Page<OrdemServicoDto> buscarTodos(OrdemServicoPageRequest ordemServicoPageRequest) {
         String ordenarPor = ordemServicoPageRequest.getOrdenarPor();
@@ -148,6 +149,9 @@ public class OrdemServicoService extends OrdemServicoSubject {
         CalendarEventRequest request = new CalendarEventRequest();
         ZonedDateTime zoned = ordemServico.getDataAgendamento().atZone(ZoneId.of("America/Sao_Paulo"));
         OrdemServicoEntity ordem = ordemServicoRepository.findOrdemServicoEntityById(ordemServico.getId()).get();
+
+        carrinhoService.limparCarrinhoPessoa(ordem.getVeiculo().getPessoa().getId());
+
 
         request.setTitulo("Atendimento veículo - " + ordem.getVeiculo().getPlaca());
         request.setDescricao(montarDescricaoEvento(ordemServico, ordemServicoServicos));
