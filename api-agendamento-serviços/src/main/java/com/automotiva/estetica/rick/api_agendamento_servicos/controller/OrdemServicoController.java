@@ -1,7 +1,7 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoPageRequest;
+import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.OrdemServicoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class OrdemServicoController {
     private final OrdemServicoService ordemServicoService;
 
     @GetMapping
-    public ResponseEntity<Page<OrdemServicoDto>> buscarTodosPaginado(@Valid @ModelAttribute OrdemServicoPageRequest pageRequest) {
+    public ResponseEntity<Page<OrdemServicoDto>> buscarTodosPaginado(@Valid @ModelAttribute DefaultPageRequest pageRequest) {
         Page<OrdemServicoDto> ordemServicos = ordemServicoService.buscarTodos(pageRequest);
         return ResponseEntity.ok(ordemServicos);
     }

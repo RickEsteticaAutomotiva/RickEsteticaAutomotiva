@@ -15,12 +15,10 @@ public interface ItemServicoMapper {
 
     ItemServicoMapper INSTANCE = Mappers.getMapper(ItemServicoMapper.class);
 
-    // Removido mapeamento para servico.id e ordemServico.id
     @Mapping(source = "servico.id", target = "idServico")
     @Mapping(source = "ordemServico.id", target = "idOrdemServico")
     ItemServicoDto itemServicoParaItemServicoDto(ItemServicoEntity entity);
 
-    // Removido ignore para ordemServico se não existir
     @Mapping(target = "servico", ignore = true)
     ItemServicoEntity itemServicoDtoParaItemServico(ItemServicoDto dto);
 

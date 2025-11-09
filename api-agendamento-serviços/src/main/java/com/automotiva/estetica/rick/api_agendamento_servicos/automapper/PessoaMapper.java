@@ -18,8 +18,10 @@ public interface PessoaMapper {
 
     PessoaDto pessoaParaPessoaDto(PessoaEntity pessoa);
     PessoaEntity pessoaDtoParaPessoa(PessoaDto pessoa);
+
     @Mapping(target = "id", ignore = true)
     PessoaEntity pessoaCadastroDtoParaPessoaEntity(PessoaCadastroDto dto);
+
     PessoaCadastroDto pessoaEntityParaPessoaCadastroDto(PessoaEntity entity);
     void atualizarPessoaEntityFromDto(PessoaCadastroDto dto, @MappingTarget PessoaEntity entity);
     List<PessoaDto> pessoasParaPessoasDto(List<PessoaEntity> pessoas);

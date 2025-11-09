@@ -1,4 +1,3 @@
-// src/main/java/com/automotiva/estetica/rick/api_agendamento_servicos/service/PessoaService.java
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.PessoaMapper;
