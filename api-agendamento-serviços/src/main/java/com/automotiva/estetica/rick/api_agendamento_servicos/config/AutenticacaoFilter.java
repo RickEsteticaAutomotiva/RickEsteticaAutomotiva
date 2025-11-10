@@ -28,11 +28,6 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
     private final AutenticacaoService autenticacaoService;
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
 
-//    public AutenticacaoFilter(AutenticacaoService autenticacaoService, GerenciadorTokenJwt gerenciadorTokenJwt) {
-//        this.autenticacaoService = autenticacaoService;
-//        this.gerenciadorTokenJwt = gerenciadorTokenJwt;
-//    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,

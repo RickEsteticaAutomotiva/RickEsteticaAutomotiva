@@ -1,16 +1,13 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
-import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.ItemServicoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.OrdemServicoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CalendarEventRequest;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ItemServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoPageRequest;
-import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ItemServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.OrdemServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
+import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.OrdemServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.observer.EmailObserver;
@@ -42,7 +39,7 @@ public class OrdemServicoService extends OrdemServicoSubject {
     private final VeiculoService veiculoService;
     private final CarrinhoService carrinhoService;
 
-    public Page<OrdemServicoDto> buscarTodos(OrdemServicoPageRequest ordemServicoPageRequest) {
+    public Page<OrdemServicoDto> buscarTodos(DefaultPageRequest ordemServicoPageRequest) {
         String ordenarPor = ordemServicoPageRequest.getOrdenarPor();
 
         if (ordenarPor == null || ordenarPor.isBlank()) {

@@ -27,7 +27,6 @@ public interface OrdemServicoMapper {
 
     List<OrdemServicoDto> ordemServicosParaOrdemServicosDto(List<OrdemServicoEntity> entities);
 
-    // Métodos auxiliares para MapStruct
     default Long map(StatusEntity status) {
         return status == null ? null : status.getId();
     }

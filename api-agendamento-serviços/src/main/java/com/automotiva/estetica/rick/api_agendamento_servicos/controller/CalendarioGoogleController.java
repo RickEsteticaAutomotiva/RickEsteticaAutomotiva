@@ -27,7 +27,6 @@ public class CalendarioGoogleController {
 
     @PostMapping
     public ResponseEntity<?> criarEvento(@RequestBody CalendarEventRequest request) {
-        // Usando o novo método para verificar disponibilidade
         ResponseEntity<?> respostaIndisponivel = verificarDisponibilidadeServico(calendarioService.estaDisponivel());
         if (respostaIndisponivel != null) {
             return respostaIndisponivel;
