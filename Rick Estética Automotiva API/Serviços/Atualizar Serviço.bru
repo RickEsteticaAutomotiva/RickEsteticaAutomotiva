@@ -1,0 +1,27 @@
+meta {
+  name: Atualizar Serviço
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/servicos/1
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "nome": "Lavagem Premium",
+    "descricao": "Lavagem completa com cera",
+    "preco": 80.00
+  }
+}
+
+settings {
+  encodeUrl: true
+}

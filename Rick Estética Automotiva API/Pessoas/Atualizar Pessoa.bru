@@ -1,0 +1,27 @@
+meta {
+  name: Atualizar Pessoa
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/pessoas/1
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "nome": "João Silva Santos",
+    "email": "joao.santos@email.com",
+    "telefone": "11888888888"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,20 +1,16 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CalendarEventRequest;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.BaseController;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.CalendarioGoogleService;
-import com.google.api.services.calendar.model.Event;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/calendario/eventos")
 @RequiredArgsConstructor
-public class CalendarioGoogleController extends BaseController {
+public class CalendarioGoogleController {
 
     @Autowired
     private final CalendarioGoogleService calendarioService;
@@ -23,22 +19,21 @@ public class CalendarioGoogleController extends BaseController {
     public ResponseEntity<?> verificarSaude() {
         boolean disponivel = calendarioService.estaDisponivel();
         if (disponivel) {
-            return definirRetorno(200, null, "Serviço do Google Calendar está disponível");
+            return ResponseEntity.status(200).build();
         } else {
-            return definirRetorno(503, null, "Serviço do Google Calendar não está disponível");
+            return ResponseEntity.status(503).build();
         }
     }
 
     @PostMapping
     public ResponseEntity<?> criarEvento(@RequestBody CalendarEventRequest request) {
-        // Usando o novo método para verificar disponibilidade
         ResponseEntity<?> respostaIndisponivel = verificarDisponibilidadeServico(calendarioService.estaDisponivel());
         if (respostaIndisponivel != null) {
             return respostaIndisponivel;
         }
 
         var retorno = calendarioService.criarEvento(request);
-        return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
+        return ResponseEntity.status(204).body(retorno);
     }
 
     @GetMapping("/{idEvento}")
@@ -49,7 +44,7 @@ public class CalendarioGoogleController extends BaseController {
         }
 
         var retorno = calendarioService.obterEvento(idEvento);
-        return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
+        return ResponseEntity.status(200).body(retorno);
     }
 
     @GetMapping
@@ -60,7 +55,7 @@ public class CalendarioGoogleController extends BaseController {
         }
 
         var retorno = calendarioService.listarEventos();
-        return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
+        return ResponseEntity.status(200).body(retorno);
     }
 
     @PutMapping("/{idEvento}")
@@ -73,7 +68,7 @@ public class CalendarioGoogleController extends BaseController {
         }
 
         var retorno = calendarioService.atualizarEvento(idEvento, request);
-        return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{idEvento}")
@@ -82,14 +77,13 @@ public class CalendarioGoogleController extends BaseController {
         if (respostaIndisponivel != null) {
             return respostaIndisponivel;
         }
-
-        var retorno = calendarioService.excluirEvento(idEvento);
-        return definirRetorno(retorno.getStatusCode(), retorno.getObjeto(), retorno.getMensagem());
+        calendarioService.excluirEvento(idEvento);
+        return ResponseEntity.noContent().build();
     }
 
     private ResponseEntity<?> verificarDisponibilidadeServico(boolean servicoDisponivel) {
         if (!servicoDisponivel) {
-            return definirRetorno(503, null, "Serviço não está disponível");
+            ResponseEntity.status(503).build();
         }
         return null;
     }

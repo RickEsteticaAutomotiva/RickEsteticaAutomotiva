@@ -1,126 +1,181 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
+import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.PessoaMapper;
+
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.*;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.RetornoComListaObjeto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.RetornoComObjeto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.RetornoSemObjeto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
+import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.PessoaRepository;
+import com.automotiva.estetica.rick.api_agendamento_servicos.specification.PessoaSpecification;
+import com.automotiva.estetica.rick.api_agendamento_servicos.config.GerenciadorTokenJwt;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PessoaService {
+@RequiredArgsConstructor
+public class PessoaService implements UserDetailsService {
+    private final PessoaRepository pessoaRepository;
     @Autowired
-    PessoaRepository pessoaRepository;
+    private final PessoaMapper pessoaMapper;
+    @Autowired
+    private final GerenciadorTokenJwt gerenciadorTokenJwt;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-//    public RetornoComListaObjeto<PessoaEntity>buscarTodos() {
-//
-//        var retornoComListaObjeto = new RetornoComListaObjeto<PessoaEntity>();
-//
-//        try {
-//            List<PessoaEntity> pessoas = pessoaRepository.findAll();
-//
-//            if (pessoas.isEmpty()) {
-//
-//                retornoComListaObjeto.setStatusCode(404);
-//                retornoComListaObjeto.setMensagem("Nenhuma pessoa encontrada.");
-//                retornoComListaObjeto.setObjeto(List.of()); // lista vazia
-//            } else {
-//                retornoComListaObjeto.setStatusCode(200);
-//                retornoComListaObjeto.setMensagem("Pessoas encontradas com sucesso.");
-//                retornoComListaObjeto.setObjeto(pessoas);
-//            }
-//        } catch (Exception e) {
-//            retornoComListaObjeto.setStatusCode(500);
-//            retornoComListaObjeto.setMensagem("Erro ao buscar pessoas: " + e.getMessage());
-//            retornoComListaObjeto.setObjeto(List.of());
-//        }
-//
-//        return retornoComListaObjeto;
-//    }
 
-    public RetornoComListaObjeto<PessoaEntity> buscarTodos() {
 
-        try {
-            List<PessoaEntity> pessoas = pessoaRepository.findAll();
-
-            if (pessoas.isEmpty()) {
-                return RetornoComListaObjeto.<PessoaEntity>builder()
-                        .statusCode(404)
-                        .mensagem("Nenhuma pessoa encontrada.")
-                        .objeto(List.of())
-                        .build();
-            }
-
-            return RetornoComListaObjeto.<PessoaEntity>builder()
-                    .statusCode(200)
-                    .mensagem("Pessoas encontradas com sucesso.")
-                    .objeto(pessoas)
-                    .build();
-
-        } catch (Exception e) {
-            return RetornoComListaObjeto.<PessoaEntity>builder()
-                    .statusCode(500)
-                    .mensagem("Erro ao buscar pessoas: " + e.getMessage())
-                    .objeto(List.of())
-                    .build();
+    public Page<PessoaDto> buscarTodosComFiltro(DefaultPageRequest pageRequest) {
+        String ordenarPor = pageRequest.getOrdenarPor();
+        if (ordenarPor == null || ordenarPor.isBlank()) {
+            ordenarPor = "id";
         }
-    }
-
-    public RetornoComObjeto<PessoaDto> login(LoginDto loginDto){
-        var retorno = new RetornoComObjeto<PessoaDto>();
-
-        try {
-            Optional<PessoaEntity> autenticado = pessoaRepository.findByEmailAndSenha(loginDto.getEmail(), loginDto.getSenha());
-
-            if (autenticado.isPresent()) {
-
-                var pessoaDto = PessoaDto.builder()
-                        .id(autenticado.get().getId())
-                        .nome(autenticado.get().getNome())
-                        .email(autenticado.get().getEmail())
-                        .dataNascimento(autenticado.get().getDataNascimento())
-                        .build();
-
-                retorno.setStatusCode(200);
-                retorno.setObjeto(pessoaDto);
-            } else {
-                retorno.setStatusCode(401);
-                retorno.setMensagem("Credenciais inválidas.");
-            }
-        } catch (Exception e) {
-            retorno.setStatusCode(500);
-            retorno.setMensagem("Erro ao processar login: " + e.getMessage());
+        String[] camposOrdenacao = ordenarPor.split(",");
+        for (int i = 0; i < camposOrdenacao.length; i++) {
+            camposOrdenacao[i] = camposOrdenacao[i].trim();
         }
 
-        return retorno;
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                pageRequest.getPagina(),
+                pageRequest.getTamanho(),
+                org.springframework.data.domain.Sort.by(camposOrdenacao)
+        );
+
+        Specification<PessoaEntity> spec = PessoaSpecification.filtroUnico(pageRequest.getFiltro());
+        Page<PessoaEntity> paginaPessoas = pessoaRepository.findAll(spec, pageable);
+
+        return paginaPessoas.map(pessoaMapper::pessoaParaPessoaDto);
     }
 
-    public RetornoSemObjeto cadastro(PessoaCadastroDto pessoaDto) {
-        var retorno = new RetornoSemObjeto();
+    public PessoaTokenDto login(LoginDto loginDto) {
+        // 1. Cria as credenciais
+        final UsernamePasswordAuthenticationToken credentials =
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getSenha());
 
-        try {
-            var novaPessoa = PessoaEntity.builder()
-//                    .nome(pessoaDto.getNome())
-                    .email(pessoaDto.getEmail())
-                    .senha(pessoaDto.getSenha())
+        // 2. Autentica
+        final Authentication authentication = this.authenticationManager.authenticate(credentials);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 3. Obtém o UserDetails
+        PessoaDetalhesDto pessoaDetalhes = (PessoaDetalhesDto) authentication.getPrincipal();
+
+        // 4. Busca a entidade no banco (necessário para gerar token com dados completos)
+        PessoaEntity pessoa = pessoaRepository.findByEmail(pessoaDetalhes.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado após autenticação"));
+
+        // 5. Gera token
+        final String token = gerenciadorTokenJwt.generateToken(authentication);
+
+        // 6. Retorna DTO com dados + token
+        return pessoaMapper.PessoaParaPessoaToken(pessoa, token);
+    }
+
+    public PessoaCadastroDto criarPessoa(PessoaCadastroDto pessoa) {
+        if (pessoaRepository.existsByCpf(pessoa.getCpf())) {
+            throw RecursoJaExisteException.builder()
+                    .mensagem("o cpf já existe no sistema")
+                    .detalhes("")
                     .build();
+        }
+        if (pessoaRepository.existsByEmail(pessoa.getEmail())) {
+            throw RecursoJaExisteException.builder()
+                    .mensagem("o email já existe no sistema")
+                    .detalhes("")
+                    .build();
+        }
+        PessoaEntity pessoaEntity = pessoaMapper.pessoaCadastroDtoParaPessoaEntity(pessoa);
+        String senhaCodificada = passwordEncoder.encode(pessoa.getSenha());
+        pessoaEntity.setSenha(senhaCodificada);
+        pessoaRepository.save(pessoaEntity);
+        return pessoa;
+    }
 
-            pessoaRepository.save(novaPessoa);
+    public PessoaDto buscarPorId(Long id) {
+        Optional<PessoaEntity> pessoa = pessoaRepository.findById(id);
 
-            retorno.setStatusCode(201);
-            retorno.setMensagem("Pessoa cadastrada com sucesso.");
-        } catch (Exception e) {
-            retorno.setStatusCode(500);
-            retorno.setMensagem("Erro ao cadastrar pessoa: " + e.getMessage());
+        if (pessoa.isEmpty()) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("a pessoa com id " + id + " não foi encontrada")
+                    .detalhes("")
+                    .build();
         }
 
-        return retorno;
+        return pessoaMapper.pessoaParaPessoaDto(pessoa.get());
     }
+
+    public PessoaCadastroDto atualizarPessoa(Long id, PessoaCadastroDto pessoaAtualizada) {
+        Optional<PessoaEntity> pessoaExistente = pessoaRepository.findById(id);
+
+        if (pessoaExistente.isEmpty()) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("a pessoa com id " + id + " não foi encontrada")
+                    .detalhes("")
+                    .build();
+        }
+
+        PessoaEntity pessoa = pessoaExistente.get();
+        if (!pessoa.getCpf().equals(pessoaAtualizada.getCpf()) &&
+                pessoaRepository.existsByCpf(pessoaAtualizada.getCpf())) {
+            throw RecursoJaExisteException.builder()
+                    .mensagem("o cpf já existe no sistema")
+                    .detalhes("")
+                    .build();
+        }
+
+        if (!pessoa.getEmail().equals(pessoaAtualizada.getEmail()) &&
+                pessoaRepository.existsByEmail(pessoaAtualizada.getEmail())) {
+            throw RecursoJaExisteException.builder()
+                    .mensagem("o email já existe no sistema")
+                    .detalhes("")
+                    .build();
+        }
+
+        pessoaMapper.atualizarPessoaEntityFromDto(pessoaAtualizada, pessoa);
+        pessoa.setSenha(pessoaAtualizada.getSenha());
+        pessoaRepository.save(pessoa);
+        return pessoaAtualizada;
+    }
+
+    public void deletarPessoa(Long id) {
+        Optional<PessoaEntity> pessoa = pessoaRepository.findById(id);
+
+        if (pessoa.isEmpty()) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("a pessoa com id " + id + " não foi encontrada")
+                    .detalhes("")
+                    .build();
+        }
+
+        pessoaRepository.deleteById(id);
+    }
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+        Optional<PessoaEntity> pessoaOpt = pessoaRepository.findByEmail(username);
+        if (pessoaOpt.isEmpty()){
+            throw new UsernameNotFoundException(String.format("usuario: %s não encontrado",username));
+        }
+
+        return new PessoaDetalhesDto(pessoaOpt.get());
+    }
+
 }

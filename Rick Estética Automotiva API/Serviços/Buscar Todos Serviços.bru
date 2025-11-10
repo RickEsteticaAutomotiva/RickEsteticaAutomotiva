@@ -1,0 +1,15 @@
+meta {
+  name: Buscar Todos Serviços
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/servicos
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
