@@ -15,7 +15,7 @@ public class DefaultPageRequest {
     @Min(1)
     @Max(50)
     private int tamanho = 10;
+
     private String ordenarPor = "id";
     private String filtro;
 }
-

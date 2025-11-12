@@ -5,10 +5,9 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.Date;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EventoGoogleCalendarService {
@@ -22,25 +21,21 @@ public class EventoGoogleCalendarService {
     public String criarEvento(String resumo, String descricao, Date inicio, Date fim) throws IOException {
         Calendar service = servicoConexaoGoogleCalendar.obterServicoCalendario();
 
-        Event event = new Event()
-                .setSummary(resumo)
-                .setDescription(descricao);
+        Event event = new Event().setSummary(resumo).setDescription(descricao);
 
-        EventDateTime start = new EventDateTime()
-                .setDateTime(new DateTime(inicio))
-                .setTimeZone("America/Sao_Paulo");
+        EventDateTime start =
+                new EventDateTime().setDateTime(new DateTime(inicio)).setTimeZone("America/Sao_Paulo");
         event.setStart(start);
 
-        EventDateTime end = new EventDateTime()
-                .setDateTime(new DateTime(fim))
-                .setTimeZone("America/Sao_Paulo");
+        EventDateTime end = new EventDateTime().setDateTime(new DateTime(fim)).setTimeZone("America/Sao_Paulo");
         event.setEnd(end);
 
         Event eventoCriado = service.events().insert("primary", event).execute();
         return eventoCriado.getId();
     }
 
-    public void atualizarEvento(String eventId, String novoResumo, String novaDescricao, Date inicio, Date fim) throws IOException {
+    public void atualizarEvento(String eventId, String novoResumo, String novaDescricao, Date inicio, Date fim)
+            throws IOException {
         Calendar service = servicoConexaoGoogleCalendar.obterServicoCalendario();
 
         Event event = service.events().get("primary", eventId).execute();

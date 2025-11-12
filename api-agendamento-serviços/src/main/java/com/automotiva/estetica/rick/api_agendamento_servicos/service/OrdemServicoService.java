@@ -5,25 +5,24 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CalendarEventRe
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.OrdemServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
-import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.OrdemServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.observer.EmailObserver;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.observer.OrdemServicoSubject;
 import com.automotiva.estetica.rick.api_agendamento_servicos.specification.OrdemServicoSpecification;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -54,19 +53,17 @@ public class OrdemServicoService extends OrdemServicoSubject {
         Pageable pageable = org.springframework.data.domain.PageRequest.of(
                 ordemServicoPageRequest.getPagina(),
                 ordemServicoPageRequest.getTamanho(),
-                org.springframework.data.domain.Sort.by(camposOrdenacao)
-        );
+                org.springframework.data.domain.Sort.by(camposOrdenacao));
 
-        Specification<OrdemServicoEntity> spec = OrdemServicoSpecification.filtroUnico(ordemServicoPageRequest.getFiltro());
+        Specification<OrdemServicoEntity> spec =
+                OrdemServicoSpecification.filtroUnico(ordemServicoPageRequest.getFiltro());
         Page<OrdemServicoEntity> paginaOrdemServico = ordemServicoRepository.findAll(spec, pageable);
         return paginaOrdemServico.map(ordemServicoMapper::ordemServicoParaOrdemServicoDto);
     }
 
     public OrdemServicoDto criarOrdemServico(OrdemServicoDto ordemServico) {
         if (ordemServicoRepository.existsByVeiculoIdAndDataAgendamento(
-                ordemServico.getVeiculo(),
-                ordemServico.getDataAgendamento()
-        )) {
+                ordemServico.getVeiculo(), ordemServico.getDataAgendamento())) {
             throw RecursoJaExisteException.builder()
                     .mensagem("um agendamento já existe nessa hora e data")
                     .detalhes("")
@@ -83,7 +80,7 @@ public class OrdemServicoService extends OrdemServicoSubject {
         } catch (Exception e) {
             log.info("falha ao criar ordem de serviço");
             throw new RuntimeException();
-        };
+        }
 
         OrdemServicoDto retorno = ordemServicoMapper.ordemServicoParaOrdemServicoDto(ordemServicoEntity);
         retorno.setServicos(ordemServico.getServicos());
@@ -141,9 +138,9 @@ public class OrdemServicoService extends OrdemServicoSubject {
 
         OrdemServicoEntity ordemServico = ordemServicoExistente.get();
 
-        if (ordemServicoAtualizada.getStatus() == 2L || ordemServicoAtualizada.getStatus() == 5L){
+        if (ordemServicoAtualizada.getStatus() == 2L || ordemServicoAtualizada.getStatus() == 5L) {
             notifyObservers(ordemServico);
-        }else {
+        } else {
             unsubscribe(emailObserver);
         }
 
@@ -167,15 +164,14 @@ public class OrdemServicoService extends OrdemServicoSubject {
     }
 
     private CalendarEventRequest montarEventoGoogleCalendar(
-            OrdemServicoEntity ordemServico,
-            OrdemServicoDto ordemServicoServicos
-    ) {
+            OrdemServicoEntity ordemServico, OrdemServicoDto ordemServicoServicos) {
         CalendarEventRequest request = new CalendarEventRequest();
         ZonedDateTime zoned = ordemServico.getDataAgendamento().atZone(ZoneId.of("America/Sao_Paulo"));
-        OrdemServicoEntity ordem = ordemServicoRepository.findOrdemServicoEntityById(ordemServico.getId()).get();
+        OrdemServicoEntity ordem = ordemServicoRepository
+                .findOrdemServicoEntityById(ordemServico.getId())
+                .get();
 
         carrinhoService.limparCarrinhoPessoa(ordem.getVeiculo().getPessoa().getId());
-
 
         request.setTitulo("Atendimento veículo - " + ordem.getVeiculo().getPlaca());
         request.setDescricao(montarDescricaoEvento(ordemServico, ordemServicoServicos));
@@ -196,19 +192,17 @@ public class OrdemServicoService extends OrdemServicoSubject {
         StringBuilder descricao = new StringBuilder();
         List<ServicoEntity> servicos = servicoRepository.findByIdIn(ordemServicos.getServicos());
 
-
         descricao.append("Data: ").append(ordemServico.getDataAgendamento()).append("\n\n");
         descricao.append("Serviços:\n");
 
-        servicos.forEach(servico ->
-                descricao.append("- ").append(servico.getNome()).append("\n")
-        );
+        servicos.forEach(
+                servico -> descricao.append("- ").append(servico.getNome()).append("\n"));
 
-        if (ordemServico.getObservacoes() != null && !ordemServico.getObservacoes().isBlank()) {
+        if (ordemServico.getObservacoes() != null
+                && !ordemServico.getObservacoes().isBlank()) {
             descricao.append("\nObservações: ").append(ordemServico.getObservacoes());
         }
 
         return descricao.toString();
     }
-
 }

@@ -32,5 +32,4 @@ public class VeiculoEntity extends BaseEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "fk_usuario")
     private PessoaEntity pessoa; // TODO TROCAR DEPOIS PARA USUARIO
-
 }

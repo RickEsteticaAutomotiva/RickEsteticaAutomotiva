@@ -13,12 +13,6 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,10 +20,13 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 
-/**
- * Serviço responsável pela conexão e autenticação com a API do Google Calendar
- */
+/** Serviço responsável pela conexão e autenticação com a API do Google Calendar */
 @Slf4j
 @Service
 public class ServicoConexaoGoogleCalendar {
@@ -59,9 +56,7 @@ public class ServicoConexaoGoogleCalendar {
         }
     }
 
-    /**
-     * Obtém as credenciais de autenticação do Google
-     */
+    /** Obtém as credenciais de autenticação do Google */
     private Credential obterCredenciais(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         Resource recurso = new ClassPathResource(arquivoCredenciais.replace("classpath:", ""));
         if (!recurso.exists()) {
@@ -74,7 +69,7 @@ public class ServicoConexaoGoogleCalendar {
         }
 
         GoogleAuthorizationCodeFlow fluxoAutorizacao = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, segredosCliente, ESCOPOS)
+                        HTTP_TRANSPORT, JSON_FACTORY, segredosCliente, ESCOPOS)
                 .setDataStoreFactory(new FileDataStoreFactory(new File(caminhoTokens)))
                 .setAccessType("offline")
                 .build();
@@ -87,9 +82,7 @@ public class ServicoConexaoGoogleCalendar {
         return new AuthorizationCodeInstalledApp(fluxoAutorizacao, receptor).authorize("user");
     }
 
-    /**
-     * Cria o serviço do Google Calendar
-     */
+    /** Cria o serviço do Google Calendar */
     private Calendar criarServicoCalendario() throws IOException, GeneralSecurityException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Credential credencial = obterCredenciais(HTTP_TRANSPORT);
@@ -99,23 +92,17 @@ public class ServicoConexaoGoogleCalendar {
                 .build();
     }
 
-    /**
-     * Obtém o serviço do Google Calendar
-     */
+    /** Obtém o serviço do Google Calendar */
     public Calendar obterServicoCalendario() {
         return servicoCalendario;
     }
 
-    /**
-     * Verifica se o serviço está disponível
-     */
+    /** Verifica se o serviço está disponível */
     public boolean estaDisponivel() {
         return servicoCalendario != null;
     }
 
-    /**
-     * Força a renovação das credenciais
-     */
+    /** Força a renovação das credenciais */
     public void renovarCredenciais() throws IOException, GeneralSecurityException {
         log.info("Renovando credenciais do Google Calendar...");
         this.servicoCalendario = criarServicoCalendario();

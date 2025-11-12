@@ -2,11 +2,10 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.automapper;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ServicoMapper {
@@ -20,5 +19,4 @@ public interface ServicoMapper {
     void atualizarServicoEntityFromDto(ServicoDto dto, @MappingTarget ServicoEntity entity);
 
     List<ServicoDto> servicosParaServicosDto(List<ServicoEntity> entities);
-
 }

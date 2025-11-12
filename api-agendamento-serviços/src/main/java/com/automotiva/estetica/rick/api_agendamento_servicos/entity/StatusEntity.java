@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StatusEntity extends BaseEntity<Long>{
+public class StatusEntity extends BaseEntity<Long> {
     @Column(nullable = false, unique = true, length = 50)
     private String descricao;
 }

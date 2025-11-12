@@ -1,20 +1,21 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.PessoaMapper;
-
+import com.automotiva.estetica.rick.api_agendamento_servicos.config.GerenciadorTokenJwt;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.*;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
-import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.PessoaRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.specification.PessoaSpecification;
-import com.automotiva.estetica.rick.api_agendamento_servicos.config.GerenciadorTokenJwt;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,25 +26,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PessoaService implements UserDetailsService {
     private final PessoaRepository pessoaRepository;
-    @Autowired
+
     private final PessoaMapper pessoaMapper;
-    @Autowired
+
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
+    private final AuthenticationManager authenticationManager;
 
+    private final PasswordEncoder passwordEncoder;
 
     public Page<PessoaDto> buscarTodosComFiltro(DefaultPageRequest pageRequest) {
         String ordenarPor = pageRequest.getOrdenarPor();
@@ -58,8 +53,7 @@ public class PessoaService implements UserDetailsService {
         Pageable pageable = org.springframework.data.domain.PageRequest.of(
                 pageRequest.getPagina(),
                 pageRequest.getTamanho(),
-                org.springframework.data.domain.Sort.by(camposOrdenacao)
-        );
+                org.springframework.data.domain.Sort.by(camposOrdenacao));
 
         Specification<PessoaEntity> spec = PessoaSpecification.filtroUnico(pageRequest.getFiltro());
         Page<PessoaEntity> paginaPessoas = pessoaRepository.findAll(spec, pageable);
@@ -80,7 +74,8 @@ public class PessoaService implements UserDetailsService {
         PessoaDetalhesDto pessoaDetalhes = (PessoaDetalhesDto) authentication.getPrincipal();
 
         // 4. Busca a entidade no banco (necessário para gerar token com dados completos)
-        PessoaEntity pessoa = pessoaRepository.findByEmail(pessoaDetalhes.getEmail())
+        PessoaEntity pessoa = pessoaRepository
+                .findByEmail(pessoaDetalhes.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado após autenticação"));
 
         // 5. Gera token
@@ -134,16 +129,16 @@ public class PessoaService implements UserDetailsService {
         }
 
         PessoaEntity pessoa = pessoaExistente.get();
-        if (!pessoa.getCpf().equals(pessoaAtualizada.getCpf()) &&
-                pessoaRepository.existsByCpf(pessoaAtualizada.getCpf())) {
+        if (!pessoa.getCpf().equals(pessoaAtualizada.getCpf())
+                && pessoaRepository.existsByCpf(pessoaAtualizada.getCpf())) {
             throw RecursoJaExisteException.builder()
                     .mensagem("o cpf já existe no sistema")
                     .detalhes("")
                     .build();
         }
 
-        if (!pessoa.getEmail().equals(pessoaAtualizada.getEmail()) &&
-                pessoaRepository.existsByEmail(pessoaAtualizada.getEmail())) {
+        if (!pessoa.getEmail().equals(pessoaAtualizada.getEmail())
+                && pessoaRepository.existsByEmail(pessoaAtualizada.getEmail())) {
             throw RecursoJaExisteException.builder()
                     .mensagem("o email já existe no sistema")
                     .detalhes("")
@@ -169,13 +164,12 @@ public class PessoaService implements UserDetailsService {
         pessoaRepository.deleteById(id);
     }
 
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<PessoaEntity> pessoaOpt = pessoaRepository.findByEmail(username);
-        if (pessoaOpt.isEmpty()){
-            throw new UsernameNotFoundException(String.format("usuario: %s não encontrado",username));
+        if (pessoaOpt.isEmpty()) {
+            throw new UsernameNotFoundException(String.format("usuario: %s não encontrado", username));
         }
 
         return new PessoaDetalhesDto(pessoaOpt.get());
     }
-
 }

@@ -1,12 +1,11 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.dto;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
+import java.util.Collection;
+import java.util.List;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
 
 @Getter
 @Setter

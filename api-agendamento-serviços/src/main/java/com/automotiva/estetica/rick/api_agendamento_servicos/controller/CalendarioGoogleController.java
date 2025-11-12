@@ -59,15 +59,13 @@ public class CalendarioGoogleController {
     }
 
     @PutMapping("/{idEvento}")
-    public ResponseEntity<?> atualizarEvento(
-            @PathVariable String idEvento,
-            @RequestBody CalendarEventRequest request) {
+    public ResponseEntity<?> atualizarEvento(@PathVariable String idEvento, @RequestBody CalendarEventRequest request) {
         ResponseEntity<?> respostaIndisponivel = verificarDisponibilidadeServico(calendarioService.estaDisponivel());
         if (respostaIndisponivel != null) {
             return respostaIndisponivel;
         }
 
-        var retorno = calendarioService.atualizarEvento(idEvento, request);
+        calendarioService.atualizarEvento(idEvento, request);
         return ResponseEntity.noContent().build();
     }
 

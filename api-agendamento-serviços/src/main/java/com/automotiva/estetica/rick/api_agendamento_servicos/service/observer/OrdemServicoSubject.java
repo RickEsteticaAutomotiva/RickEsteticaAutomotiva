@@ -1,7 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.service.observer;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.OrdemServicoEntity;
-
 import java.util.ArrayList;
 import java.util.List;
 

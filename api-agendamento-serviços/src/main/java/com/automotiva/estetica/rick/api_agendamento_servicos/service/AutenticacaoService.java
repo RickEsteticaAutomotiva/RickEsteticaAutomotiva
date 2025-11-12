@@ -20,9 +20,9 @@ public class AutenticacaoService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return pessoaRepository.findByEmail(username)
+        return pessoaRepository
+                .findByEmail(username)
                 .map(PessoaDetalhesDto::new)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
     }
 }
-
