@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/ordem-servicos")
 @RequiredArgsConstructor
@@ -26,6 +28,12 @@ public class OrdemServicoController {
     public ResponseEntity<OrdemServicoDto> buscarPorId(@PathVariable Long id) {
         OrdemServicoDto ordemServico = ordemServicoService.buscarPorId(id);
         return ResponseEntity.ok(ordemServico);
+    }
+
+    @GetMapping("/usuario/{id}")
+    public ResponseEntity<List<OrdemServicoDto>> buscarPorUsuarioId(@PathVariable Long id) {
+        List<OrdemServicoDto> ordensServico = ordemServicoService.buscarPorUsuarioId(id);
+        return ResponseEntity.ok(ordensServico);
     }
 
     @PostMapping

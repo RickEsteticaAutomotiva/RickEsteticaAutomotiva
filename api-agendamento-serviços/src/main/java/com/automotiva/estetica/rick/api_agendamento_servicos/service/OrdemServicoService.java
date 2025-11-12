@@ -92,21 +92,45 @@ public class OrdemServicoService extends OrdemServicoSubject {
 
     public OrdemServicoDto buscarPorId(Long id) {
         Optional<OrdemServicoEntity> ordemServico = ordemServicoRepository.findById(id);
+
         if (ordemServico.isEmpty()) {
             throw RecursoNaoEncontradaException.builder()
                     .mensagem("a ordem de serviço com id " + id + " não foi encontrado")
                     .detalhes("")
                     .build();
         }
+
         OrdemServicoDto retorno = ordemServicoMapper.ordemServicoParaOrdemServicoDto(ordemServico.get());
         retorno.setServicos(itemServicoService.buscarServicosPorOrdemServicoId(retorno.getId()));
         return retorno;
+    }
+
+    public List<OrdemServicoDto> buscarPorUsuarioId(Long id) {
+        List<OrdemServicoEntity> ordensServico = ordemServicoRepository.findByVeiculo_Pessoa_Id(id);
+
+        if (ordensServico.isEmpty()) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("ordens de serviço do usuário " + id + " não foram encontradas")
+                    .detalhes("")
+                    .build();
+        }
+
+        List<OrdemServicoDto> ordensDoUsuario = ordensServico.stream()
+                .map(ordem -> {
+                    OrdemServicoDto retorno = ordemServicoMapper.ordemServicoParaOrdemServicoDto(ordem);
+                    retorno.setServicos(itemServicoService.buscarServicosPorOrdemServicoId(retorno.getId()));
+                    return retorno;
+                })
+                .toList();
+
+        return ordensDoUsuario;
     }
 
     public OrdemServicoDto atualizarOrdemServico(Long id, OrdemServicoDto ordemServicoAtualizada) {
         EmailObserver emailObserver = new EmailObserver(emailService);
         subscribe(emailObserver);
         Optional<OrdemServicoEntity> ordemServicoExistente = ordemServicoRepository.findOrdemServicoEntityById(id);
+
         if (ordemServicoExistente.isEmpty()) {
             unsubscribe(emailObserver);
             throw RecursoNaoEncontradaException.builder()
@@ -114,12 +138,15 @@ public class OrdemServicoService extends OrdemServicoSubject {
                     .detalhes("")
                     .build();
         }
+
         OrdemServicoEntity ordemServico = ordemServicoExistente.get();
+
         if (ordemServicoAtualizada.getStatus() == 2L || ordemServicoAtualizada.getStatus() == 5L){
             notifyObservers(ordemServico);
         }else {
             unsubscribe(emailObserver);
         }
+
         ordemServicoMapper.atualizarOrdemServicoEntityFromDto(ordemServicoAtualizada, ordemServico);
         ordemServicoRepository.save(ordemServico);
 

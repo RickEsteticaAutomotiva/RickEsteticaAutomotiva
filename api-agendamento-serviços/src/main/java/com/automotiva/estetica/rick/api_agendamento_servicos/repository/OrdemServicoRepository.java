@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,4 +15,5 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServicoEntity
     boolean existsByVeiculoIdAndDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
     @EntityGraph(attributePaths = {"veiculo", "veiculo.pessoa", "status"})
     Optional<OrdemServicoEntity> findOrdemServicoEntityById(Long id);
+    List<OrdemServicoEntity> findByVeiculo_Pessoa_Id(Long id);
 }
