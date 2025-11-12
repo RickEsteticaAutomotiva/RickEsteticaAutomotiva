@@ -16,5 +16,4 @@ public interface CarrinhoMapper {
 
     @Mapping(target = "idServico", source = "id")
     ServicoCarrinhoDto servicoParaServicoCarrinhoDto(ServicoEntity entity);
-
 }

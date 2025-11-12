@@ -1,10 +1,9 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.dto;
 
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.*;
 
 @Builder
 @Getter

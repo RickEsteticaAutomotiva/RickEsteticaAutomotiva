@@ -5,6 +5,10 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.service.EmailServic
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,15 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 @RestController
 @RequestMapping("/emails")
 @AllArgsConstructor
-//TODO clase para teste
+// TODO clase para teste
 public class EmailController {
 
     private final EmailService emailService;
@@ -41,9 +40,7 @@ public class EmailController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        List<MultipartFile> listaAnexos = anexos == null
-                ? Collections.emptyList()
-                : Arrays.asList(anexos);
+        List<MultipartFile> listaAnexos = anexos == null ? Collections.emptyList() : Arrays.asList(anexos);
 
         emailService.enviarEmailComAnexos(email, listaAnexos);
         return ResponseEntity.accepted().build();

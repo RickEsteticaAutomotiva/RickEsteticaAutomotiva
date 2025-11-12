@@ -1,13 +1,11 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.VeiculoDto;
-
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.VeiculoService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/veiculos")
@@ -24,7 +22,7 @@ public class VeiculoController {
 
     @GetMapping
     public ResponseEntity<List<VeiculoDto>> buscarTodosVeiculos() {
-        //TODO colocar paginado igual esta na pesssoaController
+        // TODO colocar paginado igual esta na pesssoaController
         List<VeiculoDto> resposta = veiculoService.buscarTodosVeiculos();
         return ResponseEntity.ok(resposta);
     }

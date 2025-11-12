@@ -5,9 +5,9 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.entity.MotivoCancel
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.OrdemServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.StatusEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.VeiculoEntity;
+import java.util.List;
 import org.mapstruct.*;
 
-import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OrdemServicoMapper {
 

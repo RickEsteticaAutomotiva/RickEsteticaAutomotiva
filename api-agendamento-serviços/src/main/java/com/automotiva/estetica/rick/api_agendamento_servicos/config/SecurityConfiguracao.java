@@ -2,6 +2,8 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.config;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.AutenticacaoService;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +13,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,42 +25,40 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-//@DependsOn("pessoaService")
+// @DependsOn("pessoaService")
 public class SecurityConfiguracao {
 
-    @Autowired  @Lazy
+    @Autowired
+    @Lazy
     private AutenticacaoService autenticacaoService;
 
     @Autowired
     private AutenticacaoEntryPoint autenticacaoEntryPoint;
 
-    @Autowired  @Lazy
+    @Autowired
+    @Lazy
     private AutenticacaoProvider autenticacaoProvider;
 
     private static final String[] URLS_PERMITIDAS = {
-            // Swagger
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/swagger-resources/**",
-            "/webjars/**",
-            "/pessoas/login",
-            "/pessoas/",
-            "/servicos",
-            "/servicos/**",
-            "/categorias",
+        // Swagger
+        "/swagger-ui/**",
+        "/v3/api-docs/**",
+        "/swagger-resources/**",
+        "/webjars/**",
+        "/pessoas/login",
+        "/pessoas/",
+        "/servicos",
+        "/servicos/**",
+        "/categorias",
 
-            // H2 Console
-            "/h2-console/**",
+        // H2 Console
+        "/h2-console/**",
 
-            // Erros
-            "/error/**",
-
+        // Erros
+        "/error/**",
     };
 
     @Bean
@@ -77,17 +77,15 @@ public class SecurityConfiguracao {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 // Tratamento de exceções de autenticação e autorização
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(autenticacaoEntryPoint)
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(autenticacaoEntryPoint)
                         .accessDeniedHandler((request, response, accessDeniedException) ->
-                                response.sendError(HttpServletResponse.SC_FORBIDDEN))
-                )
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN)))
 
                 // Controle de acesso
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(URLS_PERMITIDAS).permitAll()
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(auth -> auth.requestMatchers(URLS_PERMITIDAS)
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
 
                 // Provider + filtro JWT
                 .authenticationProvider(autenticacaoProvider)
@@ -130,8 +128,7 @@ public class SecurityConfiguracao {
                 HttpMethod.PUT.name(),
                 HttpMethod.PATCH.name(),
                 HttpMethod.DELETE.name(),
-                HttpMethod.OPTIONS.name()
-        ));
+                HttpMethod.OPTIONS.name()));
         config.setExposedHeaders(List.of(HttpHeaders.CONTENT_DISPOSITION));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

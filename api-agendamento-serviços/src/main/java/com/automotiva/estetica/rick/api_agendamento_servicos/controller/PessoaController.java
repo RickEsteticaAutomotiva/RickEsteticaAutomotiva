@@ -1,6 +1,5 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
-
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.*;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
@@ -45,14 +44,13 @@ public class PessoaController {
     @SecurityRequirement(name = "")
     @Operation(security = {})
     public ResponseEntity<Void> criarPessoa(@RequestBody PessoaCadastroDto pessoaCadastroDto) {
-        PessoaCadastroDto pessoa = pessoaService.criarPessoa(pessoaCadastroDto);
+        pessoaService.criarPessoa(pessoaCadastroDto);
         return ResponseEntity.status(201).build();
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<PessoaCadastroDto> atualizarPessoa(
-            @PathVariable Long id,
-            @RequestBody PessoaCadastroDto pessoa) {
+            @PathVariable Long id, @RequestBody PessoaCadastroDto pessoa) {
         PessoaCadastroDto pessoaAtualizada = pessoaService.atualizarPessoa(id, pessoa);
         return ResponseEntity.ok(pessoaAtualizada);
     }

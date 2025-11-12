@@ -1,22 +1,21 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.OrdemServicoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.OrdemServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.OrdemServicoEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.OrdemServicoRepository;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrdemServicoServiceTest {
@@ -44,14 +43,11 @@ class OrdemServicoServiceTest {
         OrdemServicoDto dto = new OrdemServicoDto();
         dto.setId(10L);
 
-        when(ordemServicoRepository.findByVeiculo_Pessoa_Id(idUsuario))
-                .thenReturn(List.of(entity));
+        when(ordemServicoRepository.findByVeiculo_Pessoa_Id(idUsuario)).thenReturn(List.of(entity));
 
-        when(ordemServicoMapper.ordemServicoParaOrdemServicoDto(entity))
-                .thenReturn(dto);
+        when(ordemServicoMapper.ordemServicoParaOrdemServicoDto(entity)).thenReturn(dto);
 
-        when(itemServicoService.buscarServicosPorOrdemServicoId(dto.getId()))
-                .thenReturn(List.of(1L, 2L));
+        when(itemServicoService.buscarServicosPorOrdemServicoId(dto.getId())).thenReturn(List.of(1L, 2L));
 
         List<OrdemServicoDto> resultado = ordemServicoService.buscarPorUsuarioId(idUsuario);
 
@@ -63,8 +59,7 @@ class OrdemServicoServiceTest {
     void buscarPorUsuarioIdListaVazia() {
         Long idUsuario = 1L;
 
-        when(ordemServicoRepository.findByVeiculo_Pessoa_Id(idUsuario))
-                .thenReturn(Collections.emptyList());
+        when(ordemServicoRepository.findByVeiculo_Pessoa_Id(idUsuario)).thenReturn(Collections.emptyList());
 
         assertThrows(RecursoNaoEncontradaException.class, () -> ordemServicoService.buscarPorUsuarioId(idUsuario));
     }

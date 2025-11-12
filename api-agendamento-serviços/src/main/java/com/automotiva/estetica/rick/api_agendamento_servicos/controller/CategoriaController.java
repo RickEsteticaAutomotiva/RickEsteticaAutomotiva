@@ -2,11 +2,10 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CategoriaDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.CategoriaService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/categorias")
@@ -19,7 +18,6 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaService.buscarCategorias());
     }
 
-
     @PostMapping
     public ResponseEntity criarCategoria(@RequestBody CategoriaDto categoriaDto) {
         categoriaService.criarCategoria(categoriaDto);
@@ -27,7 +25,8 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaDto> atualizarCategoria(@PathVariable Long id, @RequestBody CategoriaDto categoriaDto) {
+    public ResponseEntity<CategoriaDto> atualizarCategoria(
+            @PathVariable Long id, @RequestBody CategoriaDto categoriaDto) {
         return ResponseEntity.ok(categoriaService.atualizarCategoria(id, categoriaDto));
     }
 }

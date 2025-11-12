@@ -1,10 +1,9 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter

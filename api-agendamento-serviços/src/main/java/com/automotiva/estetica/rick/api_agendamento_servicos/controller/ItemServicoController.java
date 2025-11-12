@@ -2,11 +2,10 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ItemServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.ItemServicoService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/itens-servicos")
@@ -17,7 +16,7 @@ public class ItemServicoController {
 
     @GetMapping
     public ResponseEntity<List<ItemServicoDto>> buscarTodos() {
-        //TODO colocar paginado igual esta na pesssoaController
+        // TODO colocar paginado igual esta na pesssoaController
         List<ItemServicoDto> itens = itemServicoService.buscarTodos();
         return ResponseEntity.ok(itens);
     }
@@ -36,8 +35,7 @@ public class ItemServicoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ItemServicoDto> atualizarItemServico(
-            @PathVariable Long id,
-            @RequestBody ItemServicoDto preco) {
+            @PathVariable Long id, @RequestBody ItemServicoDto preco) {
         ItemServicoDto atualizado = itemServicoService.atualizarItemServico(id, preco);
         return ResponseEntity.ok(atualizado);
     }

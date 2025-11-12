@@ -22,14 +22,13 @@ public class SwaggerConfig {
                         .description("Gerencia o agendamento de serviços da RICK Estética Automotiva"))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .components(new Components()
-                        .addSecuritySchemes(SECURITY_SCHEME_NAME,
+                        .addSecuritySchemes(
+                                SECURITY_SCHEME_NAME,
                                 new SecurityScheme()
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
                                         .bearerFormat("JWT")
                                         .in(SecurityScheme.In.HEADER)
-                                        .name("Authorization")
-                        )
-                );
+                                        .name("Authorization")));
     }
 }

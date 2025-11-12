@@ -4,8 +4,8 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.ServicoService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +35,7 @@ public class ServicoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ServicoDto> atualizarServico(
-            @PathVariable Long id,
-            @RequestBody ServicoDto servicoDto) {
+    public ResponseEntity<ServicoDto> atualizarServico(@PathVariable Long id, @RequestBody ServicoDto servicoDto) {
         ServicoDto servicoAtualizado = servicoService.atualizarServico(id, servicoDto);
         return ResponseEntity.ok(servicoAtualizado);
     }

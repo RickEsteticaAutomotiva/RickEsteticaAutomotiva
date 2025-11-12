@@ -5,12 +5,8 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNa
 import com.automotiva.estetica.rick.api_agendamento_servicos.infra.ServicoConexaoGoogleCalendar;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.EventAttendee;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
+import com.google.api.services.calendar.model.EventDateTime;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -18,6 +14,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -26,7 +25,8 @@ public class CalendarioGoogleService {
 
     private final ServicoConexaoGoogleCalendar servicoConexao;
 
-    private static final DateTimeFormatter FORMATADOR_RFC3339 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    private static final DateTimeFormatter FORMATADOR_RFC3339 =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     private static final String CALENDARIO_PRIMARIO = "primary";
 
     public Event criarEvento(CalendarEventRequest request) {
@@ -53,7 +53,10 @@ public class CalendarioGoogleService {
 
             configurarPropriedadesAdicionais(evento, request);
 
-            return servicoCalendario.events().insert(CALENDARIO_PRIMARIO, evento).execute();
+            return servicoCalendario
+                    .events()
+                    .insert(CALENDARIO_PRIMARIO, evento)
+                    .execute();
 
         } catch (IOException e) {
             log.error("Erro ao criar evento no calendário", e);
@@ -80,7 +83,9 @@ public class CalendarioGoogleService {
     public List<Event> listarEventos(int maxResultados) {
         try {
             Calendar servicoCalendario = servicoConexao.obterServicoCalendario();
-            List<Event> eventos = servicoCalendario.events().list(CALENDARIO_PRIMARIO)
+            List<Event> eventos = servicoCalendario
+                    .events()
+                    .list(CALENDARIO_PRIMARIO)
                     .setMaxResults(maxResultados)
                     .execute()
                     .getItems();
@@ -103,7 +108,10 @@ public class CalendarioGoogleService {
     public Event atualizarEvento(String idEvento, CalendarEventRequest request) {
         try {
             Calendar servicoCalendario = servicoConexao.obterServicoCalendario();
-            Event eventoExistente = servicoCalendario.events().get(CALENDARIO_PRIMARIO, idEvento).execute();
+            Event eventoExistente = servicoCalendario
+                    .events()
+                    .get(CALENDARIO_PRIMARIO, idEvento)
+                    .execute();
 
             configurarPropriedadesAdicionais(eventoExistente, request);
 
@@ -129,7 +137,10 @@ public class CalendarioGoogleService {
 
             atualizarParticipantes(eventoExistente, request);
 
-            return servicoCalendario.events().update(CALENDARIO_PRIMARIO, idEvento, eventoExistente).execute();
+            return servicoCalendario
+                    .events()
+                    .update(CALENDARIO_PRIMARIO, idEvento, eventoExistente)
+                    .execute();
 
         } catch (IOException e) {
             log.error("Erro ao atualizar evento do calendário: {}", idEvento, e);
@@ -169,7 +180,8 @@ public class CalendarioGoogleService {
             evento.setTransparency(request.getTransparencia());
         }
 
-        if (request.getEmailsParticipantes() != null && !request.getEmailsParticipantes().isEmpty()) {
+        if (request.getEmailsParticipantes() != null
+                && !request.getEmailsParticipantes().isEmpty()) {
             List<EventAttendee> participantes = request.getEmailsParticipantes().stream()
                     .map(email -> new EventAttendee().setEmail(email))
                     .collect(Collectors.toList());

@@ -1,10 +1,8 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-
-public class RecursoNaoEncontradaException extends ApiBaseException{
+public class RecursoNaoEncontradaException extends ApiBaseException {
 
     public RecursoNaoEncontradaException(String tipo, String mensagem, String detalhes, HttpStatus status) {
         super(tipo, mensagem, detalhes, status);
