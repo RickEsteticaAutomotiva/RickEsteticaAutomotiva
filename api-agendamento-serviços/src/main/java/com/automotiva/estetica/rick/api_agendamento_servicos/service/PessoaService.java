@@ -118,7 +118,7 @@ public class PessoaService implements UserDetailsService {
         return pessoaMapper.pessoaParaPessoaDto(pessoa.get());
     }
 
-    public PessoaCadastroDto atualizarPessoa(Long id, PessoaCadastroDto pessoaAtualizada) {
+    public PessoaAtualizaDto atualizarPessoa(Long id, PessoaAtualizaDto pessoaAtualizada) {
         Optional<PessoaEntity> pessoaExistente = pessoaRepository.findById(id);
 
         if (pessoaExistente.isEmpty()) {
@@ -146,7 +146,7 @@ public class PessoaService implements UserDetailsService {
         }
 
         pessoaMapper.atualizarPessoaEntityFromDto(pessoaAtualizada, pessoa);
-        pessoa.setSenha(pessoaAtualizada.getSenha());
+        //        pessoa.setSenha(pessoaAtualizada.getSenha());
         pessoaRepository.save(pessoa);
         return pessoaAtualizada;
     }
@@ -171,5 +171,51 @@ public class PessoaService implements UserDetailsService {
         }
 
         return new PessoaDetalhesDto(pessoaOpt.get());
+    }
+
+    public void atualizarSenhaPessoa(Long id, SenhaDto senhaDto) {
+        String mensagemErro = "dados de senha inválidos";
+        if (senhaDto == null) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem(mensagemErro)
+                    .detalhes("")
+                    .build();
+        }
+
+        if (senhaDto.getSenhaAtual() == null || senhaDto.getNovaSenha() == null) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem(mensagemErro)
+                    .detalhes("")
+                    .build();
+        }
+
+        if (senhaDto.getSenhaAtual().isBlank() || senhaDto.getNovaSenha().isBlank()) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem(mensagemErro)
+                    .detalhes("")
+                    .build();
+        }
+
+        Optional<PessoaEntity> pessoaOpt = pessoaRepository.findById(id);
+
+        if (pessoaOpt.isEmpty()) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("a pessoa com id " + id + " não foi encontrada")
+                    .detalhes("")
+                    .build();
+        }
+
+        PessoaEntity pessoa = pessoaOpt.get();
+
+        if (!passwordEncoder.matches(senhaDto.getSenhaAtual(), pessoa.getSenha())) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem(mensagemErro)
+                    .detalhes("")
+                    .build();
+        }
+
+        pessoa.setSenha(passwordEncoder.encode(senhaDto.getNovaSenha()));
+
+        pessoaRepository.save(pessoa);
     }
 }

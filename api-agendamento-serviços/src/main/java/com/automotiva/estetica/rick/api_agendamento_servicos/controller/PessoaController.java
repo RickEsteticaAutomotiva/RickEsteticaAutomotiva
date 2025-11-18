@@ -49,9 +49,9 @@ public class PessoaController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PessoaCadastroDto> atualizarPessoa(
-            @PathVariable Long id, @RequestBody PessoaCadastroDto pessoa) {
-        PessoaCadastroDto pessoaAtualizada = pessoaService.atualizarPessoa(id, pessoa);
+    public ResponseEntity<PessoaAtualizaDto> atualizarPessoa(
+            @PathVariable Long id, @RequestBody PessoaAtualizaDto pessoa) {
+        PessoaAtualizaDto pessoaAtualizada = pessoaService.atualizarPessoa(id, pessoa);
         return ResponseEntity.ok(pessoaAtualizada);
     }
 
@@ -59,5 +59,11 @@ public class PessoaController {
     public ResponseEntity<Void> deletarPessoa(@PathVariable Long id) {
         pessoaService.deletarPessoa(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/atualizar-senha/{id}")
+    public ResponseEntity<PessoaAtualizaDto> atualizarSenhaPessoa(@PathVariable Long id, @RequestBody SenhaDto senha) {
+        pessoaService.atualizarSenhaPessoa(id, senha);
+        return ResponseEntity.ok().build();
     }
 }
