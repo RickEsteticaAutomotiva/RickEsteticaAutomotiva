@@ -7,6 +7,7 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.dto.LoginDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.PessoaEntity;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.CampoInvalidoException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
@@ -118,7 +119,7 @@ public class PessoaService implements UserDetailsService {
         return pessoaMapper.pessoaParaPessoaDto(pessoa.get());
     }
 
-    public PessoaAtualizaDto atualizarPessoa(Long id, PessoaAtualizaDto pessoaAtualizada) {
+    public PessoaAtualizadaDto atualizarPessoa(Long id, PessoaAtualizadaDto pessoaAtualizada) {
         Optional<PessoaEntity> pessoaExistente = pessoaRepository.findById(id);
 
         if (pessoaExistente.isEmpty()) {
@@ -146,7 +147,6 @@ public class PessoaService implements UserDetailsService {
         }
 
         pessoaMapper.atualizarPessoaEntityFromDto(pessoaAtualizada, pessoa);
-        //        pessoa.setSenha(pessoaAtualizada.getSenha());
         pessoaRepository.save(pessoa);
         return pessoaAtualizada;
     }
@@ -176,21 +176,21 @@ public class PessoaService implements UserDetailsService {
     public void atualizarSenhaPessoa(Long id, SenhaDto senhaDto) {
         String mensagemErro = "dados de senha inválidos";
         if (senhaDto == null) {
-            throw RecursoNaoEncontradaException.builder()
+            throw CampoInvalidoException.builder()
                     .mensagem(mensagemErro)
                     .detalhes("")
                     .build();
         }
 
         if (senhaDto.getSenhaAtual() == null || senhaDto.getNovaSenha() == null) {
-            throw RecursoNaoEncontradaException.builder()
+            throw CampoInvalidoException.builder()
                     .mensagem(mensagemErro)
                     .detalhes("")
                     .build();
         }
 
         if (senhaDto.getSenhaAtual().isBlank() || senhaDto.getNovaSenha().isBlank()) {
-            throw RecursoNaoEncontradaException.builder()
+            throw CampoInvalidoException.builder()
                     .mensagem(mensagemErro)
                     .detalhes("")
                     .build();
@@ -208,7 +208,7 @@ public class PessoaService implements UserDetailsService {
         PessoaEntity pessoa = pessoaOpt.get();
 
         if (!passwordEncoder.matches(senhaDto.getSenhaAtual(), pessoa.getSenha())) {
-            throw RecursoNaoEncontradaException.builder()
+            throw CampoInvalidoException.builder()
                     .mensagem(mensagemErro)
                     .detalhes("")
                     .build();

@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PessoaAtualizaDto {
+public class PessoaAtualizadaDto {
     private String nome;
     private String cpf;
     private String email;
