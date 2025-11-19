@@ -18,7 +18,7 @@ public class CampoInvalidoException extends ApiBaseException {
         @Override
         public CampoInvalidoException build() {
             this.tipo = "CAMPO_INVALIDO_EXCEPTION";
-            this.status = HttpStatus.NOT_FOUND;
+            this.status = HttpStatus.BAD_REQUEST;
             return new CampoInvalidoException(tipo, mensagem, detalhes, status);
         }
     }
