@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.automapper;
 
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaAtualizadaDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaCadastroDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.PessoaTokenDto;
@@ -24,7 +25,7 @@ public interface PessoaMapper {
 
     PessoaCadastroDto pessoaEntityParaPessoaCadastroDto(PessoaEntity entity);
 
-    void atualizarPessoaEntityFromDto(PessoaCadastroDto dto, @MappingTarget PessoaEntity entity);
+    void atualizarPessoaEntityFromDto(PessoaAtualizadaDto dto, @MappingTarget PessoaEntity entity);
 
     List<PessoaDto> pessoasParaPessoasDto(List<PessoaEntity> pessoas);
 
