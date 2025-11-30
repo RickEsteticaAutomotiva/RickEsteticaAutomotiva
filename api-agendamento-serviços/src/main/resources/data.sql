@@ -66,7 +66,23 @@ INSERT INTO ordem_servico (
 ('2024-01-19 09:30:00', 200.00, 'Aguardando peças', NULL, 2, 3, 1),
 ('2024-01-20 08:00:00', 180.00, 'Cliente muito satisfeito', '2024-01-22 17:15:00', 3, 1, NULL),
 ('2024-01-21 11:45:00', 120.00, 'Iniciado hoje', NULL, 4, 2, NULL),
-('2024-01-23 14:00:00', 250.00, 'Excelente resultado', '2024-01-25 16:30:00', 5, 1, NULL);
+('2024-01-23 14:00:00', 250.00, 'Excelente resultado', '2024-01-25 16:30:00', 5, 1, NULL),
+('2024-10-02 09:15:00', 180.00, 'Revisão periódica realizada', '2024-10-03 14:40:00', 1, 1, NULL),
+('2024-10-04 11:30:00', 220.00, 'Aguardando autorização do cliente', NULL, 3, 2, NULL),
+('2024-10-06 08:50:00', 150.00, 'Troca de óleo concluída', '2024-10-06 12:20:00', 2, 1, NULL),
+('2024-10-10 15:10:00', 300.00, 'Servico iniciado, aguardando peças', NULL, 4, 3, NULL),
+('2024-10-12 10:00:00', 275.00, 'Cliente relatou ruído na suspensão', '2024-10-14 16:30:00', 5, 1, NULL),
+('2025-10-04 09:20:00', 100.00, 'Lavagem completa realizada', '2025-10-04 12:15:00', 2, 1, NULL),
+('2025-10-15 14:10:00', 100.00, 'Cliente solicitou avaliação prévia', NULL, 3, 5, NULL),
+('2025-10-27 16:45:00', 200.00, 'Correção de pequenos riscos iniciada', NULL, 1, 3, NULL),
+('2025-10-06 10:30:00', 150.00, 'Polimento básico concluído', '2025-10-06 13:00:00', 4, 1, NULL),
+('2025-10-12 09:00:00', 180.00, 'Higienização interna em andamento', NULL, 1, 2, NULL),
+('2025-10-18 15:40:00', 220.00, 'Cliente solicitou retoque adicional', '2025-10-19 11:20:00', 3, 1, NULL),
+('2025-10-29 17:10:00', 300.00, 'Reparo finalizado com sucesso', '2025-10-30 09:45:00', 2, 1, NULL),
+('2025-11-05 09:00:00', 1000.00, 'Revisão completa realizada', '2025-11-06 14:30:00', 2, 1, NULL),
+('2025-11-12 13:45:00', 2000.00, 'Aguardando aprovação do cliente', NULL, 3, 5, NULL),
+('2025-11-25 16:20:00', 200.00, 'Serviço urgente iniciado', NULL, 1, 5, NULL);
+;
 
 -- ===============================
 -- TABELA: item_servico
@@ -77,4 +93,16 @@ INSERT INTO item_servico (ordem_servico_id, servico_id, preco) VALUES
 (3, 4, 120.00),
 (4, 5, 200.00),
 (5, 2, 45.00),
-(5, 3, 80.00);
+(5, 3, 80.00),
+(11, 1, 50.00),
+(11, 2, 50.00),
+(12, 3, 60.00),
+(12, 4, 40.00),
+(13, 5, 100.00),
+(13, 5, 100.00),
+(14, 1, 50.00),
+(14, 2, 100.00),
+(18, 4, 500.00),
+(18, 3, 500.00),
+(19, 2, 1000.00),
+(20, 2, 100.00);
