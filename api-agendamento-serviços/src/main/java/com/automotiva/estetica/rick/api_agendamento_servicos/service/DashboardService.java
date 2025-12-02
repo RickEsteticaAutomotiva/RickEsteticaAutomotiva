@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 
+import com.automotiva.estetica.rick.api_agendamento_servicos.Utils.PeriodoMensal;
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.DashboardMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.FaturamentoResponseDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.QtdOrdensServicoConcluidasMensalResponseDto;
@@ -22,107 +23,97 @@ public class DashboardService {
     private final OrdemServicoRepository ordemServicoRepository;
     private final DashboardMapper dashboardMapper;
 
-    private final LocalDateTime inicioMesAtual =
-            LocalDate.now().withDayOfMonth(1).atStartOfDay();
-    private final LocalDateTime fimMesAtual = inicioMesAtual.plusMonths(1).minusNanos(1);
-
-    private final LocalDateTime inicioMesAnterior = inicioMesAtual.minusMonths(1);
-    private final LocalDateTime fimMesAnterior = inicioMesAtual.minusNanos(1);
-
     public FaturamentoResponseDto buscarFaturamentoTotal() {
-        BigDecimal faturamentoMesAtual = ordemServicoRepository.somarFaturamentoDoPeriodo(inicioMesAtual, fimMesAtual);
-        BigDecimal faturamentoMesAnterior =
-                ordemServicoRepository.somarFaturamentoDoPeriodo(inicioMesAnterior, fimMesAnterior);
+        PeriodoMensal mesAtual = getPeriodoMesAtual();
+        PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
-        BigDecimal variacaoMensal = calcularVariacaoFaturamento(faturamentoMesAtual, faturamentoMesAnterior);
+        BigDecimal faturamentoMesAtual =
+                ordemServicoRepository.somarFaturamentoDoPeriodo(mesAtual.inicio(), mesAtual.fim());
+        BigDecimal faturamentoMesAnterior =
+                ordemServicoRepository.somarFaturamentoDoPeriodo(mesAtual.inicio(), mesAnterior.fim());
+
+        BigDecimal variacaoMensal = calcularVariacaoMensal(faturamentoMesAtual, faturamentoMesAnterior);
 
         return dashboardMapper.paraFaturamentoResponseDto(faturamentoMesAtual, variacaoMensal);
     }
 
     public QtdOrdensServicoMensalResponseDto buscarQtdTotalAgendamentosMes() {
+        PeriodoMensal mesAtual = getPeriodoMesAtual();
+        PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
-        Integer totalOrdensMesAtual = ordemServicoRepository.findQtdOrdensServicoDoMes(inicioMesAtual, fimMesAtual);
+        Integer totalOrdensMesAtual =
+                ordemServicoRepository.buscarQtdOrdensServicoDoMes(mesAtual.inicio(), mesAtual.fim());
         Integer totalOrdensMesAnterior =
-                ordemServicoRepository.findQtdOrdensServicoDoMes(inicioMesAnterior, fimMesAnterior);
+                ordemServicoRepository.buscarQtdOrdensServicoDoMes(mesAnterior.inicio(), mesAnterior.fim());
 
-        BigDecimal variacaoMensalQtdOrdens = calcularVariacaoMensalOrdens(totalOrdensMesAtual, totalOrdensMesAnterior);
+        BigDecimal variacaoMensalQtdOrdens = calcularVariacaoMensal(totalOrdensMesAtual, totalOrdensMesAnterior);
 
         return dashboardMapper.paraQtdOrdensMensalResponseDto(totalOrdensMesAtual, variacaoMensalQtdOrdens);
     }
 
     public QtdOrdensServicoConcluidasMensalResponseDto buscarQtdOrdensConcluidasMes() {
+        PeriodoMensal mesAtual = getPeriodoMesAtual();
+        PeriodoMensal mesAnterior = getPeriodoMesAnterior();
+
         Integer totalOrdensConcluidasMesAtual =
-                ordemServicoRepository.findQtdOrdensServicoConcluidasNoMes(inicioMesAtual, fimMesAtual);
+                ordemServicoRepository.buscarQtdOrdensServicoConcluidasNoMes(mesAtual.inicio(), mesAtual.fim());
 
         Integer totalOrdensConcluidasMesAnterior =
-                ordemServicoRepository.findQtdOrdensServicoConcluidasNoMes(inicioMesAnterior, fimMesAnterior);
+                ordemServicoRepository.buscarQtdOrdensServicoConcluidasNoMes(mesAnterior.inicio(), mesAnterior.fim());
 
         BigDecimal variacaoMensalTotalOrdensConcluidas =
-                calcularVariacaoMensalOrdensConcluidas(totalOrdensConcluidasMesAtual, totalOrdensConcluidasMesAnterior);
+                calcularVariacaoMensal(totalOrdensConcluidasMesAtual, totalOrdensConcluidasMesAnterior);
 
         return dashboardMapper.paraQtdOrdensConcluidasMensalDto(
                 totalOrdensConcluidasMesAtual, variacaoMensalTotalOrdensConcluidas);
     }
 
     public TicketMedioMensalResponseDto buscarTicketMedioMes() {
-        BigDecimal ticketMedioMesAtual = ordemServicoRepository.calcularTicketMedioDoMes(inicioMesAtual, fimMesAtual);
+        PeriodoMensal mesAtual = getPeriodoMesAtual();
+        PeriodoMensal mesAnterior = getPeriodoMesAnterior();
+
+        BigDecimal ticketMedioMesAtual =
+                ordemServicoRepository.calcularTicketMedioDoMes(mesAtual.inicio(), mesAtual.fim());
 
         BigDecimal ticketMedioMesAnterior =
-                ordemServicoRepository.calcularTicketMedioDoMes(inicioMesAnterior, fimMesAnterior);
+                ordemServicoRepository.calcularTicketMedioDoMes(mesAnterior.inicio(), mesAnterior.fim());
 
-        BigDecimal variacaoMensalTicketMedio =
-                calcularVariacaoMensalTicketMedio(ticketMedioMesAtual, ticketMedioMesAnterior);
+        BigDecimal variacaoMensalTicketMedio = calcularVariacaoMensal(ticketMedioMesAtual, ticketMedioMesAnterior);
 
-t         return dashboardMapper.paraTicketMedioMensalDto(ticketMedioMesAtual, variacaoMensalTicketMedio);
+        return dashboardMapper.paraTicketMedioMensalDto(ticketMedioMesAtual, variacaoMensalTicketMedio);
     }
 
-    private BigDecimal calcularVariacaoFaturamento(BigDecimal faturamentoAtual, BigDecimal faturamentoAnterior) {
-        if (faturamentoAnterior == null || faturamentoAnterior.compareTo(BigDecimal.ZERO) == 0) {
+    private <T extends Number> BigDecimal calcularVariacaoMensal(T valorMesAtual, T valorMesAnterior) {
+        BigDecimal mesAtual = toBigDecimal(valorMesAtual);
+        BigDecimal mesAnterior = toBigDecimal(valorMesAnterior);
+
+        if (mesAnterior == null || mesAnterior.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;
         }
 
-        return faturamentoAtual
-                .subtract(faturamentoAnterior)
-                .divide(faturamentoAnterior, 4, RoundingMode.HALF_UP)
+        return mesAtual.subtract(mesAnterior)
+                .divide(mesAnterior, 4, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100));
     }
 
-    private BigDecimal calcularVariacaoMensalOrdens(Integer totalOrdensMesAtual, Integer totalOrdensMesAnterior) {
-        if (totalOrdensMesAnterior == null || totalOrdensMesAnterior == 0) {
-            return BigDecimal.ZERO;
+    private BigDecimal toBigDecimal(Number number) {
+        if (number == null) return BigDecimal.ZERO;
+
+        if (number instanceof BigDecimal) {
+            return (BigDecimal) number;
         }
-
-        BigDecimal atual = BigDecimal.valueOf(totalOrdensMesAtual);
-        BigDecimal anterior = BigDecimal.valueOf(totalOrdensMesAnterior);
-
-        return atual.subtract(anterior)
-                .divide(anterior, 4, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100));
+        return new BigDecimal(number.toString());
     }
 
-    private BigDecimal calcularVariacaoMensalOrdensConcluidas(
-            Integer totalOrdensConcluidasMesAtual, Integer totalOrdensConcluidasMesAnterior) {
-        if (totalOrdensConcluidasMesAnterior == null || totalOrdensConcluidasMesAnterior == 0) {
-            return BigDecimal.ZERO;
-        }
-
-        BigDecimal atual = BigDecimal.valueOf(totalOrdensConcluidasMesAtual);
-        BigDecimal anterior = BigDecimal.valueOf(totalOrdensConcluidasMesAnterior);
-
-        return atual.subtract(anterior)
-                .divide(anterior, 4, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100));
+    private PeriodoMensal getPeriodoMesAtual() {
+        LocalDateTime inicio = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime fim = inicio.plusMonths(1).minusNanos(1);
+        return new PeriodoMensal(inicio, fim);
     }
 
-    private BigDecimal calcularVariacaoMensalTicketMedio(
-            BigDecimal ticketMedioMesAtual, BigDecimal ticketMedioMesAnterior) {
-        if (ticketMedioMesAnterior == null || ticketMedioMesAnterior.compareTo(BigDecimal.ZERO) == 0) {
-            return BigDecimal.ZERO;
-        }
-
-        return ticketMedioMesAtual
-                .subtract(ticketMedioMesAnterior)
-                .divide(ticketMedioMesAnterior, 4, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100));
+    private PeriodoMensal getPeriodoMesAnterior() {
+        LocalDateTime inicio = LocalDate.now().minusMonths(1).withDayOfMonth(1).atStartOfDay();
+        LocalDateTime fim = inicio.plusMonths(1).minusNanos(1);
+        return new PeriodoMensal(inicio, fim);
     }
 }
