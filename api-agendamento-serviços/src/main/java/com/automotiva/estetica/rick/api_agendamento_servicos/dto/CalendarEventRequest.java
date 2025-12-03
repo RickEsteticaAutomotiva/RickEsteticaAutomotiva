@@ -1,9 +1,9 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import java.time.Instant;
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class CalendarEventRequest {

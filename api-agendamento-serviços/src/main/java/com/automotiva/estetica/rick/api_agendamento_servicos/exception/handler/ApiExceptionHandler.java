@@ -1,13 +1,12 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.exception.handler;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.ApiBaseException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ApiExceptionHandler {
@@ -25,4 +24,3 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(body, ex.getStatus());
     }
 }
-

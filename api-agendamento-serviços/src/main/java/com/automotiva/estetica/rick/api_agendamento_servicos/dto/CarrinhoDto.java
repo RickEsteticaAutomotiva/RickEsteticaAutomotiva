@@ -11,6 +11,7 @@ import lombok.*;
 public class CarrinhoDto {
     @NotNull
     private Long idPessoa;
+
     @NotNull
     private Long idServico;
 }

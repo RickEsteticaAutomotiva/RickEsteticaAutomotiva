@@ -1,4 +1,5 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.config;
+
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.AutenticacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -17,8 +18,7 @@ public class AutenticacaoProvider implements AuthenticationProvider {
     private final AutenticacaoService autenticacaoService;
 
     @Autowired
-    public AutenticacaoProvider(PasswordEncoder passwordEncoder,
-                                AutenticacaoService autenticacaoService) {
+    public AutenticacaoProvider(PasswordEncoder passwordEncoder, AutenticacaoService autenticacaoService) {
         this.passwordEncoder = passwordEncoder;
         this.autenticacaoService = autenticacaoService;
     }
@@ -42,4 +42,3 @@ public class AutenticacaoProvider implements AuthenticationProvider {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 }
-

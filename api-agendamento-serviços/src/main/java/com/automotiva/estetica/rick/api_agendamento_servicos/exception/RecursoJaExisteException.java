@@ -1,7 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 public class RecursoJaExisteException extends ApiBaseException {
 
@@ -9,7 +8,8 @@ public class RecursoJaExisteException extends ApiBaseException {
         super(tipo, mensagem, detalhes, status);
     }
 
-    public static class Builder extends ApiBaseException.Builder<RecursoJaExisteException, RecursoJaExisteException.Builder> {
+    public static class Builder
+            extends ApiBaseException.Builder<RecursoJaExisteException, RecursoJaExisteException.Builder> {
 
         @Override
         protected Builder self() {

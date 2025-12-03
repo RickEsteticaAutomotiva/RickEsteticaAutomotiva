@@ -4,12 +4,11 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.dto.FavoritoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoFavoritoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.FavoritoService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/favoritos")

@@ -1,24 +1,19 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ordem_servico")
-//public class OrdemServicoEntity extends BaseEntity {
-public class OrdemServicoEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+public class OrdemServicoEntity extends BaseEntity<Long> {
 
     @Column(name = "data_agendamento", nullable = false)
     private LocalDateTime dataAgendamento;

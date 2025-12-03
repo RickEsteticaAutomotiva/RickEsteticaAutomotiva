@@ -1,7 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CalendarEventRequest;
-import com.automotiva.estetica.rick.api_agendamento_servicos.infra.BaseController;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.CalendarioGoogleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/calendario/eventos")
 @RequiredArgsConstructor
-public class CalendarioGoogleController extends BaseController {
+public class CalendarioGoogleController {
 
     @Autowired
     private final CalendarioGoogleService calendarioService;
@@ -28,7 +27,6 @@ public class CalendarioGoogleController extends BaseController {
 
     @PostMapping
     public ResponseEntity<?> criarEvento(@RequestBody CalendarEventRequest request) {
-        // Usando o novo método para verificar disponibilidade
         ResponseEntity<?> respostaIndisponivel = verificarDisponibilidadeServico(calendarioService.estaDisponivel());
         if (respostaIndisponivel != null) {
             return respostaIndisponivel;
@@ -61,15 +59,13 @@ public class CalendarioGoogleController extends BaseController {
     }
 
     @PutMapping("/{idEvento}")
-    public ResponseEntity<?> atualizarEvento(
-            @PathVariable String idEvento,
-            @RequestBody CalendarEventRequest request) {
+    public ResponseEntity<?> atualizarEvento(@PathVariable String idEvento, @RequestBody CalendarEventRequest request) {
         ResponseEntity<?> respostaIndisponivel = verificarDisponibilidadeServico(calendarioService.estaDisponivel());
         if (respostaIndisponivel != null) {
             return respostaIndisponivel;
         }
 
-        var retorno = calendarioService.atualizarEvento(idEvento, request);
+        calendarioService.atualizarEvento(idEvento, request);
         return ResponseEntity.noContent().build();
     }
 

@@ -3,18 +3,17 @@ package com.automotiva.estetica.rick.api_agendamento_servicos.service;
 import com.automotiva.estetica.rick.api_agendamento_servicos.automapper.ServicoMapper;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.ServicoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntity;
-import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoJaExisteException;
+import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.page_request.DefaultPageRequest;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.specification.ServicoSpecification;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +37,7 @@ public class ServicoService {
         Pageable pageable = org.springframework.data.domain.PageRequest.of(
                 pageRequest.getPagina(),
                 pageRequest.getTamanho(),
-                org.springframework.data.domain.Sort.by(camposOrdenacao)
-        );
+                org.springframework.data.domain.Sort.by(camposOrdenacao));
 
         Specification<ServicoEntity> spec = ServicoSpecification.filtroUnico(pageRequest.getFiltro());
         Page<ServicoEntity> paginaServicos = servicoRepository.findAll(spec, pageable);

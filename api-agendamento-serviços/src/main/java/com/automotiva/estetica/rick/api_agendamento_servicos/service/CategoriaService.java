@@ -5,12 +5,10 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CategoriaDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.CategoriaEntity;
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.CategoriaRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +30,7 @@ public class CategoriaService {
 
     public CategoriaDto atualizarCategoria(Long id, CategoriaDto categoriaDto) {
         if (!categoriaRepository.existsById(id)) {
-            throw RecursoNaoEncontradaException
-                    .builder()
+            throw RecursoNaoEncontradaException.builder()
                     .mensagem("Categoria não encontrada com o ID: " + id)
                     .detalhes("")
                     .build();

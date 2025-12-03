@@ -12,12 +12,11 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNa
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.CarrinhoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.PessoaRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ServicoRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,14 +27,15 @@ public class CarrinhoService {
     private final ServicoMapper servicoMapper;
     private final CarrinhoMapper carrinhoMapper;
 
-
     public void adicionarCarrinho(CarrinhoDto carrinhoDto) {
-        PessoaEntity usuario = pessoaRepository.findById(carrinhoDto.getIdPessoa())
+        PessoaEntity usuario = pessoaRepository
+                .findById(carrinhoDto.getIdPessoa())
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
                         .mensagem("Usuário não encontrado: " + carrinhoDto.getIdPessoa())
                         .detalhes("")
                         .build());
-        ServicoEntity servico = servicoRepository.findById(carrinhoDto.getIdServico())
+        ServicoEntity servico = servicoRepository
+                .findById(carrinhoDto.getIdServico())
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
                         .mensagem("Serviço não encontrado: " + carrinhoDto.getIdServico())
                         .detalhes("")
@@ -51,19 +51,41 @@ public class CarrinhoService {
         CarrinhoEntity carrinhoEntity = carrinhoMapper.carrinhoDtoParaEntity(carrinhoDto);
         carrinhoRepository.save(carrinhoEntity);
     }
+
     @Transactional
     public void removerCarrinho(Long idCarrinho) {
-        carrinhoRepository.findById(idCarrinho)
-                .orElseThrow(() -> RecursoNaoEncontradaException.builder()
-                    .mensagem("Carrinho não encontrado para este usuário.")
-                    .detalhes("")
-                    .build());
+        carrinhoRepository.findById(idCarrinho).orElseThrow(() -> RecursoNaoEncontradaException.builder()
+                .mensagem("Carrinho não encontrado para este usuário.")
+                .detalhes("")
+                .build());
 
         carrinhoRepository.deleteById(idCarrinho);
     }
 
+    @Transactional
+    public void limparCarrinhoPessoa(Long idPessoa) {
+        PessoaEntity pessoa = pessoaRepository
+                .findById(idPessoa)
+                .orElseThrow(() -> RecursoNaoEncontradaException.builder()
+                        .mensagem("Usuário não encontrado: " + idPessoa)
+                        .detalhes("")
+                        .build());
+
+        List<CarrinhoEntity> itens = carrinhoRepository.findByPessoaId(pessoa.getId());
+
+        if (itens == null || itens.isEmpty()) {
+            throw RecursoNaoEncontradaException.builder()
+                    .mensagem("Carrinho não encontrado para este usuário.")
+                    .detalhes("")
+                    .build();
+        }
+
+        carrinhoRepository.deleteAll(itens);
+    }
+
     public List<ServicoCarrinhoDto> listarCarrinhoPessoa(Long idPessoa) {
-        PessoaEntity pessoa = pessoaRepository.findById(idPessoa)
+        PessoaEntity pessoa = pessoaRepository
+                .findById(idPessoa)
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
                         .mensagem("Usuário não encontrado: " + idPessoa)
                         .detalhes("")

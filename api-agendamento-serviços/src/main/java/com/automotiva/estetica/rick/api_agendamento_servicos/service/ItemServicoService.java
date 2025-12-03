@@ -10,11 +10,10 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNa
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ItemServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.OrdemServicoRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.ServicoRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -37,13 +36,10 @@ public class ItemServicoService {
     }
 
     public void criarItemServico(OrdemServicoDto ordemServicoRequest, OrdemServicoEntity ordemServicoSalva) {
-        for(Long id : ordemServicoRequest.getServicos()) {
+        for (Long id : ordemServicoRequest.getServicos()) {
             ServicoEntity servico = servicoRepository.findById(id).get();
-            ItemServicoEntity entity = itemServicoMapper.ordemServicoParaItemServicoEntity(
-                    id,
-                    ordemServicoSalva,
-                    servico
-            );
+            ItemServicoEntity entity =
+                    itemServicoMapper.ordemServicoParaItemServicoEntity(id, ordemServicoSalva, servico);
             itemServicoRepository.save(entity);
         }
     }
@@ -84,15 +80,13 @@ public class ItemServicoService {
         itemServicoRepository.deleteById(id);
     }
 
-
     public List<ItemServicoDto> listarPorOrdem(Long idOrdem) {
         List<ItemServicoEntity> itens = itemServicoRepository.findByOrdemServicoId(idOrdem);
         return itemServicoMapper.itemServicosParaItemServicosDto(itens);
     }
 
     public List<Long> buscarServicosPorOrdemServicoId(Long ordemServicoId) {
-        return itemServicoRepository.findByOrdemServicoId(ordemServicoId)
-                .stream()
+        return itemServicoRepository.findByOrdemServicoId(ordemServicoId).stream()
                 .map(item -> item.getServico().getId())
                 .toList();
     }

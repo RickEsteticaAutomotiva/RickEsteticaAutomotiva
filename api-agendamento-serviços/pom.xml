@@ -170,6 +170,65 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.28.0</version>
+				<configuration>
+					<minimumTokens>120</minimumTokens>
+
+					<!-- Falha o build se encontrar violações -->
+					<failOnViolation>true</failOnViolation>
+
+					<!-- Mostra as violações no console -->
+					<printFailingErrors>true</printFailingErrors>
+
+					<!-- Evita gerar links HTML desnecessários -->
+					<linkXRef>false</linkXRef>
+
+					<!-- Opcional: define prioridade mínima para alertas (1=crítico, 5=leve) -->
+					<minimumPriority>5</minimumPriority>
+				</configuration>
+
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+							<goal>cpd-check</goal> <!-- também bloqueia se encontrar código duplicado -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.43.0</version>
+
+				<configuration>
+					<java>
+						<!-- Remove imports não usados -->
+						<removeUnusedImports />
+
+						<!-- Aplica formatação do Google (corrige ponto e vírgula, indentação, chaves, etc.) -->
+						<palantirJavaFormat />
+
+						<!-- Opcional: garante UTF-8 e nova linha no fim -->
+						<encoding>UTF-8</encoding>
+						<endWithNewline />
+					</java>
+				</configuration>
+
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>apply</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 
 	</build>

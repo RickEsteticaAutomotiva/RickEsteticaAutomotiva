@@ -16,18 +16,17 @@ public class EmailObserver implements OrdemServicoObserver {
         EmailEntity email = new EmailEntity();
         email.setAssunto("Atualização de Status da Ordem de Serviço #" + ordemServico.getId());
         email.setCorpo(String.format(
-                "A ordem de serviço #%d teve seu status atualizado para: %s\n" +
-                        "Cliente: %s\n" +
-                        "Veículo: %s\n" +
-                        "Data do Serviço: %s",
+                "A ordem de serviço #%d teve seu status atualizado para: %s\n"
+                        + "Cliente: %s\n"
+                        + "Veículo: %s\n"
+                        + "Data do Serviço: %s",
                 ordemServico.getId(),
                 ordemServico.getStatus().getDescricao(),
                 ordemServico.getVeiculo().getPessoa().getNome(),
                 ordemServico.getVeiculo().getModelo(),
-                ordemServico.getDataAgendamento()
-        ));
+                ordemServico.getDataAgendamento()));
         email.setDestinatario(ordemServico.getVeiculo().getPessoa().getEmail());
 
-        emailService.enviarEmailComAnexos(email,null);
+        emailService.enviarEmailComAnexos(email, null);
     }
 }

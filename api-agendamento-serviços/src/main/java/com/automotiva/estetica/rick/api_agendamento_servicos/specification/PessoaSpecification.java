@@ -16,12 +16,9 @@ public class PessoaSpecification {
                     cb.like(cb.lower(root.get("cpf")), likeFiltro),
                     cb.like(cb.lower(root.get("email")), likeFiltro),
                     cb.like(
-                            cb.lower(
-                                    cb.function("TO_CHAR", String.class, root.get("dataNascimento"), cb.literal("yyyy-MM-dd"))
-                            ),
-                            likeFiltro
-                    )
-            );
+                            cb.lower(cb.function(
+                                    "TO_CHAR", String.class, root.get("dataNascimento"), cb.literal("yyyy-MM-dd"))),
+                            likeFiltro));
         };
     }
 }

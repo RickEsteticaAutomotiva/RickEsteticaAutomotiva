@@ -7,11 +7,9 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.entity.VeiculoEntit
 import com.automotiva.estetica.rick.api_agendamento_servicos.exception.RecursoNaoEncontradaException;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.PessoaRepository;
 import com.automotiva.estetica.rick.api_agendamento_servicos.repository.VeiculoRepository;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +20,12 @@ public class VeiculoService {
     private final VeiculoMapper veiculoMapper;
 
     public VeiculoDto cadastrarVeiculo(VeiculoDto veiculoDto) {
-        PessoaEntity pessoa = pessoaRepository.findById(veiculoDto.getIdPessoa())
-                .orElseThrow(() ->
-                        RecursoNaoEncontradaException.builder()
-                                .mensagem("a pessoa com id " + veiculoDto.getIdPessoa() + " não foi encontrada")
-                                .detalhes("")
-                                .build());
+        PessoaEntity pessoa = pessoaRepository
+                .findById(veiculoDto.getIdPessoa())
+                .orElseThrow(() -> RecursoNaoEncontradaException.builder()
+                        .mensagem("a pessoa com id " + veiculoDto.getIdPessoa() + " não foi encontrada")
+                        .detalhes("")
+                        .build());
 
         VeiculoEntity novoVeiculo = veiculoMapper.veiculoDtoParaVeiculo(veiculoDto);
         novoVeiculo.setPessoa(pessoa);
@@ -48,7 +46,8 @@ public class VeiculoService {
     }
 
     public List<VeiculoDto> buscarVeiculosByPessoaId(Long idPessoa) {
-        PessoaEntity donoVeiculo = pessoaRepository.findById(idPessoa)
+        PessoaEntity donoVeiculo = pessoaRepository
+                .findById(idPessoa)
                 .orElseThrow(() -> RecursoNaoEncontradaException.builder()
                         .mensagem("nenhum veículo foi encontrado para a pessoa " + idPessoa)
                         .detalhes("")
@@ -67,8 +66,7 @@ public class VeiculoService {
     }
 
     public void atualizarVeiculo(Long id, VeiculoDto veiculoDto) {
-        var veiculo = veiculoRepository.findById(id)
-                .orElseThrow(() -> RecursoNaoEncontradaException.builder()
+        var veiculo = veiculoRepository.findById(id).orElseThrow(() -> RecursoNaoEncontradaException.builder()
                 .mensagem("o veículo com a placa " + veiculoDto.getPlaca() + " não foi encontrado")
                 .detalhes("")
                 .build());

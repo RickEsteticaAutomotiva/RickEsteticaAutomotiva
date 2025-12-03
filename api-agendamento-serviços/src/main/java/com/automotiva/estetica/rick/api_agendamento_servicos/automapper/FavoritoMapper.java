@@ -7,8 +7,6 @@ import com.automotiva.estetica.rick.api_agendamento_servicos.entity.ServicoEntit
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface FavoritoMapper {
 

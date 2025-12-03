@@ -15,12 +15,23 @@ public class ApiBaseException extends RuntimeException {
         this.status = status;
     }
 
-    public String getTipo() { return tipo; }
-    public String getMensagem() { return mensagem; }
-    public String getDetalhes() { return detalhes; }
-    public HttpStatus getStatus() { return status; }
+    public String getTipo() {
+        return tipo;
+    }
 
-    public static abstract class Builder<T extends ApiBaseException, B extends Builder<T, B>> {
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public String getDetalhes() {
+        return detalhes;
+    }
+
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public abstract static class Builder<T extends ApiBaseException, B extends Builder<T, B>> {
         protected String tipo;
         protected String mensagem;
         protected String detalhes;
@@ -47,6 +58,7 @@ public class ApiBaseException extends RuntimeException {
         }
 
         protected abstract B self();
+
         public abstract T build();
     }
 }

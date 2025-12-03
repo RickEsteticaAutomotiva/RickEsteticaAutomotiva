@@ -11,6 +11,7 @@ import lombok.*;
 public class FavoritoDto {
     @NotNull
     private Long idPessoa;
+
     @NotNull
     private Long idServico;
 }
