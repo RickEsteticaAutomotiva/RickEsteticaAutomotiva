@@ -20,14 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class OrdemServicoServiceTest {
 
-    @Mock
-    private OrdemServicoRepository ordemServicoRepository;
-
-    @Mock
-    private OrdemServicoMapper ordemServicoMapper;
-
-    @Mock
-    private ItemServicoService itemServicoService;
+    @Mock private OrdemServicoRepository ordemServicoRepository;
+    @Mock private OrdemServicoMapper ordemServicoMapper;
+    @Mock private ItemServicoService itemServicoService;
 
     @InjectMocks
     OrdemServicoService ordemServicoService;
