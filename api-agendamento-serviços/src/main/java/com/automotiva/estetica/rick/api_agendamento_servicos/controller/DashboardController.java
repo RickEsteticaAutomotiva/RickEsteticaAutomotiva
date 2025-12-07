@@ -1,10 +1,8 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.controller;
 
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.FaturamentoResponseDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.QtdOrdensServicoConcluidasMensalResponseDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.QtdOrdensServicoMensalResponseDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.TicketMedioMensalResponseDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.*;
 import com.automotiva.estetica.rick.api_agendamento_servicos.service.DashboardService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,5 +38,11 @@ public class DashboardController {
     public ResponseEntity<TicketMedioMensalResponseDto> buscarTicketMedioMes() {
         var totalTicketMedioMes = dashboardService.buscarTicketMedioMes();
         return ResponseEntity.ok(totalTicketMedioMes);
+    }
+
+    @GetMapping("/faturamento-periodo")
+    public ResponseEntity<List<FaturamentoPeriodoResponseDto>> buscarFaturamentoPeriodo() {
+        var dadosFaturamento = dashboardService.buscarFaturamentoPeriodo();
+        return ResponseEntity.ok(dadosFaturamento);
     }
 }
