@@ -77,12 +77,21 @@ INSERT INTO ordem_servico (
 ('2025-10-27 16:45:00', 200.00, 'Correção de pequenos riscos iniciada', NULL, 1, 3, NULL),
 ('2025-10-06 10:30:00', 150.00, 'Polimento básico concluído', '2025-10-06 13:00:00', 4, 1, NULL),
 ('2025-10-12 09:00:00', 180.00, 'Higienização interna em andamento', NULL, 1, 2, NULL),
-('2025-10-18 15:40:00', 220.00, 'Cliente solicitou retoque adicional', '2025-10-19 11:20:00', 3, 1, NULL),
-('2025-10-29 17:10:00', 300.00, 'Reparo finalizado com sucesso', '2025-10-30 09:45:00', 2, 1, NULL),
-('2025-11-05 09:00:00', 1000.00, 'Revisão completa realizada', '2025-11-06 14:30:00', 2, 1, NULL),
+('2025-10-18 15:40:00', 220.00, 'Cliente solicitou retoque adicional', '2025-10-19 11:20:00', 3, 5, NULL),
+('2025-10-29 17:10:00', 300.00, 'Reparo finalizado com sucesso', '2025-10-30 09:45:00', 2, 5, NULL),
+('2025-11-05 09:00:00', 1000.00, 'Revisão completa realizada', '2025-11-06 14:30:00', 2, 5, NULL),
 ('2025-11-12 13:45:00', 2000.00, 'Aguardando aprovação do cliente', NULL, 3, 5, NULL),
-('2025-11-25 16:20:00', 200.00, 'Serviço urgente iniciado', NULL, 1, 5, NULL);
-;
+('2025-11-25 16:20:00', 200.00, 'Serviço urgente iniciado', NULL, 1, 5, NULL),
+('2025-11-22 09:10:00', 150.00, 'Serviço concluído com sucesso', '2025-11-22 12:30:00', 1, 5, NULL),
+('2025-11-23 14:20:00', 180.00, 'Polimento finalizado', '2025-11-23 17:40:00', 2, 5, NULL),
+('2025-11-24 08:45:00', 220.00, 'Lavagem premium concluída', '2025-11-24 11:50:00', 3, 5, NULL),
+('2025-12-02 09:30:00', 160.00, 'Inspeção e ajuste, concluído', '2025-12-02 12:00:00', 1, 5, NULL),
+('2025-12-03 14:45:00', 190.00, 'Reparo estético finalizado', '2025-12-03 17:00:00', 2, 5, NULL),
+('2025-12-04 11:15:00', 260.00, 'Limpeza profunda concluída', '2025-12-04 14:20:00', 3, 5, NULL),
+('2025-12-05 16:00:00', 300.00, 'Revisão completa finalizada', '2025-12-05 18:45:00', 4, 5, NULL),
+('2025-12-06 10:40:00', 220.00, 'Higienização interna concluída', '2025-12-06 13:00:00', 5, 5, NULL),
+('2025-11-25 16:30:00', 200.00, 'Serviço urgente iniciado', NULL, 1, 5, NULL),
+('2025-12-07 10:40:00', 220.00, 'Higienização interna concluída', '2025-12-06 13:00:00', 5, 5, NULL);
 
 -- ===============================
 -- TABELA: item_servico
@@ -105,4 +114,14 @@ INSERT INTO item_servico (ordem_servico_id, servico_id, preco) VALUES
 (18, 4, 500.00),
 (18, 3, 500.00),
 (19, 2, 1000.00),
-(20, 2, 100.00);
+(20, 2, 5000.00),
+(21, 1, 300.00),
+(22, 3, 400.00),
+(23, 2, 100.00),
+(24, 3, 150.00),
+(25, 2, 430.00),
+(26, 1, 320.00),
+(27, 4, 100.00),
+(28, 1, 0.0),
+(29, 1, 5000.00),
+(30, 2, 1000.00);
