@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.repository;
 
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.CancelamentoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.FaturamentoMensalDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.dto.RegistroFaturamentoDto;
 import com.automotiva.estetica.rick.api_agendamento_servicos.entity.OrdemServicoEntity;
@@ -31,14 +32,14 @@ public interface OrdemServicoRepository
             """)
     BigDecimal somarFaturamentoDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
 
-    @Query("SELECT COUNT(o) FROM OrdemServicoEntity o WHERE o.dataAgendamento BETWEEN :inicio AND :fim")
+    @Query("SELECT COUNT(o) FROM OrdemServicoEntity o WHERE o.dataAgendamento BETWEEN :inicio AND :fim AND o.status.id = 5")
     Integer buscarQtdOrdensServicoDoMes(LocalDateTime inicio, LocalDateTime fim);
 
     @Query(
-            """
-                        SELECT COUNT(o) FROM OrdemServicoEntity o
-                        WHERE o.dataAgendamento BETWEEN :inicio AND :fim AND o.status.id = 5
-                    """)
+    """
+    SELECT COUNT(o) FROM OrdemServicoEntity o
+           WHERE o.dataAgendamento BETWEEN :inicio AND :fim AND o.status.id = 5
+    """)
     Integer buscarQtdOrdensServicoConcluidasNoMes(
             @Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 
@@ -60,27 +61,27 @@ public interface OrdemServicoRepository
                                                  @Param("fim") LocalDateTime fim);
 
 
-    @Query(value = """
-    SELECT
-    m.descricao AS tipo,
-    COUNT(os.id) AS quantidade
-    FROM ordem_servico os
-    LEFT JOIN motivo m ON m.id = os.fk_motivo
-    WHERE os.fk_status = 4
-      AND os.data_agendamento >= DATEADD('DAY', -30, CURRENT_DATE)
+    @Query("""
+    SELECT new com.automotiva.estetica.rick.api_agendamento_servicos.dto.CancelamentoDto(
+            m.descricao,
+            COUNT(os.id)
+        )
+    FROM OrdemServicoEntity os
+    LEFT JOIN os.motivoCancelamento m
+    WHERE os.status.id = 4
     GROUP BY m.descricao
-    ORDER BY quantidade DESC;
-    """,
-            nativeQuery = true)
-    List<Object[]> buscarCancelamentos();
+    ORDER BY COUNT(os.id) DESC
+    """)
+    List<CancelamentoDto> buscarCancelamentos(@Param("inicio") LocalDateTime inicio);
+
 
     @Query(
-            """
-                        SELECT COALESCE(SUM(i.preco) / COUNT(i.preco), 0)
-                        FROM ItemServicoEntity i
-                        WHERE i.ordemServico.dataAgendamento BETWEEN :inicio AND :fim
-                          AND i.ordemServico.status.id = 5
-                    """)
+    """
+    SELECT COALESCE(SUM(i.preco) / COUNT(i.preco), 0)
+    FROM ItemServicoEntity i
+    WHERE i.ordemServico.dataAgendamento BETWEEN :inicio AND :fim
+        AND i.ordemServico.status.id = 5
+     """)
     BigDecimal calcularTicketMedioDoMes(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 
     @Query(

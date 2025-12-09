@@ -18,17 +18,21 @@ public interface ItemServicoRepository extends JpaRepository<ItemServicoEntity, 
     SELECT new com.automotiva.estetica.rick.api_agendamento_servicos.dto.RegistroFaturamentoDto(
         c.nome,
         s.nome,
-        SUM(i.preco)
+        COALESCE(SUM(i.preco), 0)
     )
-        FROM ItemServicoEntity i
-        JOIN i.servico s
-        JOIN s.categoria c
-        JOIN i.ordemServico os
-        WHERE os.dataAgendamento BETWEEN :inicio AND :fim
-          AND os.status.id = 5
-        GROUP BY c.nome, s.nome
-        ORDER BY c.nome, s.nome
+    FROM ItemServicoEntity i
+    JOIN i.servico s
+    JOIN s.categoria c
+    JOIN i.ordemServico os
+    WHERE os.dataAgendamento BETWEEN :inicio AND :fim
+      AND os.status.id = 5
+    GROUP BY c.nome, s.nome
+    ORDER BY c.nome, s.nome
     """)
-    List<RegistroFaturamentoDto> buscarFaturamentoAgrupado(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+    List<RegistroFaturamentoDto> buscarFaturamentoAgrupado(
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fim") LocalDateTime fim
+    );
+
 
 }

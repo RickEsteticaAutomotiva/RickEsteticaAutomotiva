@@ -78,10 +78,12 @@ public class DashboardService {
         PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
         BigDecimal ticketMedioMesAtual =
-                ordemServicoRepository.calcularTicketMedioDoMes(mesAtual.inicio(), mesAtual.fim());
+                ordemServicoRepository.calcularTicketMedioDoMes(mesAtual.inicio(), mesAtual.fim())
+                        .setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal ticketMedioMesAnterior =
-                ordemServicoRepository.calcularTicketMedioDoMes(mesAnterior.inicio(), mesAnterior.fim());
+                ordemServicoRepository.calcularTicketMedioDoMes(mesAnterior.inicio(), mesAnterior.fim())
+                        .setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal variacaoMensalTicketMedio = calcularVariacaoMensal(ticketMedioMesAtual, ticketMedioMesAnterior);
 
@@ -127,7 +129,9 @@ public class DashboardService {
 
     public List<CategoriaDashboardDto> calcularFaturamentoPorServico() {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
-        List<RegistroFaturamentoDto> registros = itemServicoRepository.buscarFaturamentoAgrupado(mesAtual.inicio(), mesAtual.fim());
+
+        List<RegistroFaturamentoDto> registros =
+                itemServicoRepository.buscarFaturamentoAgrupado(mesAtual.inicio(), mesAtual.fim());
 
         return registros.stream()
                 .collect(Collectors.groupingBy(RegistroFaturamentoDto::getCategoriaNome))
@@ -136,22 +140,26 @@ public class DashboardService {
                     String categoria = entry.getKey();
                     List<RegistroFaturamentoDto> itens = entry.getValue();
 
-                    double totalCategoria = itens.stream()
+                    BigDecimal totalCategoria = itens.stream()
                             .map(RegistroFaturamentoDto::getTotalPreco)
-                            .mapToDouble(BigDecimal::doubleValue)
-                            .sum();
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     List<ServicoDashboardDto> servicos = itens.stream()
                             .map(item -> new ServicoDashboardDto(
                                     item.getServicoNome(),
-                                    item.getTotalPreco().doubleValue()
+                                    item.getTotalPreco()
                             ))
                             .toList();
 
-                    return new CategoriaDashboardDto(categoria, totalCategoria, servicos);
+                    return new CategoriaDashboardDto(
+                            categoria,
+                            totalCategoria,
+                            servicos
+                    );
                 })
                 .toList();
     }
+
 
     public FluxoCaixaDto fluxoCaixa() {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
@@ -174,18 +182,9 @@ public class DashboardService {
         return new FluxoCaixaDto(total, lucro, custo, percentualCusto, percentualLucro);
     }
 
-    public List<Map<String, Object>> buscarCancelamentos() {
-        List<Object[]> resultados = ordemServicoRepository.buscarCancelamentos();
-        List<Map<String, Object>> cancelamentos = new ArrayList<>();
-
-        for (Object[] row : resultados) {
-            Map<String, Object> item = new HashMap<>();
-            item.put("tipo", row[0]);
-            item.put("quantidade", row[1]);
-            cancelamentos.add(item);
-        }
-
-        return cancelamentos;
+    public List<CancelamentoDto> buscarCancelamentos() {
+        PeriodoMensal mesAtual = getPeriodoMesAtual();
+        return ordemServicoRepository.buscarCancelamentos(mesAtual.inicio());
     }
 
     private PeriodoMensal getPeriodoMesAtual() {

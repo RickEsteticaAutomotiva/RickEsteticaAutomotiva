@@ -56,8 +56,8 @@ public class DashboardController {
     }
 
     @GetMapping("/cancelamentos")
-    public ResponseEntity<List<Map<String, Object>>> getCancelamentos() {
-        List<Map<String, Object>> cancelamentos = dashboardService.buscarCancelamentos();
+    public ResponseEntity<List<CancelamentoDto>> getCancelamentos() {
+        List<CancelamentoDto> cancelamentos = dashboardService.buscarCancelamentos();
         return ResponseEntity.ok(cancelamentos);
     }
 

@@ -4,16 +4,14 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class RegistroFaturamentoDto {
     private String categoriaNome;
     private String servicoNome;
     private BigDecimal totalPreco;
-    
 }
 
 
