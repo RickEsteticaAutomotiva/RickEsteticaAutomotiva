@@ -50,10 +50,7 @@ public class DashboardController {
     }
 
     @GetMapping("/faturamento-servicos")
-    public ResponseEntity<List<CategoriaDashboardDto>> faturamentoPorServicos(
-            @RequestParam(required = false) Integer mes,
-            @RequestParam(required = false) Integer ano
-    ) {
+    public ResponseEntity<List<CategoriaDashboardDto>> faturamentoPorServicos() {
         return ResponseEntity.ok( dashboardService.calcularFaturamentoPorServico());
     }
 
