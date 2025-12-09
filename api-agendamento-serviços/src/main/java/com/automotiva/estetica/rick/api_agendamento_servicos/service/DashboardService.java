@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -86,6 +86,21 @@ public class DashboardService {
         BigDecimal variacaoMensalTicketMedio = calcularVariacaoMensal(ticketMedioMesAtual, ticketMedioMesAnterior);
 
         return dashboardMapper.paraTicketMedioMensalDto(ticketMedioMesAtual, variacaoMensalTicketMedio);
+    }
+
+    public List<FaturamentoPeriodoResponseDto> buscarFaturamentoPeriodo() {
+        LocalDateTime dataReferencia = LocalDate.now().minusDays(15).atStartOfDay();
+
+        List<Object[]> dadosPeriodo = ordemServicoRepository.buscarOrdensConcluidasPeriodo(dataReferencia);
+
+        return dadosPeriodo.stream()
+                .map(obj -> {
+                    LocalDate data = ((java.sql.Date) obj[0]).toLocalDate();
+                    BigDecimal valor = (BigDecimal) obj[1];
+
+                    return dashboardMapper.paraFaturamentoPeriodoDto(data, valor);
+                })
+                .toList();
     }
 
     private <T extends Number> BigDecimal calcularVariacaoMensal(T valorMesAtual, T valorMesAnterior) {

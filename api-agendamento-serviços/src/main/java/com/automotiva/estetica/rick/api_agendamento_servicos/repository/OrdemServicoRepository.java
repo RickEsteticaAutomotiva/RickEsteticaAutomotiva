@@ -36,20 +36,11 @@ public interface OrdemServicoRepository
 
     @Query(
             """
-                SELECT COUNT(o) FROM OrdemServicoEntity o
-                WHERE o.dataAgendamento BETWEEN :inicio AND :fim AND o.status.id = 5
-            """)
+                        SELECT COUNT(o) FROM OrdemServicoEntity o
+                        WHERE o.dataAgendamento BETWEEN :inicio AND :fim AND o.status.id = 5
+                    """)
     Integer buscarQtdOrdensServicoConcluidasNoMes(
             @Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
-
-    @Query(
-            """
-                SELECT COALESCE(SUM(i.preco) / COUNT(i.preco), 0)
-                FROM ItemServicoEntity i
-                WHERE i.ordemServico.dataAgendamento BETWEEN :inicio AND :fim
-                
-            """)
-    BigDecimal calcularTicketMedioDoMes(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 
     @Query("""
     SELECT new com.automotiva.estetica.rick.api_agendamento_servicos.dto.FaturamentoMensalDto(
@@ -82,4 +73,26 @@ public interface OrdemServicoRepository
     """,
             nativeQuery = true)
     List<Object[]> buscarCancelamentos();
+
+    @Query(
+            """
+                        SELECT COALESCE(SUM(i.preco) / COUNT(i.preco), 0)
+                        FROM ItemServicoEntity i
+                        WHERE i.ordemServico.dataAgendamento BETWEEN :inicio AND :fim
+                          AND i.ordemServico.status.id = 5
+                    """)
+    BigDecimal calcularTicketMedioDoMes(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+
+    @Query(
+            """
+                SELECT
+                CAST(i.ordemServico.dataAgendamento AS date) AS dia,
+                SUM(i.preco) AS totalDia
+                FROM ItemServicoEntity i
+                WHERE i.ordemServico.dataAgendamento >= :dataInicial
+                AND i.ordemServico.status.id = 5
+                GROUP BY CAST(i.ordemServico.dataAgendamento AS date)
+                ORDER BY dia DESC
+            """)
+    List<Object[]> buscarOrdensConcluidasPeriodo(@Param("dataInicial") LocalDateTime dataInicial);
 }

@@ -1,10 +1,8 @@
 package com.automotiva.estetica.rick.api_agendamento_servicos.automapper;
 
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.FaturamentoResponseDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.QtdOrdensServicoConcluidasMensalResponseDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.QtdOrdensServicoMensalResponseDto;
-import com.automotiva.estetica.rick.api_agendamento_servicos.dto.TicketMedioMensalResponseDto;
+import com.automotiva.estetica.rick.api_agendamento_servicos.dto.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
@@ -20,4 +18,6 @@ public interface DashboardMapper {
 
     TicketMedioMensalResponseDto paraTicketMedioMensalDto(
             BigDecimal totalTicketMedioMesAtual, BigDecimal variacaoPercentual);
+
+    FaturamentoPeriodoResponseDto paraFaturamentoPeriodoDto(LocalDate data, BigDecimal faturamentoDiario);
 }

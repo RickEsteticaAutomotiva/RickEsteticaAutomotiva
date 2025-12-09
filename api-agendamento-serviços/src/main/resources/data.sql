@@ -96,7 +96,6 @@ INSERT INTO ordem_servico (
 ('2025-11-25 16:30:00', 200.00, 'Serviço urgente iniciado', '2025-12-06 13:30:00', 1, 5, NULL),
 ('2025-12-07 10:40:00', 220.00, 'Higienização interna concluída', '2025-12-06 13:00:00', 5, 5, NULL);
 
-
 -- ===============================
 -- TABELA: item_servico
 -- ===============================
@@ -128,7 +127,6 @@ INSERT INTO item_servico (ordem_servico_id, servico_id, preco) VALUES
 (7, 2, 45.00),
 (9, 4, 120.00),
 (10, 3, 80.00),
-
 (6, 3, 80.00),
 (8, 5, 150.00),
 (15, 5, 180.00),
@@ -154,4 +152,3 @@ INSERT INTO item_servico (ordem_servico_id, servico_id, preco) VALUES
 (31, 4, 120.00),
 (31, 3, 80.00),
 (32, 5, 220.00);
-
