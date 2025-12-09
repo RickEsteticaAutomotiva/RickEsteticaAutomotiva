@@ -79,7 +79,7 @@ public class OrdemServicoService extends OrdemServicoSubject {
             itemServicoService.criarItemServico(ordemServico, ordemServicoEntity);
         } catch (Exception e) {
             log.info("falha ao criar ordem de serviço");
-            throw new RuntimeException();
+            throw new RuntimeException("Erro ao criar OS: " + e.getMessage(), e);
         }
 
         OrdemServicoDto retorno = ordemServicoMapper.ordemServicoParaOrdemServicoDto(ordemServicoEntity);

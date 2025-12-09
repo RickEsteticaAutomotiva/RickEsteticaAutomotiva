@@ -29,4 +29,8 @@ public class ServicoEntity extends BaseEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "fk_categoria", nullable = false)
     private CategoriaEntity categoria;
+
+    @Column(name = "margem_lucro", nullable = false)
+    private BigDecimal margemLucro;
+
 }
