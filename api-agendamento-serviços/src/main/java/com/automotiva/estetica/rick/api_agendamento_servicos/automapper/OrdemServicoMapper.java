@@ -23,6 +23,7 @@ public interface OrdemServicoMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
+    @Mapping(source = "motivo", target = "motivoCancelamento")
     void atualizarOrdemServicoEntityFromDto(OrdemServicoDto dto, @MappingTarget OrdemServicoEntity entity);
 
     List<OrdemServicoDto> ordemServicosParaOrdemServicosDto(List<OrdemServicoEntity> entities);

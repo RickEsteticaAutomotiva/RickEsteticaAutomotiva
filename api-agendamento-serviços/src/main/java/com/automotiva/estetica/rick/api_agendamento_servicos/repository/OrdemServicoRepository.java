@@ -32,7 +32,7 @@ public interface OrdemServicoRepository
             """)
     BigDecimal somarFaturamentoDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
 
-    @Query("SELECT COUNT(o) FROM OrdemServicoEntity o WHERE o.dataAgendamento BETWEEN :inicio AND :fim AND o.status.id = 5")
+    @Query("SELECT COUNT(o) FROM OrdemServicoEntity o WHERE o.dataAgendamento BETWEEN :inicio AND :fim")
     Integer buscarQtdOrdensServicoDoMes(LocalDateTime inicio, LocalDateTime fim);
 
     @Query(
