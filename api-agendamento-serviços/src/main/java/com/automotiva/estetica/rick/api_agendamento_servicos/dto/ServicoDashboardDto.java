@@ -10,6 +10,4 @@ import java.math.BigDecimal;
 public class ServicoDashboardDto {
     private String servico;
     private BigDecimal faturamento;
-//    private Double lucro;
-//    private Double percentual;
 }
