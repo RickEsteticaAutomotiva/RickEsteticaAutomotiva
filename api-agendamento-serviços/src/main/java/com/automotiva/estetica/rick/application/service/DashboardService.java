@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.automotiva.estetica.rick.infrastructure.security.GerenteOnly;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@GerenteOnly
 public class DashboardService implements DashboardUseCase {
 
     private final OrdemServicoRepositoryPort ordemServicoRepositoryPort;

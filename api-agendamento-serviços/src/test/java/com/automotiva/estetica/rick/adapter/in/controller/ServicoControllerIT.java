@@ -105,10 +105,14 @@ class ServicoControllerIT extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("DELETE /servicos/{id} → 204 ao remover serviço")
+    @DisplayName("DELETE /servicos/{id} → 204 e registro não encontrado após soft-delete")
     void deletar_sucesso() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/servicos/5").header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isNoContent());
+
+        // Confirma que o serviço não aparece mais (@SQLRestriction filtra deletado_em IS NOT NULL)
+        mockMvc.perform(get(BASE_PATH + "/servicos/5"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

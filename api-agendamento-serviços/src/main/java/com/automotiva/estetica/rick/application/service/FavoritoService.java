@@ -60,10 +60,7 @@ public class FavoritoService implements FavoritoUseCase {
     @Override
     public List<ServicoFavoritoResponse> listar(Long idPessoa) {
         if (!pessoaRepositoryPort.existePorId(idPessoa)) {
-            throw RecursoNaoEncontradoException.builder()
-                    .mensagem("Usuário não encontrado: " + idPessoa)
-                    .detalhes("")
-                    .build();
+            return List.of();
         }
         return favoritoRepositoryPort.buscarPorPessoaId(idPessoa).stream()
                 .map(f -> ServicoFavoritoResponse.builder()

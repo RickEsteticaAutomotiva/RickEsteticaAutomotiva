@@ -172,11 +172,14 @@ class CarrinhoServiceTest {
     // ─── listar ─────────────────────────────────────────────────────────────
 
     @Test
-    @DisplayName("Deve lançar exceção ao listar quando pessoa não existir")
-    void listar_pessoaNaoEncontrada_deveLancarExcecao() {
-        when(pessoaRepositoryPort.buscarPorId(2L)).thenReturn(Optional.empty());
+    @DisplayName("Deve retornar lista vazia ao listar quando pessoa não existir")
+    void listar_pessoaNaoEncontrada_deveRetornarListaVazia() {
+        when(pessoaRepositoryPort.existePorId(2L)).thenReturn(false);
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> carrinhoService.listar(2L));
+        List<ServicoCarrinhoResponse> resultado = carrinhoService.listar(2L);
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
     }
 
     @Test
@@ -187,7 +190,7 @@ class CarrinhoServiceTest {
         Carrinho carrinho =
                 Carrinho.builder().id(1L).pessoa(pessoa).servico(servico).build();
 
-        when(pessoaRepositoryPort.buscarPorId(1L)).thenReturn(Optional.of(pessoa));
+        when(pessoaRepositoryPort.existePorId(1L)).thenReturn(true);
         when(carrinhoRepositoryPort.buscarPorPessoaId(1L)).thenReturn(List.of(carrinho));
 
         List<ServicoCarrinhoResponse> resultado = carrinhoService.listar(1L);
@@ -202,9 +205,7 @@ class CarrinhoServiceTest {
     @Test
     @DisplayName("Deve retornar lista vazia quando carrinho não tiver itens")
     void listar_carrinhoVazio_deveRetornarListaVazia() {
-        Pessoa pessoa = pessoaMock();
-
-        when(pessoaRepositoryPort.buscarPorId(1L)).thenReturn(Optional.of(pessoa));
+        when(pessoaRepositoryPort.existePorId(1L)).thenReturn(true);
         when(carrinhoRepositoryPort.buscarPorPessoaId(1L)).thenReturn(List.of());
 
         List<ServicoCarrinhoResponse> resultado = carrinhoService.listar(1L);

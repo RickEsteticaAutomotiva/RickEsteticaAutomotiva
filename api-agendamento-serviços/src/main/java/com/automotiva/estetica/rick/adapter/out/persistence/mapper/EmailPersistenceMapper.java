@@ -1,6 +1,6 @@
 package com.automotiva.estetica.rick.adapter.out.persistence.mapper;
 
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.EmailJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.EmailJpaEntity;
 import com.automotiva.estetica.rick.domain.entity.Email;
 import org.mapstruct.Mapper;
 

@@ -58,7 +58,7 @@ public class SecurityConfig {
             public Authentication authenticate(Authentication authentication) throws AuthenticationException {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
                 if (!encoder.matches(authentication.getCredentials().toString(), userDetails.getPassword())) {
-                    throw new BadCredentialsException("Credenciais inválidas");
+                    throw new BadCredentialsException("E-mail ou senha incorretos");
                 }
                 return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             }
@@ -83,13 +83,11 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
-                    if (authException instanceof BadCredentialsException) {
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Credenciais inválidas");
-                    } else {
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Acesso não autorizado");
-                    }
-                }))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Acesso não autorizado"))
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Acesso negado")))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(URLS_PUBLICAS)
                         .permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**")

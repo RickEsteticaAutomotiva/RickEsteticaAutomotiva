@@ -2,10 +2,11 @@ package com.automotiva.estetica.rick.adapter.out.persistence;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.*;
-import com.automotiva.estetica.rick.adapter.out.persistence.mapper.OrdemServicoPersistenceMapper;
-import com.automotiva.estetica.rick.adapter.out.persistence.mapper.PessoaPersistenceMapper;
-import com.automotiva.estetica.rick.adapter.out.persistence.mapper.VeiculoPersistenceMapper;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.*;
+import com.automotiva.estetica.rick.adapter.out.persistence.mapper.OrdemServicoPersistenceMapperImpl;
+import com.automotiva.estetica.rick.adapter.out.persistence.mapper.PessoaPersistenceMapperImpl;
+import com.automotiva.estetica.rick.adapter.out.persistence.mapper.VeiculoPersistenceMapperImpl;
+import com.automotiva.estetica.rick.adapter.out.persistence.ordemservico.OrdemServicoRepositoryAdapter;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,9 +29,9 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @Import({
     OrdemServicoRepositoryAdapter.class,
-    OrdemServicoPersistenceMapper.class,
-    VeiculoPersistenceMapper.class,
-    PessoaPersistenceMapper.class
+    OrdemServicoPersistenceMapperImpl.class,
+    VeiculoPersistenceMapperImpl.class,
+    PessoaPersistenceMapperImpl.class
 })
 @DisplayName("Persistência — OrdemServicoRepositoryAdapter")
 class OrdemServicoRepositoryAdapterIT {
@@ -191,19 +192,5 @@ class OrdemServicoRepositoryAdapterIT {
         var ordens = repositoryAdapter.buscarPorVeiculoPessoaId(99999L);
 
         assertThat(ordens).isEmpty();
-    }
-
-    // ─── deletarPorId ────────────────────────────────────────────────────────
-
-    @Test
-    @DisplayName("deletarPorId → remove ordem do banco")
-    void deletarPorId_sucesso() {
-        OrdemServicoJpaEntity jpa =
-                persistirOrdem(LocalDateTime.now().plusDays(10), statusAnalise, BigDecimal.valueOf(50));
-
-        repositoryAdapter.deletarPorId(jpa.getId());
-        em.flush();
-
-        assertThat(em.find(OrdemServicoJpaEntity.class, jpa.getId())).isNull();
     }
 }

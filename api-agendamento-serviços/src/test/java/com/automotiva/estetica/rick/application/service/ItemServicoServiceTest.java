@@ -89,22 +89,4 @@ class ItemServicoServiceTest {
 
         assertEquals(1, resposta.size());
     }
-
-    @Test
-    @DisplayName("Deve lançar exceção ao deletar item inexistente")
-    void deletar_inexistente_deveLancarExcecao() {
-        when(itemServicoRepositoryPort.buscarPorId(99L)).thenReturn(Optional.empty());
-
-        assertThrows(RecursoNaoEncontradoException.class, () -> itemServicoService.deletar(99L));
-    }
-
-    @Test
-    @DisplayName("Deve deletar item existente com sucesso")
-    void deletar_sucesso() {
-        when(itemServicoRepositoryPort.buscarPorId(1L)).thenReturn(Optional.of(itemMock()));
-
-        itemServicoService.deletar(1L);
-
-        verify(itemServicoRepositoryPort).deletarPorId(1L);
-    }
 }

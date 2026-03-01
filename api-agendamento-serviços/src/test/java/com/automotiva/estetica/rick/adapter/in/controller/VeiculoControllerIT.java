@@ -97,10 +97,15 @@ class VeiculoControllerIT extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("DELETE /veiculos/{id} → 204 ao remover veículo")
+    @DisplayName("DELETE /veiculos/{id} → 204 e veículo não listado após soft-delete")
     void deletar_sucesso() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/veiculos/3").header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isNoContent());
+
+        // Confirma que o veículo não aparece mais na listagem da pessoa (@SQLRestriction filtra deletado_em IS NOT NULL)
+        mockMvc.perform(get(BASE_PATH + "/veiculos/pessoa/1").header("Authorization", bearer(tokenAdmin)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].id", not(hasItem(3))));
     }
 
     @Test

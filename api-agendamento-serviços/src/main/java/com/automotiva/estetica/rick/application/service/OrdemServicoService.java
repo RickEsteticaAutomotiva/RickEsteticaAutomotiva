@@ -154,15 +154,6 @@ public class OrdemServicoService implements OrdemServicoUseCase {
         return response;
     }
 
-    @Override
-    public void deletar(Long id) {
-        ordemServicoRepositoryPort.buscarPorId(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                .mensagem("a ordem de serviço com id " + id + " não foi encontrada")
-                .detalhes("")
-                .build());
-        ordemServicoRepositoryPort.deletarPorId(id);
-    }
-
     // ─── helpers ──────────────────────────────────────────────────────────────
 
     private void criarItensServico(List<Long> servicoIds, OrdemServico ordemServico) {
@@ -173,7 +164,6 @@ public class OrdemServicoService implements OrdemServicoUseCase {
                             .mensagem("serviço " + servicoId + " não encontrado")
                             .detalhes("")
                             .build());
-            // Regra de domínio: ItemServico com preço snapshot encapsulada em OrdemServico.criarItem()
             itemServicoRepositoryPort.salvar(ordemServico.criarItem(servico));
         }
     }

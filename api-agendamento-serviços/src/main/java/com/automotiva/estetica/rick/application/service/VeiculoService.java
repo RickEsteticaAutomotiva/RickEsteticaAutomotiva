@@ -51,10 +51,7 @@ public class VeiculoService implements VeiculoUseCase {
     @Override
     public List<VeiculoResponse> buscarPorPessoaId(Long pessoaId) {
         if (!pessoaRepositoryPort.existePorId(pessoaId)) {
-            throw RecursoNaoEncontradoException.builder()
-                    .mensagem("a pessoa com id " + pessoaId + " não foi encontrada")
-                    .detalhes("")
-                    .build();
+            return List.of();
         }
         return veiculoRepositoryPort.buscarPorPessoaId(pessoaId).stream()
                 .map(this::toResponse)

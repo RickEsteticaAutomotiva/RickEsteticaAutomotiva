@@ -1,8 +1,8 @@
 package com.automotiva.estetica.rick.adapter.out.persistence.mapper;
 
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.MotivoCancelamentoJpaEntity;
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.OrdemServicoJpaEntity;
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.StatusJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.MotivoCancelamentoJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.OrdemServicoJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.StatusJpaEntity;
 import com.automotiva.estetica.rick.domain.entity.MotivoCancelamento;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import com.automotiva.estetica.rick.domain.entity.Status;

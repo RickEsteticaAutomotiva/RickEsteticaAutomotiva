@@ -113,23 +113,6 @@ class OrdemServicoServiceTest {
         assertEquals(10L, response.getId());
     }
 
-    @Test
-    @DisplayName("Deve lançar exceção ao deletar ordem inexistente")
-    void deletar_inexistente_deveLancarExcecao() {
-        when(ordemServicoRepositoryPort.buscarPorId(99L)).thenReturn(Optional.empty());
-
-        assertThrows(RecursoNaoEncontradoException.class, () -> ordemServicoService.deletar(99L));
-    }
-
-    @Test
-    @DisplayName("Deve deletar ordem de serviço existente com sucesso")
-    void deletar_sucesso() {
-        when(ordemServicoRepositoryPort.buscarPorId(10L)).thenReturn(Optional.of(ordemMock()));
-
-        ordemServicoService.deletar(10L);
-
-        verify(ordemServicoRepositoryPort).deletarPorId(10L);
-    }
 
     @Test
     @DisplayName("Deve retornar página de ordens ao buscar todos")

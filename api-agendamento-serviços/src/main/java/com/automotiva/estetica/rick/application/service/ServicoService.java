@@ -89,6 +89,7 @@ public class ServicoService implements ServicoUseCase {
                 .preco(s.getPreco())
                 .imagem(s.getImagem())
                 .categoriaId(s.getCategoria() != null ? s.getCategoria().getId() : null)
+                .categoriaNome(s.getCategoria() != null ? s.getCategoria().getNome() : null)
                 .build();
     }
 }

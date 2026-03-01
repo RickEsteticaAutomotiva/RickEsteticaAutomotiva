@@ -1,6 +1,6 @@
 package com.automotiva.estetica.rick.adapter.out.persistence.mapper;
 
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.ErroLogJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.ErroLogJpaEntity;
 import com.automotiva.estetica.rick.domain.entity.ErroLog;
 import org.mapstruct.Mapper;
 

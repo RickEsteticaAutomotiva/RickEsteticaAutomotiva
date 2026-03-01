@@ -45,14 +45,6 @@ public class ItemServicoService implements ItemServicoUseCase {
                 .toList();
     }
 
-    @Override
-    public void deletar(Long id) {
-        itemServicoRepositoryPort.buscarPorId(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                .mensagem("o item com id " + id + " não foi encontrado")
-                .detalhes("")
-                .build());
-        itemServicoRepositoryPort.deletarPorId(id);
-    }
 
     private ItemServicoResponse toResponse(ItemServico i) {
         return ItemServicoResponse.builder()

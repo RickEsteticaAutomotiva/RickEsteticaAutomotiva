@@ -1,7 +1,7 @@
 package com.automotiva.estetica.rick.adapter.out.persistence.mapper;
 
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.PessoaJpaEntity;
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.RoleJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.PessoaJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.RoleJpaEntity;
 import com.automotiva.estetica.rick.domain.entity.Pessoa;
 import com.automotiva.estetica.rick.domain.enums.RoleEnum;
 import java.util.Collections;

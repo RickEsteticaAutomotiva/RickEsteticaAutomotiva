@@ -78,14 +78,11 @@ public class CarrinhoService implements CarrinhoUseCase {
 
     @Override
     public List<ServicoCarrinhoResponse> listar(Long idPessoa) {
-        Pessoa pessoa = pessoaRepositoryPort
-                .buscarPorId(idPessoa)
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("Usuário não encontrado: " + idPessoa)
-                        .detalhes("")
-                        .build());
+        if (!pessoaRepositoryPort.existePorId(idPessoa)) {
+            return List.of();
+        }
 
-        return carrinhoRepositoryPort.buscarPorPessoaId(pessoa.getId()).stream()
+        return carrinhoRepositoryPort.buscarPorPessoaId(idPessoa).stream()
                 .map(c -> ServicoCarrinhoResponse.builder()
                         .idCarrinho(c.getId())
                         .idServico(c.getServico().getId())

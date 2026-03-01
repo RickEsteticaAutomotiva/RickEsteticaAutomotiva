@@ -39,7 +39,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @ActiveProfiles("integration-test")
 @Sql(
         scripts = {"/reset-it.sql", "/seed-it.sql"},
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public abstract class AbstractIntegrationTest {
 
     /**
@@ -53,6 +53,8 @@ public abstract class AbstractIntegrationTest {
     protected static final String SENHA_ADMIN = "rick@2024";
     protected static final String EMAIL_USER = "maria.santos@email.com";
     protected static final String SENHA_USER = "senha123";
+    protected static final String EMAIL_GERENTE = "rick.souza@email.com";
+    protected static final String SENHA_GERENTE = "gerente@2024";
 
     @Autowired
     protected MockMvc mockMvc;
@@ -78,6 +80,7 @@ public abstract class AbstractIntegrationTest {
 
     protected String tokenAdmin;
     protected String tokenUser;
+    protected String tokenGerente;
 
     /**
      * Garante que as senhas no banco H2 correspondem às credenciais de teste,
@@ -88,9 +91,11 @@ public abstract class AbstractIntegrationTest {
     void autenticar() throws Exception {
         atualizarSenhaNoBank(EMAIL_ADMIN, SENHA_ADMIN);
         atualizarSenhaNoBank(EMAIL_USER, SENHA_USER);
+        atualizarSenhaNoBank(EMAIL_GERENTE, SENHA_GERENTE);
 
         tokenAdmin = obterToken(EMAIL_ADMIN, SENHA_ADMIN);
         tokenUser = obterToken(EMAIL_USER, SENHA_USER);
+        tokenGerente = obterToken(EMAIL_GERENTE, SENHA_GERENTE);
     }
 
     /**

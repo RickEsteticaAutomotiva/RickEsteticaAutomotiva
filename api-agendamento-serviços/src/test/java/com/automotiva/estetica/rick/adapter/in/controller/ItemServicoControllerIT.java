@@ -55,19 +55,4 @@ class ItemServicoControllerIT extends AbstractIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
-
-    @Test
-    @DisplayName("DELETE /itens-servico/{id} → 204 ao remover item existente")
-    void deletar_sucesso() throws Exception {
-        // Item 3 (da ordem 2) para não impactar a ordem 1 usada em outros testes
-        mockMvc.perform(delete(BASE_PATH + "/itens-servico/3").header("Authorization", bearer(tokenAdmin)))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("DELETE /itens-servico/{id} → 404 quando item não existe")
-    void deletar_naoEncontrado() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/itens-servico/9999").header("Authorization", bearer(tokenAdmin)))
-                .andExpect(status().isNotFound());
-    }
 }

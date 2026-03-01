@@ -17,6 +17,4 @@ public interface OrdemServicoUseCase {
     OrdemServicoResponse criar(OrdemServicoRequest request);
 
     OrdemServicoResponse atualizar(Long id, OrdemServicoRequest request);
-
-    void deletar(Long id);
 }

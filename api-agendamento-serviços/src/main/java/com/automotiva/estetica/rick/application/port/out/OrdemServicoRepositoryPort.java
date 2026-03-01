@@ -23,7 +23,6 @@ public interface OrdemServicoRepositoryPort {
 
     boolean existePorVeiculoIdEDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
 
-    void deletarPorId(Long id);
 
     BigDecimal somarFaturamentoDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
 

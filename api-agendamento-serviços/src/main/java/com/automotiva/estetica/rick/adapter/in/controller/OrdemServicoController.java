@@ -12,7 +12,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -60,12 +59,5 @@ public class OrdemServicoController {
     public ResponseEntity<OrdemServicoResponse> atualizar(
             @PathVariable Long id, @RequestBody OrdemServicoRequest request) {
         return ResponseEntity.ok(ordemServicoUseCase.atualizar(id, request));
-    }
-
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Remove uma ordem de serviço")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        ordemServicoUseCase.deletar(id);
-        return ResponseEntity.noContent().build();
     }
 }

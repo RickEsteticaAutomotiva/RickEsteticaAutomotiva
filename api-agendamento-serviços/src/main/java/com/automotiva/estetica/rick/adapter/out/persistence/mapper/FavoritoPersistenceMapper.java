@@ -1,6 +1,6 @@
 package com.automotiva.estetica.rick.adapter.out.persistence.mapper;
 
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.FavoritoJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.FavoritoJpaEntity;
 import com.automotiva.estetica.rick.domain.entity.Favorito;
 import org.mapstruct.Mapper;
 

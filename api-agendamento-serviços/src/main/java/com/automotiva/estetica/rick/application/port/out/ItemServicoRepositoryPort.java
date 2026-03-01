@@ -13,6 +13,4 @@ public interface ItemServicoRepositoryPort {
     List<ItemServico> buscarTodos();
 
     List<ItemServico> buscarPorOrdemServicoId(Long ordemServicoId);
-
-    void deletarPorId(Long id);
 }

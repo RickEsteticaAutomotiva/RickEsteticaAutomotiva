@@ -41,7 +41,7 @@ class ServicoServiceTest {
                 .descricao("Polimento completo")
                 .preco(BigDecimal.valueOf(300))
                 .imagem("pol.jpg")
-                .categoria(Categoria.builder().id(2L).build())
+                .categoria(Categoria.builder().id(2L).nome("Polimento").build())
                 .build();
     }
 
@@ -110,6 +110,7 @@ class ServicoServiceTest {
         assertEquals(1L, resultado.getId());
         assertEquals("Polimento", resultado.getNome());
         assertEquals(2L, resultado.getCategoriaId());
+        assertEquals("Polimento", resultado.getCategoriaNome());
     }
 
     // ─── criar ──────────────────────────────────────────────────────────────

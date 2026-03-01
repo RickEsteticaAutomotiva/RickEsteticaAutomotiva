@@ -10,6 +10,4 @@ public interface ItemServicoUseCase {
     ItemServicoResponse buscarPorId(Long id);
 
     List<ItemServicoResponse> listarPorOrdem(Long idOrdem);
-
-    void deletar(Long id);
 }

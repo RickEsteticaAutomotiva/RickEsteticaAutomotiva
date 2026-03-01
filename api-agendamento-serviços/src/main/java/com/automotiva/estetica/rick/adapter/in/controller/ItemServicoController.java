@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,12 +38,5 @@ public class ItemServicoController {
     @Operation(summary = "Lista itens de serviço por ordem")
     public ResponseEntity<List<ItemServicoResponse>> listarPorOrdem(@PathVariable Long idOrdem) {
         return ResponseEntity.ok(itemServicoUseCase.listarPorOrdem(idOrdem));
-    }
-
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Remove um item de serviço")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        itemServicoUseCase.deletar(id);
-        return ResponseEntity.noContent().build();
     }
 }

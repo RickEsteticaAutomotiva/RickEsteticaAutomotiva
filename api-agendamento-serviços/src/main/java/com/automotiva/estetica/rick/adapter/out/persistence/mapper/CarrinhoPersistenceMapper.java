@@ -1,6 +1,6 @@
 package com.automotiva.estetica.rick.adapter.out.persistence.mapper;
 
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.CarrinhoJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.CarrinhoJpaEntity;
 import com.automotiva.estetica.rick.domain.entity.Carrinho;
 import org.mapstruct.Mapper;
 

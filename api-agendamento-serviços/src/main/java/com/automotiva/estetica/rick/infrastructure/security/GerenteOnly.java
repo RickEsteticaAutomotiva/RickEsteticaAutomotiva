@@ -8,13 +8,12 @@ import java.lang.annotation.Target;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
- * Meta-anotação de segurança que restringe o acesso aos roles GERENTE e ADMIN.
- *
- * <p>ADMIN é incluído pois é hierarquicamente superior e deve ter acesso
- * a todo recurso de gerência. Para mais detalhes sobre multi-role no Spring
- * Security, consulte: https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html
+ * Meta-anotação de segurança que restringe o acesso exclusivamente ao role GERENTE.
  *
  * <p>Pode ser aplicada na classe (protege todos os métodos) ou em métodos individuais.
+ *
+ * <p>Para adicionar ou remover roles, edite apenas o {@code @PreAuthorize} aqui.
+ * Nenhum controller precisa ser modificado.
  *
  * <p>Camada: infrastructure/security.
  */

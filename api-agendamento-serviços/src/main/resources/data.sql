@@ -18,7 +18,9 @@ INSERT INTO role (id, nome) VALUES (3, 'ROLE_CLIENTE');
 -- TABELA: pessoa_roles (junção N:N entre pessoa e role)
 -- Rodrigo (id=1): ADMIN + USER (multi-role)
 INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (1, 1);
+INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (1, 2);
 INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (1, 3);
+
 -- Maria (id=2): apenas USER
 INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (2, 3);
 -- Rick (id=3): GERENTE + USER (multi-role)

@@ -6,6 +6,7 @@ import com.automotiva.estetica.rick.application.dto.response.QtdOrdensConcluidas
 import com.automotiva.estetica.rick.application.dto.response.QtdOrdensMensalResponse;
 import com.automotiva.estetica.rick.application.dto.response.TicketMedioMensalResponse;
 import com.automotiva.estetica.rick.application.port.in.DashboardUseCase;
+import com.automotiva.estetica.rick.infrastructure.security.GerenteOnly;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/dashboard")
 @RequiredArgsConstructor
+@GerenteOnly
 @Tag(name = "Dashboard", description = "Indicadores e métricas do negócio")
 public class DashboardController {
 

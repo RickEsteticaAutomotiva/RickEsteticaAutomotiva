@@ -170,11 +170,15 @@ class PessoaControllerIT extends AbstractIntegrationTest {
     // ─── Deleção ────────────────────────────────────────────────────────────
 
     @Test
-    @DisplayName("DELETE /pessoas/{id} → 204 ao remover pessoa existente")
+    @DisplayName("DELETE /pessoas/{id} → 204 ao inativar pessoa existente (soft-delete)")
     @Sql(scripts = "/seed-extra-pessoa.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deletar_sucesso() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/pessoas/10").header("Authorization", bearer(tokenAdmin)))
+        mockMvc.perform(delete(BASE_PATH + "/pessoas/100").header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isNoContent());
+
+        // Confirma que a pessoa não aparece mais após o soft-delete (@SQLRestriction filtra deletado_em IS NOT NULL)
+        mockMvc.perform(get(BASE_PATH + "/pessoas/100").header("Authorization", bearer(tokenAdmin)))
+                .andExpect(status().isNotFound());
     }
 
     @Test

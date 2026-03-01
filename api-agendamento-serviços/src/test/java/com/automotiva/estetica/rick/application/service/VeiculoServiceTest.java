@@ -105,11 +105,14 @@ class VeiculoServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção quando pessoa não existir ao buscar veículos por pessoa")
-    void buscarPorPessoaId_pessoaNaoEncontrada_deveLancarExcecao() {
+    @DisplayName("Deve retornar lista vazia quando pessoa não existir ao buscar veículos por pessoa")
+    void buscarPorPessoaId_pessoaNaoEncontrada_deveRetornarListaVazia() {
         when(pessoaRepositoryPort.existePorId(10L)).thenReturn(false);
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> veiculoService.buscarPorPessoaId(10L));
+        List<VeiculoResponse> result = veiculoService.buscarPorPessoaId(10L);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
     @Test

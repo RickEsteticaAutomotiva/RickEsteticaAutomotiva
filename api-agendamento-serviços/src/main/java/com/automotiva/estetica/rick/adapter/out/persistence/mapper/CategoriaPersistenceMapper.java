@@ -1,6 +1,6 @@
 package com.automotiva.estetica.rick.adapter.out.persistence.mapper;
 
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.CategoriaJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.CategoriaJpaEntity;
 import com.automotiva.estetica.rick.domain.entity.Categoria;
 import org.mapstruct.Mapper;
 

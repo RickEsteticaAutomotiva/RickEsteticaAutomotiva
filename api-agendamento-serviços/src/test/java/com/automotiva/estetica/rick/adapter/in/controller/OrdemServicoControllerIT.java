@@ -132,20 +132,4 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk());
     }
-
-    // ─── Deleção ─────────────────────────────────────────────────────────────
-
-    @Test
-    @DisplayName("DELETE /ordem-servicos/{id} → 204 ao remover ordem existente")
-    void deletar_sucesso() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/ordem-servicos/2").header("Authorization", bearer(tokenAdmin)))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("DELETE /ordem-servicos/{id} → 404 quando ordem não existe")
-    void deletar_naoEncontrado() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/ordem-servicos/9999").header("Authorization", bearer(tokenAdmin)))
-                .andExpect(status().isNotFound());
-    }
 }

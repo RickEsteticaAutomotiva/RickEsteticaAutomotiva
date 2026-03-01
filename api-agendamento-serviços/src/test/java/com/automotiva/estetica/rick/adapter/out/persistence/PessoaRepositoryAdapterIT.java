@@ -2,12 +2,16 @@ package com.automotiva.estetica.rick.adapter.out.persistence;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.PessoaJpaEntity;
-import com.automotiva.estetica.rick.adapter.out.persistence.jpa.RoleJpaEntity;
-import com.automotiva.estetica.rick.adapter.out.persistence.mapper.PessoaPersistenceMapper;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.PessoaJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.RoleJpaEntity;
+import com.automotiva.estetica.rick.adapter.out.persistence.mapper.PessoaPersistenceMapperImpl;
+import com.automotiva.estetica.rick.adapter.out.persistence.pessoa.PessoaRepositoryAdapter;
+import com.automotiva.estetica.rick.adapter.out.persistence.pessoa.RoleJpaRepository;
 import com.automotiva.estetica.rick.domain.entity.Pessoa;
 import com.automotiva.estetica.rick.domain.enums.RoleEnum;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
@@ -30,13 +34,17 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @DataJpaTest
 @ActiveProfiles("test")
-@Import({PessoaRepositoryAdapter.class, PessoaPersistenceMapper.class})
+@Import({PessoaRepositoryAdapter.class, PessoaPersistenceMapperImpl.class})
 @DisplayName("Persistência — PessoaRepositoryAdapter")
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 class PessoaRepositoryAdapterIT {
 
     @Autowired
     private TestEntityManager entityManager;
+
+    /** {@link EntityManager} bruto — necessário para queries SQL nativas que ignoram {@code @SQLRestriction}. */
+    @Autowired
+    private EntityManager em;
 
     @Autowired
     private PessoaRepositoryAdapter repositoryAdapter;
@@ -202,14 +210,34 @@ class PessoaRepositoryAdapterIT {
     }
 
     @Test
-    @DisplayName("deletarPorId → remove pessoa do banco")
+    @DisplayName("deletarPorId → aplica soft-delete preenchendo deletadoEm e oculta da busca")
     void deletarPorId_sucesso() {
         PessoaJpaEntity jpa = criarPessoaJpa("Delete Me", "11100099900", "deleteme@email.com");
+        Long id = jpa.getId();
 
-        repositoryAdapter.deletarPorId(jpa.getId());
+        repositoryAdapter.deletarPorId(id);
         entityManager.flush();
+        entityManager.clear();
 
-        assertThat(entityManager.find(PessoaJpaEntity.class, jpa.getId())).isNull();
+        // Query SQL nativa: bypassa o @SQLRestriction("deletado_em IS NULL") do Hibernate.
+        // entityManager.find() e qualquer método JPA derivado aplicam o filtro automaticamente,
+        // tornando o registro invisível após o soft-delete — por isso não podem ser usados aqui.
+        // O H2 retorna java.sql.Timestamp para colunas TIMESTAMP em queries nativas,
+        // por isso a conversão explícita para LocalDateTime é necessária.
+        Object resultado = em
+                .createNativeQuery("SELECT deletado_em FROM pessoa WHERE id = :id")
+                .setParameter("id", id)
+                .getSingleResult();
+
+        LocalDateTime deletadoEm = resultado instanceof java.sql.Timestamp ts
+                ? ts.toLocalDateTime()
+                : (LocalDateTime) resultado;
+
+        assertThat(deletadoEm).isNotNull();
+
+        // @SQLRestriction oculta o registro nas queries JPA normais
+        assertThat(repositoryAdapter.buscarPorId(id)).isEmpty();
+        assertThat(repositoryAdapter.existePorId(id)).isFalse();
     }
 
     @Test

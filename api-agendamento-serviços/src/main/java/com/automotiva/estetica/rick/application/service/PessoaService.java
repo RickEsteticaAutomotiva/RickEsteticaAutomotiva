@@ -22,8 +22,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -157,7 +159,14 @@ public class PessoaService implements PessoaUseCase, UserDetailsService {
     public TokenResponse login(LoginRequest request) {
         UsernamePasswordAuthenticationToken credentials =
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getSenha());
-        Authentication authentication = authenticationManager.authenticate(credentials);
+
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(credentials);
+        } catch (AuthenticationException ex) {
+            throw new BadCredentialsException("E-mail ou senha incorretos", ex);
+        }
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         Pessoa pessoa = pessoaRepositoryPort

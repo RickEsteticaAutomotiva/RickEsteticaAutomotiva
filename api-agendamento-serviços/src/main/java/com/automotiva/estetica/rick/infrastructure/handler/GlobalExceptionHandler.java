@@ -19,8 +19,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -106,11 +109,21 @@ public class GlobalExceptionHandler {
     /**
      * Trata negações de acesso lançadas pelo Spring Security (@PreAuthorize, @Secured, etc.).
      *
-     * <p>Retorna 403 FORBIDDEN com ProblemDetail. Não persiste no erro_log pois acesso negado
-     * é um evento de segurança esperado, não um erro de servidor.
+     * <p>Se o usuário não está autenticado (anônimo), relança a exceção para que o
+     * {@code authenticationEntryPoint} do Spring Security devolva 401 UNAUTHORIZED.
+     * Se está autenticado mas sem permissão, retorna 403 FORBIDDEN com ProblemDetail.
      */
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ProblemDetail> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+    public ResponseEntity<ProblemDetail> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request)
+            throws AccessDeniedException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAnonymous = auth == null
+                || !auth.isAuthenticated()
+                || "anonymousUser".equals(auth.getPrincipal());
+        if (isAnonymous) {
+            // Não autenticado — deixa o authenticationEntryPoint devolver 401
+            throw ex;
+        }
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
         problem.setType(URI.create("https://api.rickestetica.com.br/errors/acesso-negado"));
         problem.setTitle("Acesso negado");
@@ -119,6 +132,65 @@ public class GlobalExceptionHandler {
         problem.setProperty("path", request.getRequestURI());
         problem.setProperty("motivo", ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problem);
+    }
+
+    /**
+     * Trata falhas de autenticação por credenciais inválidas (e-mail ou senha errados).
+     *
+     * <p>Retorna 401 UNAUTHORIZED com mensagem genérica para evitar <em>user enumeration attack</em>.
+     * Não persiste no erro_log pois é um evento de segurança esperado, não um erro de servidor.
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ProblemDetail> handleBadCredentials(
+            BadCredentialsException ex, HttpServletRequest request) {
+        log.debug("Tentativa de login com credenciais inválidas em [{}]: {}", request.getRequestURI(), ex.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        problem.setType(URI.create("https://api.rickestetica.com.br/errors/credenciais-invalidas"));
+        problem.setTitle("Credenciais inválidas");
+        problem.setDetail("E-mail ou senha incorretos");
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
+    }
+
+    /**
+     * Trata o wrapper lançado pelo Spring Security quando o UserDetailsService lança qualquer
+     * exceção durante a autenticação (ex: UsernameNotFoundException).
+     *
+     * <p>O Spring Security captura exceções não-checadas lançadas dentro do AuthenticationProvider
+     * e as re-lança envoltas em InternalAuthenticationServiceException — por isso a
+     * UsernameNotFoundException nunca chega diretamente ao handler. Este método desempacota
+     * e delega para handleBadCredentials para retornar 401 com mensagem genérica.
+     */
+    @ExceptionHandler(InternalAuthenticationServiceException.class)
+    public ResponseEntity<ProblemDetail> handleInternalAuthService(
+            InternalAuthenticationServiceException ex, HttpServletRequest request) {
+        log.debug(
+                "Falha interna de autenticação em [{}] — causa: {}",
+                request.getRequestURI(),
+                ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage());
+        return handleBadCredentials(new BadCredentialsException("E-mail ou senha incorretos", ex), request);
+    }
+
+    /**
+     * Trata o caso em que o e-mail informado no login não existe na base.
+     *
+     * <p>O {@link org.springframework.security.authentication.AuthenticationProvider} customizado
+     * não herda de {@code DaoAuthenticationProvider}, portanto a {@code UsernameNotFoundException}
+     * não é convertida automaticamente em {@code BadCredentialsException}. Este handler garante
+     * que qualquer um dos dois caminhos retorne sempre 401 com a mesma mensagem genérica.
+     */
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ProblemDetail> handleUsernameNotFound(
+            UsernameNotFoundException ex, HttpServletRequest request) {
+        log.debug("Tentativa de login com e-mail inexistente em [{}]: {}", request.getRequestURI(), ex.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        problem.setType(URI.create("https://api.rickestetica.com.br/errors/credenciais-invalidas"));
+        problem.setTitle("Credenciais inválidas");
+        problem.setDetail("E-mail ou senha incorretos");
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
     }
 
     @ExceptionHandler(Exception.class)

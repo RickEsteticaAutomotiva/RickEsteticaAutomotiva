@@ -134,11 +134,14 @@ class FavoritoServiceTest {
     // ─── listar ─────────────────────────────────────────────────────────────
 
     @Test
-    @DisplayName("Deve lançar exceção ao listar favoritos quando pessoa não existir")
-    void listar_pessoaNaoEncontrada_deveLancarExcecao() {
+    @DisplayName("Deve retornar lista vazia ao listar favoritos quando pessoa não existir")
+    void listar_pessoaNaoEncontrada_deveRetornarListaVazia() {
         when(pessoaRepositoryPort.existePorId(2L)).thenReturn(false);
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> favoritoService.listar(2L));
+        List<ServicoFavoritoResponse> resultado = favoritoService.listar(2L);
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
     }
 
     @Test
