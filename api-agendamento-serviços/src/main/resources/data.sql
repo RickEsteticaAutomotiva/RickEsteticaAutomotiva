@@ -2,13 +2,35 @@
 -- DADOS FICTÍCIOS - SISTEMA AUTOMOTIVA
 -- ===============================
 
--- TABELA: pessoa
+-- TABELA: pessoa (sem coluna role — roles são persistidas em pessoa_roles)
 INSERT INTO pessoa (nome, cpf, email, telefone, data_nascimento, senha) VALUES
 ('Rodrigo Santos', '12345678901', 'rodrigoapolodev@gmail.com', '11987654321', '1990-05-15', '$2a$10$351eVELULypd9x8ong42rOgTIMdw6sitDwqIvRIFGVDHi7cXRIGL2'),
 ('Maria Santos', '23456789012', 'maria.santos@email.com', '11876543210', '1985-08-20', 'senha123'),
-('Pedro Oliveira', '34567890123', 'pedro.oliveira@email.com', '11765432109', '1992-12-10', 'senha123'),
+('rick', '34567890123', 'rick@email.com', '11765432109', '1992-12-10', 'senha123'),
 ('Ana Costa', '45678901234', 'ana.costa@email.com', '11654321098', '1988-03-25', 'senha123'),
 ('Carlos Ferreira', '56789012345', 'carlos.ferreira@email.com', '11543210987', '1995-07-08', 'senha123');
+
+-- TABELA: role (entidade de referência — deve ser inserida ANTES de pessoa_roles)
+INSERT INTO role (id, nome) VALUES (1, 'ROLE_ADMIN');
+INSERT INTO role (id, nome) VALUES (2, 'ROLE_GERENTE');
+INSERT INTO role (id, nome) VALUES (3, 'ROLE_CLIENTE');
+
+-- TABELA: pessoa_roles (junção N:N entre pessoa e role)
+-- Rodrigo (id=1): ADMIN + USER (multi-role)
+INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (1, 1);
+INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (1, 2);
+INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (1, 3);
+
+-- Maria (id=2): apenas USER
+INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (2, 3);
+-- Rick (id=3): GERENTE + USER (multi-role)
+INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (3, 2);
+INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (3, 3);
+-- Ana (id=4): apenas USER
+INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (4, 3);
+-- Carlos (id=5): apenas USER
+INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (5, 3);
+
 
 
 -- Inserir categorias primeiro

@@ -38,7 +38,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -52,6 +55,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -139,6 +147,38 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- Exclui arquivos *IT.java do surefire (unitários apenas) -->
+					<excludes>
+						<exclude>**/*IT.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<!-- Inclui todos os testes de integração (*IT.java) -->
+					<includes>
+						<include>**/*IT.java</include>
+					</includes>
+					<!-- Garante que falha no IT falha o build -->
+					<failIfNoTests>false</failIfNoTests>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
 				<configuration>
@@ -162,6 +202,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<mainClass>com.automotiva.estetica.rick.ApiAgendamentoApplication</mainClass>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
@@ -203,15 +244,18 @@
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>2.43.0</version>
+				<version>2.46.1</version>
 
 				<configuration>
 					<java>
 						<!-- Remove imports não usados -->
 						<removeUnusedImports />
 
-						<!-- Aplica formatação do Google (corrige ponto e vírgula, indentação, chaves, etc.) -->
-						<palantirJavaFormat />
+						<!-- Google Java Format — compatível com JDK 21, sem dependência de APIs internas do javac -->
+						<googleJavaFormat>
+							<version>1.22.0</version>
+							<style>AOSP</style>
+						</googleJavaFormat>
 
 						<!-- Opcional: garante UTF-8 e nova linha no fim -->
 						<encoding>UTF-8</encoding>
@@ -221,7 +265,11 @@
 
 				<executions>
 					<execution>
-						<phase>validate</phase>
+						<id>spotless-apply</id>
+						<!-- fase 'none' desabilita execução automática no ciclo de build.
+						     Use: mvn spotless:apply  — para formatar manualmente
+						          mvn spotless:check  — para verificar no CI -->
+						<phase>none</phase>
 						<goals>
 							<goal>apply</goal>
 						</goals>
