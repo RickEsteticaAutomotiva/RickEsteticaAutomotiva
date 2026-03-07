@@ -10,10 +10,7 @@ import com.automotiva.estetica.rick.infrastructure.messaging.rabbitMq.RabbitMqCo
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -21,16 +18,16 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RabbitOrdemServicoPublisher implements OrdemServicoEventPublisherPort {
 
-    private static final Logger log = LoggerFactory.getLogger(RabbitOrdemServicoPublisher.class);
-    @Autowired private RabbitTemplate rabbitTemplate;
-
+    private final RabbitTemplate rabbitTemplate;
     private final ServicoRepositoryPort servicoRepositoryPort;
 
     @Override
     public void publicarOrdemServicoCriada(
             OrdemServico ordemServico, OrdemServicoRequest ordemServicoRequest) {
+
         List<String> servicos =
-                servicoRepositoryPort.buscarPorIds(ordemServicoRequest.getServicos()).stream()
+                servicoRepositoryPort.buscarPorIds(ordemServicoRequest.getServicos())
+                        .stream()
                         .map(Servico::getNome)
                         .toList();
 
@@ -47,7 +44,8 @@ public class RabbitOrdemServicoPublisher implements OrdemServicoEventPublisherPo
                         servicos,
                         observacoes);
 
-        log.info("enviando evento para a fila de criação de ordem de serviço:{}", event);
+        log.info("Enviando evento para a fila de criação de ordem de serviço: {}", event);
+
         rabbitTemplate.convertAndSend(RabbitMqConsts.ORDEM_SERVICO_CRIADA_QUEUE, event);
     }
 }
