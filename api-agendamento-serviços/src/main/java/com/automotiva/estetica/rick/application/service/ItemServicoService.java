@@ -32,10 +32,12 @@ public class ItemServicoService implements ItemServicoUseCase {
         return itemServicoRepositoryPort
                 .buscarPorId(id)
                 .map(this::toResponse)
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("o item com id " + id + " não foi encontrado")
-                        .detalhes("")
-                        .build());
+                .orElseThrow(
+                        () ->
+                                RecursoNaoEncontradoException.builder()
+                                        .mensagem("o item com id " + id + " não foi encontrado")
+                                        .detalhes("")
+                                        .build());
     }
 
     @Override
@@ -45,13 +47,11 @@ public class ItemServicoService implements ItemServicoUseCase {
                 .toList();
     }
 
-
     private ItemServicoResponse toResponse(ItemServico i) {
         return ItemServicoResponse.builder()
                 .id(i.getId())
                 .idServico(i.getServico() != null ? i.getServico().getId() : null)
-                .idOrdemServico(
-                        i.getOrdemServico() != null ? i.getOrdemServico().getId() : null)
+                .idOrdemServico(i.getOrdemServico() != null ? i.getOrdemServico().getId() : null)
                 .preco(i.getPreco())
                 .build();
     }

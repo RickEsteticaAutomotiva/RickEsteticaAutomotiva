@@ -27,17 +27,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CarrinhoServiceTest {
 
-    @Mock
-    private CarrinhoRepositoryPort carrinhoRepositoryPort;
+    @Mock private CarrinhoRepositoryPort carrinhoRepositoryPort;
 
-    @Mock
-    private PessoaRepositoryPort pessoaRepositoryPort;
+    @Mock private PessoaRepositoryPort pessoaRepositoryPort;
 
-    @Mock
-    private ServicoRepositoryPort servicoRepositoryPort;
+    @Mock private ServicoRepositoryPort servicoRepositoryPort;
 
-    @InjectMocks
-    private CarrinhoService carrinhoService;
+    @InjectMocks private CarrinhoService carrinhoService;
 
     private Pessoa pessoaMock() {
         return Pessoa.builder().id(1L).nome("João").build();
@@ -67,7 +63,9 @@ class CarrinhoServiceTest {
     void adicionar_pessoaNaoEncontrada_deveLancarExcecao() {
         when(pessoaRepositoryPort.buscarPorId(1L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> carrinhoService.adicionar(requestMock()));
+        assertThrows(
+                RecursoNaoEncontradoException.class,
+                () -> carrinhoService.adicionar(requestMock()));
         verify(servicoRepositoryPort, never()).buscarPorId(any());
     }
 
@@ -77,7 +75,9 @@ class CarrinhoServiceTest {
         when(pessoaRepositoryPort.buscarPorId(1L)).thenReturn(Optional.of(pessoaMock()));
         when(servicoRepositoryPort.buscarPorId(10L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> carrinhoService.adicionar(requestMock()));
+        assertThrows(
+                RecursoNaoEncontradoException.class,
+                () -> carrinhoService.adicionar(requestMock()));
         verify(carrinhoRepositoryPort, never()).salvar(any());
     }
 
@@ -91,7 +91,8 @@ class CarrinhoServiceTest {
         when(servicoRepositoryPort.buscarPorId(10L)).thenReturn(Optional.of(servico));
         when(carrinhoRepositoryPort.existePorPessoaEServico(pessoa, servico)).thenReturn(true);
 
-        assertThrows(RecursoJaExisteException.class, () -> carrinhoService.adicionar(requestMock()));
+        assertThrows(
+                RecursoJaExisteException.class, () -> carrinhoService.adicionar(requestMock()));
         verify(carrinhoRepositoryPort, never()).salvar(any());
     }
 
@@ -138,7 +139,9 @@ class CarrinhoServiceTest {
     void limparCarrinhoPessoa_pessoaNaoEncontrada_deveLancarExcecao() {
         when(pessoaRepositoryPort.buscarPorId(1L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> carrinhoService.limparCarrinhoPessoa(1L));
+        assertThrows(
+                RecursoNaoEncontradoException.class,
+                () -> carrinhoService.limparCarrinhoPessoa(1L));
         verify(carrinhoRepositoryPort, never()).deletarTodos(any());
     }
 
@@ -187,8 +190,7 @@ class CarrinhoServiceTest {
     void listar_sucesso() {
         Pessoa pessoa = pessoaMock();
         Servico servico = servicoMock();
-        Carrinho carrinho =
-                Carrinho.builder().id(1L).pessoa(pessoa).servico(servico).build();
+        Carrinho carrinho = Carrinho.builder().id(1L).pessoa(pessoa).servico(servico).build();
 
         when(pessoaRepositoryPort.existePorId(1L)).thenReturn(true);
         when(carrinhoRepositoryPort.buscarPorPessoaId(1L)).thenReturn(List.of(carrinho));

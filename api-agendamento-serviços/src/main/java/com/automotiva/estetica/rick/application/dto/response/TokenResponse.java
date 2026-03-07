@@ -19,6 +19,7 @@ public class TokenResponse {
     private String email;
     private String nome;
     private String token;
+
     /** Roles do usuário autenticado — útil para o front-end controlar menus/rotas. */
     private Set<RoleEnum> roles;
 }

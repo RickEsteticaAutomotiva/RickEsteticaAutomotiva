@@ -12,8 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
  *
  * <p>Pode ser aplicada na classe (protege todos os métodos) ou em métodos individuais.
  *
- * <p>Para adicionar ou remover roles, edite apenas o {@code @PreAuthorize} aqui.
- * Nenhum controller precisa ser modificado.
+ * <p>Para adicionar ou remover roles, edite apenas o {@code @PreAuthorize} aqui. Nenhum controller
+ * precisa ser modificado.
  *
  * <p>Camada: infrastructure/security.
  */
@@ -22,4 +22,3 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @Documented
 @PreAuthorize("hasRole('CLIENTE')")
 public @interface ClienteOnly {}
-

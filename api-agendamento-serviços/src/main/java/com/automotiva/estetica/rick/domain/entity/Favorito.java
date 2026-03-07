@@ -17,12 +17,12 @@ public class Favorito {
     private Pessoa pessoa;
     private Servico servico;
 
-    /**
-     * Regra de domínio: um favorito sempre exige pessoa e serviço.
-     */
+    /** Regra de domínio: um favorito sempre exige pessoa e serviço. */
     public static Favorito criar(Pessoa pessoa, Servico servico) {
-        if (pessoa == null) throw new IllegalArgumentException("Pessoa não pode ser nula no favorito");
-        if (servico == null) throw new IllegalArgumentException("Serviço não pode ser nulo no favorito");
+        if (pessoa == null)
+            throw new IllegalArgumentException("Pessoa não pode ser nula no favorito");
+        if (servico == null)
+            throw new IllegalArgumentException("Serviço não pode ser nulo no favorito");
         return Favorito.builder().pessoa(pessoa).servico(servico).build();
     }
 }

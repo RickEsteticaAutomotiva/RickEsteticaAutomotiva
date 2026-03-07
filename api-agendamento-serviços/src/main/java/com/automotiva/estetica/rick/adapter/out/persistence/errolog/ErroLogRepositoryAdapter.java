@@ -47,7 +47,10 @@ public class ErroLogRepositoryAdapter implements ErroLogRepositoryPort {
             Pageable pageable) {
 
         return jpaRepository
-                .findAll(ErroLogSpecification.comFiltros(tipoExcecao, statusHttp, usuarioEmail, de, ate), pageable)
+                .findAll(
+                        ErroLogSpecification.comFiltros(
+                                tipoExcecao, statusHttp, usuarioEmail, de, ate),
+                        pageable)
                 .map(mapper::toDomain);
     }
 

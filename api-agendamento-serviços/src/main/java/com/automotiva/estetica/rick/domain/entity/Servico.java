@@ -21,12 +21,12 @@ public class Servico {
     private String imagem;
     private Categoria categoria;
 
-    public void atualizar(String nome, String descricao, BigDecimal preco, String imagem, Long categoriaId) {
+    public void atualizar(
+            String nome, String descricao, BigDecimal preco, String imagem, Long categoriaId) {
         if (nome != null) this.nome = nome;
         if (descricao != null) this.descricao = descricao;
         if (preco != null) this.preco = preco;
         if (imagem != null) this.imagem = imagem;
-        if (categoriaId != null)
-            this.categoria = Categoria.builder().id(categoriaId).build();
+        if (categoriaId != null) this.categoria = Categoria.builder().id(categoriaId).build();
     }
 }

@@ -35,9 +35,7 @@ public class FavoritoRepositoryAdapter implements FavoritoRepositoryPort {
 
     @Override
     public List<Favorito> buscarPorPessoaId(Long pessoaId) {
-        return jpaRepository.findByPessoaId(pessoaId).stream()
-                .map(mapper::toDomain)
-                .toList();
+        return jpaRepository.findByPessoaId(pessoaId).stream().map(mapper::toDomain).toList();
     }
 
     @Override

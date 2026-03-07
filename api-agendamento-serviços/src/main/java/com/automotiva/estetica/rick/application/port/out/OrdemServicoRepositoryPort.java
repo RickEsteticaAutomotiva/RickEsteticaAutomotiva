@@ -23,7 +23,6 @@ public interface OrdemServicoRepositoryPort {
 
     boolean existePorVeiculoIdEDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
 
-
     BigDecimal somarFaturamentoDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
 
     Integer buscarQtdOrdensDoMes(LocalDateTime inicio, LocalDateTime fim);

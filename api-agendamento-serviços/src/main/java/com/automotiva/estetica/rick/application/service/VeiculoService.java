@@ -21,31 +21,36 @@ public class VeiculoService implements VeiculoUseCase {
 
     @Override
     public VeiculoResponse cadastrar(VeiculoRequest request) {
-        Pessoa pessoa = pessoaRepositoryPort
-                .buscarPorId(request.getIdPessoa())
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("a pessoa com id " + request.getIdPessoa() + " não foi encontrada")
-                        .detalhes("")
-                        .build());
+        Pessoa pessoa =
+                pessoaRepositoryPort
+                        .buscarPorId(request.getIdPessoa())
+                        .orElseThrow(
+                                () ->
+                                        RecursoNaoEncontradoException.builder()
+                                                .mensagem(
+                                                        "a pessoa com id "
+                                                                + request.getIdPessoa()
+                                                                + " não foi encontrada")
+                                                .detalhes("")
+                                                .build());
 
-        Veiculo veiculo = Veiculo.builder()
-                .placa(request.getPlaca())
-                .modelo(request.getModelo())
-                .marca(request.getMarca())
-                .porte(request.getPorte())
-                .cor(request.getCor())
-                .ano(request.getAno())
-                .pessoa(pessoa)
-                .build();
+        Veiculo veiculo =
+                Veiculo.builder()
+                        .placa(request.getPlaca())
+                        .modelo(request.getModelo())
+                        .marca(request.getMarca())
+                        .porte(request.getPorte())
+                        .cor(request.getCor())
+                        .ano(request.getAno())
+                        .pessoa(pessoa)
+                        .build();
 
         return toResponse(veiculoRepositoryPort.salvar(veiculo));
     }
 
     @Override
     public List<VeiculoResponse> buscarTodos() {
-        return veiculoRepositoryPort.buscarTodos().stream()
-                .map(this::toResponse)
-                .toList();
+        return veiculoRepositoryPort.buscarTodos().stream().map(this::toResponse).toList();
     }
 
     @Override
@@ -60,12 +65,18 @@ public class VeiculoService implements VeiculoUseCase {
 
     @Override
     public void atualizar(Long id, VeiculoRequest request) {
-        Veiculo veiculo = veiculoRepositoryPort
-                .buscarPorId(id)
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("o veículo com id " + id + " não foi encontrado")
-                        .detalhes("")
-                        .build());
+        Veiculo veiculo =
+                veiculoRepositoryPort
+                        .buscarPorId(id)
+                        .orElseThrow(
+                                () ->
+                                        RecursoNaoEncontradoException.builder()
+                                                .mensagem(
+                                                        "o veículo com id "
+                                                                + id
+                                                                + " não foi encontrado")
+                                                .detalhes("")
+                                                .build());
 
         veiculo.atualizar(
                 request.getPlaca(),

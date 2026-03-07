@@ -17,8 +17,8 @@ import org.springframework.data.domain.Pageable;
 public interface ErroLogUseCase {
 
     /**
-     * Persiste um erro capturado em runtime.
-     * Chamado de forma assíncrona — nunca deve lançar exceção.
+     * Persiste um erro capturado em runtime. Chamado de forma assíncrona — nunca deve lançar
+     * exceção.
      */
     void registrar(ErroLog erroLog);
 
@@ -29,8 +29,8 @@ public interface ErroLogUseCase {
     Page<ErroLogResponse> buscarTodos(Pageable pageable);
 
     /**
-     * Lista logs com filtros opcionais: tipo de exceção, status HTTP,
-     * e-mail do usuário e intervalo de datas.
+     * Lista logs com filtros opcionais: tipo de exceção, status HTTP, e-mail do usuário e intervalo
+     * de datas.
      */
     Page<ErroLogResponse> buscarComFiltros(
             String tipoExcecao,

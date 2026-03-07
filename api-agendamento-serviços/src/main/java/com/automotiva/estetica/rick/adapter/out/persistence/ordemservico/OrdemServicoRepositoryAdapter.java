@@ -50,10 +50,10 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepositoryPort
     }
 
     @Override
-    public boolean existePorVeiculoIdEDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento) {
+    public boolean existePorVeiculoIdEDataAgendamento(
+            Long veiculoId, LocalDateTime dataAgendamento) {
         return jpaRepository.existsByVeiculoIdAndDataAgendamento(veiculoId, dataAgendamento);
     }
-
 
     @Override
     public BigDecimal somarFaturamentoDoPeriodo(LocalDateTime inicio, LocalDateTime fim) {
@@ -78,7 +78,11 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepositoryPort
     @Override
     public List<FaturamentoDiarioDto> buscarFaturamentoPorDia(LocalDateTime dataInicial) {
         return jpaRepository.buscarFaturamentoPorDia(dataInicial).stream()
-                .map(row -> new FaturamentoDiarioDto(((java.sql.Date) row[0]).toLocalDate(), (BigDecimal) row[1]))
+                .map(
+                        row ->
+                                new FaturamentoDiarioDto(
+                                        ((java.sql.Date) row[0]).toLocalDate(),
+                                        (BigDecimal) row[1]))
                 .toList();
     }
 }

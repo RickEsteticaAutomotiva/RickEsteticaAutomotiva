@@ -23,11 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ItemServicoServiceTest {
 
-    @Mock
-    private ItemServicoRepositoryPort itemServicoRepositoryPort;
+    @Mock private ItemServicoRepositoryPort itemServicoRepositoryPort;
 
-    @InjectMocks
-    private ItemServicoService itemServicoService;
+    @InjectMocks private ItemServicoService itemServicoService;
 
     private ItemServico itemMock() {
         Servico servico = Servico.builder().id(1L).build();
@@ -83,7 +81,8 @@ class ItemServicoServiceTest {
     @Test
     @DisplayName("Deve retornar lista de itens ao listar por ordem de serviço")
     void listarPorOrdem_sucesso() {
-        when(itemServicoRepositoryPort.buscarPorOrdemServicoId(10L)).thenReturn(List.of(itemMock()));
+        when(itemServicoRepositoryPort.buscarPorOrdemServicoId(10L))
+                .thenReturn(List.of(itemMock()));
 
         List<ItemServicoResponse> resposta = itemServicoService.listarPorOrdem(10L);
 

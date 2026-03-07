@@ -48,10 +48,9 @@ class GlobalExceptionHandlerTest {
 
         // Popula SecurityContext com usuário autenticado (simula ROLE_ADMIN autenticado)
         // necessário para que handleAccessDenied retorne 403 (não 401 para anônimos)
-        var auth = new UsernamePasswordAuthenticationToken(
-                "admin@test.com",
-                null,
-                List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        var auth =
+                new UsernamePasswordAuthenticationToken(
+                        "admin@test.com", null, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
@@ -65,10 +64,11 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Deve retornar 404 para RecursoNaoEncontradoException")
     void handleDomainException_recursoNaoEncontrado_deveRetornar404() {
-        RecursoNaoEncontradoException ex = RecursoNaoEncontradoException.builder()
-                .mensagem("Recurso não encontrado")
-                .detalhes("Detalhe do erro")
-                .build();
+        RecursoNaoEncontradoException ex =
+                RecursoNaoEncontradoException.builder()
+                        .mensagem("Recurso não encontrado")
+                        .detalhes("Detalhe do erro")
+                        .build();
 
         ResponseEntity<ProblemDetail> response = handler.handleDomainException(ex, request);
 
@@ -84,10 +84,11 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Deve retornar 409 para RecursoJaExisteException")
     void handleDomainException_recursoJaExiste_deveRetornar409() {
-        RecursoJaExisteException ex = RecursoJaExisteException.builder()
-                .mensagem("Recurso já existe")
-                .detalhes("")
-                .build();
+        RecursoJaExisteException ex =
+                RecursoJaExisteException.builder()
+                        .mensagem("Recurso já existe")
+                        .detalhes("")
+                        .build();
 
         ResponseEntity<ProblemDetail> response = handler.handleDomainException(ex, request);
 
@@ -99,10 +100,8 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Deve incluir tipo correto na URI do ProblemDetail")
     void handleDomainException_deveIncluirTipoNaUri() {
-        RecursoNaoEncontradoException ex = RecursoNaoEncontradoException.builder()
-                .mensagem("msg")
-                .detalhes("")
-                .build();
+        RecursoNaoEncontradoException ex =
+                RecursoNaoEncontradoException.builder().mensagem("msg").detalhes("").build();
 
         ResponseEntity<ProblemDetail> response = handler.handleDomainException(ex, request);
 
@@ -113,10 +112,8 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Deve incluir timestamp no ProblemDetail de DomainException")
     void handleDomainException_deveIncluirTimestamp() {
-        RecursoNaoEncontradoException ex = RecursoNaoEncontradoException.builder()
-                .mensagem("msg")
-                .detalhes("")
-                .build();
+        RecursoNaoEncontradoException ex =
+                RecursoNaoEncontradoException.builder().mensagem("msg").detalhes("").build();
 
         ResponseEntity<ProblemDetail> response = handler.handleDomainException(ex, request);
 
@@ -144,7 +141,8 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Deve incluir timestamp na Exception genérica")
     void handleGeneric_deveIncluirTimestamp() {
-        ResponseEntity<ProblemDetail> response = handler.handleGeneric(new RuntimeException("erro"), request);
+        ResponseEntity<ProblemDetail> response =
+                handler.handleGeneric(new RuntimeException("erro"), request);
 
         assertNotNull(response.getBody());
         var props = response.getBody().getProperties();
@@ -155,7 +153,8 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Deve incluir URI correta para erros genéricos")
     void handleGeneric_deveIncluirUriCorreta() {
-        ResponseEntity<ProblemDetail> response = handler.handleGeneric(new RuntimeException("erro"), request);
+        ResponseEntity<ProblemDetail> response =
+                handler.handleGeneric(new RuntimeException("erro"), request);
 
         assertNotNull(response.getBody());
         assertTrue(response.getBody().getType().toString().contains("interno"));
@@ -174,8 +173,7 @@ class GlobalExceptionHandlerTest {
         assertNotNull(response.getBody());
         assertEquals("Acesso negado", response.getBody().getTitle());
         assertEquals(
-                "Você não tem permissão para acessar este recurso",
-                response.getBody().getDetail());
+                "Você não tem permissão para acessar este recurso", response.getBody().getDetail());
     }
 
     @Test
@@ -205,9 +203,12 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar 403 para AuthorizationDeniedException (subclasse de AccessDeniedException)")
-    void handleAccessDenied_authorizationDeniedException_deveRetornar403() throws AccessDeniedException {
-        AuthorizationDeniedException ex = new AuthorizationDeniedException("Access Denied", () -> false);
+    @DisplayName(
+            "Deve retornar 403 para AuthorizationDeniedException (subclasse de AccessDeniedException)")
+    void handleAccessDenied_authorizationDeniedException_deveRetornar403()
+            throws AccessDeniedException {
+        AuthorizationDeniedException ex =
+                new AuthorizationDeniedException("Access Denied", () -> false);
 
         ResponseEntity<ProblemDetail> response = handler.handleAccessDenied(ex, request);
 
@@ -245,7 +246,8 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Deve retornar 401 para UsernameNotFoundException")
     void handleUsernameNotFound_deveRetornar401() {
-        UsernameNotFoundException ex = new UsernameNotFoundException("Usuário não encontrado: test@test.com");
+        UsernameNotFoundException ex =
+                new UsernameNotFoundException("Usuário não encontrado: test@test.com");
 
         ResponseEntity<ProblemDetail> response = handler.handleUsernameNotFound(ex, request);
 
@@ -256,9 +258,11 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("Deve usar mensagem genérica para não vazar se o e-mail existe (anti user-enumeration)")
+    @DisplayName(
+            "Deve usar mensagem genérica para não vazar se o e-mail existe (anti user-enumeration)")
     void handleUsernameNotFound_deveMensagemGenerica() {
-        UsernameNotFoundException ex = new UsernameNotFoundException("Usuário não encontrado: rodrigo@email.com");
+        UsernameNotFoundException ex =
+                new UsernameNotFoundException("Usuário não encontrado: rodrigo@email.com");
 
         ResponseEntity<ProblemDetail> response = handler.handleUsernameNotFound(ex, request);
 
@@ -321,9 +325,10 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Deve retornar 401 para InternalAuthenticationServiceException")
     void handleInternalAuthService_deveRetornar401() {
-        InternalAuthenticationServiceException ex = new InternalAuthenticationServiceException(
-                "Usuário não encontrado",
-                new UsernameNotFoundException("Usuário não encontrado: test@test.com"));
+        InternalAuthenticationServiceException ex =
+                new InternalAuthenticationServiceException(
+                        "Usuário não encontrado",
+                        new UsernameNotFoundException("Usuário não encontrado: test@test.com"));
 
         ResponseEntity<ProblemDetail> response = handler.handleInternalAuthService(ex, request);
 
@@ -334,11 +339,13 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("InternalAuthenticationServiceException deve usar mensagem genérica (anti user-enumeration)")
+    @DisplayName(
+            "InternalAuthenticationServiceException deve usar mensagem genérica (anti user-enumeration)")
     void handleInternalAuthService_deveMensagemGenerica() {
-        InternalAuthenticationServiceException ex = new InternalAuthenticationServiceException(
-                "Usuário não encontrado: rodrigo@email.com",
-                new UsernameNotFoundException("Usuário não encontrado: rodrigo@email.com"));
+        InternalAuthenticationServiceException ex =
+                new InternalAuthenticationServiceException(
+                        "Usuário não encontrado: rodrigo@email.com",
+                        new UsernameNotFoundException("Usuário não encontrado: rodrigo@email.com"));
 
         ResponseEntity<ProblemDetail> response = handler.handleInternalAuthService(ex, request);
 
@@ -348,13 +355,15 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("Não deve chamar registrar() no ErroLogUseCase para InternalAuthenticationServiceException")
+    @DisplayName(
+            "Não deve chamar registrar() no ErroLogUseCase para InternalAuthenticationServiceException")
     void handleInternalAuthService_naoDeveLogar() {
         ErroLogUseCase erroLogMock = mock(ErroLogUseCase.class);
         GlobalExceptionHandler handlerComMock = new GlobalExceptionHandler(erroLogMock);
 
         handlerComMock.handleInternalAuthService(
-                new InternalAuthenticationServiceException("falha", new RuntimeException("causa")), request);
+                new InternalAuthenticationServiceException("falha", new RuntimeException("causa")),
+                request);
 
         verify(erroLogMock, never()).registrar(any());
     }

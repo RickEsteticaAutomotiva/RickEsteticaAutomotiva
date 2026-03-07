@@ -38,8 +38,8 @@ public class ServicoJpaEntity extends BaseJpaEntity<Long> {
     private String imagem;
 
     /**
-     * Data e hora em que o serviço foi inativado (soft delete).
-     * {@code null} indica que o registro está ativo.
+     * Data e hora em que o serviço foi inativado (soft delete). {@code null} indica que o registro
+     * está ativo.
      */
     @Column(name = "deletado_em")
     private LocalDateTime deletadoEm;

@@ -4,11 +4,13 @@ import org.springframework.http.HttpStatus;
 
 public class RecursoNaoEncontradoException extends DomainException {
 
-    public RecursoNaoEncontradoException(String tipo, String mensagem, String detalhes, HttpStatus status) {
+    public RecursoNaoEncontradoException(
+            String tipo, String mensagem, String detalhes, HttpStatus status) {
         super(tipo, mensagem, detalhes, status);
     }
 
-    public static class Builder extends DomainException.Builder<RecursoNaoEncontradoException, Builder> {
+    public static class Builder
+            extends DomainException.Builder<RecursoNaoEncontradoException, Builder> {
 
         @Override
         protected Builder self() {

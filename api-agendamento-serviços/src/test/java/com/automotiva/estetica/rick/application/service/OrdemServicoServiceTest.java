@@ -7,7 +7,6 @@ import static org.mockito.Mockito.*;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
 import com.automotiva.estetica.rick.application.port.in.CarrinhoUseCase;
-import com.automotiva.estetica.rick.application.port.out.CalendarioPort;
 import com.automotiva.estetica.rick.application.port.out.EmailPort;
 import com.automotiva.estetica.rick.application.port.out.ItemServicoRepositoryPort;
 import com.automotiva.estetica.rick.application.port.out.OrdemServicoRepositoryPort;
@@ -33,26 +32,17 @@ import org.springframework.data.domain.Pageable;
 @ExtendWith(MockitoExtension.class)
 class OrdemServicoServiceTest {
 
-    @Mock
-    private OrdemServicoRepositoryPort ordemServicoRepositoryPort;
+    @Mock private OrdemServicoRepositoryPort ordemServicoRepositoryPort;
 
-    @Mock
-    private ItemServicoRepositoryPort itemServicoRepositoryPort;
+    @Mock private ItemServicoRepositoryPort itemServicoRepositoryPort;
 
-    @Mock
-    private ServicoRepositoryPort servicoRepositoryPort;
+    @Mock private ServicoRepositoryPort servicoRepositoryPort;
 
-    @Mock
-    private CarrinhoUseCase carrinhoUseCase;
+    @Mock private CarrinhoUseCase carrinhoUseCase;
 
-    @Mock
-    private CalendarioPort calendarioPort;
+    @Mock private EmailPort emailPort;
 
-    @Mock
-    private EmailPort emailPort;
-
-    @InjectMocks
-    private OrdemServicoService ordemServicoService;
+    @InjectMocks private OrdemServicoService ordemServicoService;
 
     private OrdemServico ordemMock() {
         Veiculo veiculo = Veiculo.builder().id(1L).build();
@@ -96,7 +86,8 @@ class OrdemServicoServiceTest {
     void buscarPorId_inexistente_deveLancarExcecao() {
         when(ordemServicoRepositoryPort.buscarPorId(99L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> ordemServicoService.buscarPorId(99L));
+        assertThrows(
+                RecursoNaoEncontradoException.class, () -> ordemServicoService.buscarPorId(99L));
     }
 
     @Test
@@ -112,7 +103,6 @@ class OrdemServicoServiceTest {
         assertNotNull(response);
         assertEquals(10L, response.getId());
     }
-
 
     @Test
     @DisplayName("Deve retornar página de ordens ao buscar todos")

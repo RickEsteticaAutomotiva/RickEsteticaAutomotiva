@@ -10,8 +10,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 /**
  * Configura o pool de threads dedicado para persistência assíncrona de logs de erro.
  *
- * <p>O uso de um pool separado (erroLogTaskExecutor) garante que a gravação de logs
- * nunca consuma threads do pool principal da aplicação.
+ * <p>O uso de um pool separado (erroLogTaskExecutor) garante que a gravação de logs nunca consuma
+ * threads do pool principal da aplicação.
  */
 @Configuration
 @EnableAsync

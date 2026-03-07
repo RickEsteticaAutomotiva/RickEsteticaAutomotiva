@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,9 +29,12 @@ public class DashboardService implements DashboardUseCase {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
         PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
-        BigDecimal atual = ordemServicoRepositoryPort.somarFaturamentoDoPeriodo(mesAtual.inicio(), mesAtual.fim());
+        BigDecimal atual =
+                ordemServicoRepositoryPort.somarFaturamentoDoPeriodo(
+                        mesAtual.inicio(), mesAtual.fim());
         BigDecimal anterior =
-                ordemServicoRepositoryPort.somarFaturamentoDoPeriodo(mesAnterior.inicio(), mesAnterior.fim());
+                ordemServicoRepositoryPort.somarFaturamentoDoPeriodo(
+                        mesAnterior.inicio(), mesAnterior.fim());
 
         return FaturamentoResponse.builder()
                 .faturamentoAtual(atual)
@@ -45,8 +47,11 @@ public class DashboardService implements DashboardUseCase {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
         PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
-        Integer atual = ordemServicoRepositoryPort.buscarQtdOrdensDoMes(mesAtual.inicio(), mesAtual.fim());
-        Integer anterior = ordemServicoRepositoryPort.buscarQtdOrdensDoMes(mesAnterior.inicio(), mesAnterior.fim());
+        Integer atual =
+                ordemServicoRepositoryPort.buscarQtdOrdensDoMes(mesAtual.inicio(), mesAtual.fim());
+        Integer anterior =
+                ordemServicoRepositoryPort.buscarQtdOrdensDoMes(
+                        mesAnterior.inicio(), mesAnterior.fim());
 
         return QtdOrdensMensalResponse.builder()
                 .totalOrdens(atual)
@@ -59,9 +64,12 @@ public class DashboardService implements DashboardUseCase {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
         PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
-        Integer atual = ordemServicoRepositoryPort.buscarQtdOrdensConcluidasNoMes(mesAtual.inicio(), mesAtual.fim());
+        Integer atual =
+                ordemServicoRepositoryPort.buscarQtdOrdensConcluidasNoMes(
+                        mesAtual.inicio(), mesAtual.fim());
         Integer anterior =
-                ordemServicoRepositoryPort.buscarQtdOrdensConcluidasNoMes(mesAnterior.inicio(), mesAnterior.fim());
+                ordemServicoRepositoryPort.buscarQtdOrdensConcluidasNoMes(
+                        mesAnterior.inicio(), mesAnterior.fim());
 
         return QtdOrdensConcluidasMensalResponse.builder()
                 .totalOrdensConcluidas(atual)
@@ -74,9 +82,12 @@ public class DashboardService implements DashboardUseCase {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
         PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
-        BigDecimal atual = ordemServicoRepositoryPort.calcularTicketMedioDoMes(mesAtual.inicio(), mesAtual.fim());
+        BigDecimal atual =
+                ordemServicoRepositoryPort.calcularTicketMedioDoMes(
+                        mesAtual.inicio(), mesAtual.fim());
         BigDecimal anterior =
-                ordemServicoRepositoryPort.calcularTicketMedioDoMes(mesAnterior.inicio(), mesAnterior.fim());
+                ordemServicoRepositoryPort.calcularTicketMedioDoMes(
+                        mesAnterior.inicio(), mesAnterior.fim());
 
         return TicketMedioMensalResponse.builder()
                 .totalTicketMedioMesAtual(atual)
@@ -87,12 +98,15 @@ public class DashboardService implements DashboardUseCase {
     @Override
     public List<FaturamentoPeriodoResponse> buscarFaturamentoPeriodo() {
         LocalDateTime dataInicial = LocalDate.now().minusDays(30).atStartOfDay();
-        List<FaturamentoDiarioDto> rows = ordemServicoRepositoryPort.buscarFaturamentoPorDia(dataInicial);
+        List<FaturamentoDiarioDto> rows =
+                ordemServicoRepositoryPort.buscarFaturamentoPorDia(dataInicial);
         return rows.stream()
-                .map(dto -> FaturamentoPeriodoResponse.builder()
-                        .dia(dto.dia())
-                        .totalDia(dto.totalDia())
-                        .build())
+                .map(
+                        dto ->
+                                FaturamentoPeriodoResponse.builder()
+                                        .dia(dto.dia())
+                                        .totalDia(dto.totalDia())
+                                        .build())
                 .toList();
     }
 

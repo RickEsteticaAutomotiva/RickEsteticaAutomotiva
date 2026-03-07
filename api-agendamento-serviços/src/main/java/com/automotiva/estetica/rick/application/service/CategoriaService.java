@@ -18,25 +18,26 @@ public class CategoriaService implements CategoriaUseCase {
 
     @Override
     public List<CategoriaResponse> buscarTodas() {
-        return categoriaRepositoryPort.buscarTodas().stream()
-                .map(this::toResponse)
-                .toList();
+        return categoriaRepositoryPort.buscarTodas().stream().map(this::toResponse).toList();
     }
 
     @Override
     public void criar(CategoriaRequest request) {
-        categoriaRepositoryPort.salvar(
-                Categoria.builder().nome(request.getNome()).build());
+        categoriaRepositoryPort.salvar(Categoria.builder().nome(request.getNome()).build());
     }
 
     @Override
     public CategoriaResponse atualizar(Long id, CategoriaRequest request) {
-        Categoria categoria = categoriaRepositoryPort
-                .buscarPorId(id)
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("Categoria não encontrada com o ID: " + id)
-                        .detalhes("")
-                        .build());
+        Categoria categoria =
+                categoriaRepositoryPort
+                        .buscarPorId(id)
+                        .orElseThrow(
+                                () ->
+                                        RecursoNaoEncontradoException.builder()
+                                                .mensagem(
+                                                        "Categoria não encontrada com o ID: " + id)
+                                                .detalhes("")
+                                                .build());
         categoria.atualizar(request.getNome());
         return toResponse(categoriaRepositoryPort.salvar(categoria));
     }

@@ -20,7 +20,9 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("GET /ordem-servicos → 200 lista paginada autenticado")
     void buscarTodos_autenticado() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/ordem-servicos").header("Authorization", bearer(tokenAdmin)))
+        mockMvc.perform(
+                        get(BASE_PATH + "/ordem-servicos")
+                                .header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(greaterThanOrEqualTo(1))));
     }
@@ -34,7 +36,9 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("GET /ordem-servicos/{id} → 200 ao buscar por ID existente")
     void buscarPorId_sucesso() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/1").header("Authorization", bearer(tokenAdmin)))
+        mockMvc.perform(
+                        get(BASE_PATH + "/ordem-servicos/1")
+                                .header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)));
     }
@@ -42,14 +46,18 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("GET /ordem-servicos/{id} → 404 quando ID não existe")
     void buscarPorId_naoEncontrado() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/9999").header("Authorization", bearer(tokenAdmin)))
+        mockMvc.perform(
+                        get(BASE_PATH + "/ordem-servicos/9999")
+                                .header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("GET /ordem-servicos/usuario/{id} → 200 lista por usuário")
     void buscarPorUsuario_sucesso() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/usuario/1").header("Authorization", bearer(tokenAdmin)))
+        mockMvc.perform(
+                        get(BASE_PATH + "/ordem-servicos/usuario/1")
+                                .header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
     }
@@ -57,7 +65,9 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("GET /ordem-servicos/usuario/{id} → lista vazia para usuário sem ordens")
     void buscarPorUsuario_vazio() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/usuario/9999").header("Authorization", bearer(tokenAdmin)))
+        mockMvc.perform(
+                        get(BASE_PATH + "/ordem-servicos/usuario/9999")
+                                .header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -67,36 +77,41 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("POST /ordem-servicos → 201 ao criar nova ordem")
     void criar_sucesso() throws Exception {
-        OrdemServicoRequest req = OrdemServicoRequest.builder()
-                .dataAgendamento(LocalDateTime.of(2026, 6, 15, 10, 0))
-                .veiculo(1L)
-                .precoMinimo(BigDecimal.valueOf(150))
-                .servicos(List.of(1L, 2L))
-                .observacoes("Teste de integração")
-                .build();
+        OrdemServicoRequest req =
+                OrdemServicoRequest.builder()
+                        .dataAgendamento(LocalDateTime.of(2026, 6, 15, 10, 0))
+                        .veiculo(1L)
+                        .precoMinimo(BigDecimal.valueOf(150))
+                        .servicos(List.of(1L, 2L))
+                        .observacoes("Teste de integração")
+                        .build();
 
-        mockMvc.perform(post(BASE_PATH + "/ordem-servicos")
-                        .header("Authorization", bearer(tokenAdmin))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        mockMvc.perform(
+                        post(BASE_PATH + "/ordem-servicos")
+                                .header("Authorization", bearer(tokenAdmin))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", notNullValue()));
     }
 
     @Test
-    @DisplayName("POST /ordem-servicos → 409 ao tentar criar ordem duplicada (mesmo veículo e data)")
+    @DisplayName(
+            "POST /ordem-servicos → 409 ao tentar criar ordem duplicada (mesmo veículo e data)")
     void criar_conflito() throws Exception {
         // Data/hora já inserida no seed-it.sql para o veículo 1
-        OrdemServicoRequest req = OrdemServicoRequest.builder()
-                .dataAgendamento(LocalDateTime.of(2025, 12, 1, 10, 0))
-                .veiculo(1L)
-                .precoMinimo(BigDecimal.valueOf(150))
-                .build();
+        OrdemServicoRequest req =
+                OrdemServicoRequest.builder()
+                        .dataAgendamento(LocalDateTime.of(2025, 12, 1, 10, 0))
+                        .veiculo(1L)
+                        .precoMinimo(BigDecimal.valueOf(150))
+                        .build();
 
-        mockMvc.perform(post(BASE_PATH + "/ordem-servicos")
-                        .header("Authorization", bearer(tokenAdmin))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        mockMvc.perform(
+                        post(BASE_PATH + "/ordem-servicos")
+                                .header("Authorization", bearer(tokenAdmin))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isConflict());
     }
 
@@ -106,10 +121,11 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
         // dataAgendamento e veiculo são obrigatórios
         String json = "{\"precoMinimo\":100}";
 
-        mockMvc.perform(post(BASE_PATH + "/ordem-servicos")
-                        .header("Authorization", bearer(tokenAdmin))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+        mockMvc.perform(
+                        post(BASE_PATH + "/ordem-servicos")
+                                .header("Authorization", bearer(tokenAdmin))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
                 .andExpect(status().isBadRequest());
     }
 
@@ -118,18 +134,20 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("PATCH /ordem-servicos/{id} → 200 ao atualizar ordem existente")
     void atualizar_sucesso() throws Exception {
-        OrdemServicoRequest req = OrdemServicoRequest.builder()
-                .dataAgendamento(LocalDateTime.of(2025, 12, 1, 10, 0))
-                .veiculo(1L)
-                .precoMinimo(BigDecimal.valueOf(180))
-                .status(2L)
-                .observacoes("Atualizado via IT")
-                .build();
+        OrdemServicoRequest req =
+                OrdemServicoRequest.builder()
+                        .dataAgendamento(LocalDateTime.of(2025, 12, 1, 10, 0))
+                        .veiculo(1L)
+                        .precoMinimo(BigDecimal.valueOf(180))
+                        .status(2L)
+                        .observacoes("Atualizado via IT")
+                        .build();
 
-        mockMvc.perform(patch(BASE_PATH + "/ordem-servicos/1")
-                        .header("Authorization", bearer(tokenAdmin))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        mockMvc.perform(
+                        patch(BASE_PATH + "/ordem-servicos/1")
+                                .header("Authorization", bearer(tokenAdmin))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk());
     }
 }

@@ -58,8 +58,7 @@ class OrdemServicoTest {
     @DisplayName("criarItem deve retornar ItemServico com preco do servico e vinculo correto")
     void criarItem_sucesso() {
         OrdemServico ordem = ordemMock();
-        Servico servico =
-                Servico.builder().id(10L).preco(BigDecimal.valueOf(150)).build();
+        Servico servico = Servico.builder().id(10L).preco(BigDecimal.valueOf(150)).build();
 
         ItemServico item = ordem.criarItem(servico);
 

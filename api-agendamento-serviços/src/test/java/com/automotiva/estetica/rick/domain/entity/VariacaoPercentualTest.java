@@ -27,7 +27,8 @@ class VariacaoPercentualTest {
     @Test
     @DisplayName("Deve retornar zero quando o valor anterior for zero")
     void calcular_anteriorZero_deveRetornarZero() {
-        BigDecimal resultado = VariacaoPercentual.calcular(BigDecimal.valueOf(1000), BigDecimal.ZERO);
+        BigDecimal resultado =
+                VariacaoPercentual.calcular(BigDecimal.valueOf(1000), BigDecimal.ZERO);
 
         assertEquals(BigDecimal.ZERO, resultado);
     }
@@ -51,7 +52,8 @@ class VariacaoPercentualTest {
     @Test
     @DisplayName("Deve retornar zero quando atual for zero e anterior positivo")
     void calcular_atualZero_anteriorPositivo() {
-        BigDecimal resultado = VariacaoPercentual.calcular(BigDecimal.ZERO, BigDecimal.valueOf(200));
+        BigDecimal resultado =
+                VariacaoPercentual.calcular(BigDecimal.ZERO, BigDecimal.valueOf(200));
 
         assertEquals(0, new BigDecimal("-100.00").compareTo(resultado));
     }
@@ -59,7 +61,8 @@ class VariacaoPercentualTest {
     @Test
     @DisplayName("Deve aceitar BigDecimal diretamente e calcular com 2 casas decimais")
     void calcular_comBigDecimal_precisaoDuasCasas() {
-        BigDecimal resultado = VariacaoPercentual.calcular(BigDecimal.valueOf(110), BigDecimal.valueOf(100));
+        BigDecimal resultado =
+                VariacaoPercentual.calcular(BigDecimal.valueOf(110), BigDecimal.valueOf(100));
 
         assertEquals(0, new BigDecimal("10.00").compareTo(resultado));
     }
