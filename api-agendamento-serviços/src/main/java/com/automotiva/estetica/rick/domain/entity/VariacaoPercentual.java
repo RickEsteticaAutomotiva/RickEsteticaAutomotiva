@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * Value Object que encapsula o cálculo de variação percentual entre dois períodos.
- * Regra de domínio: se o valor anterior for zero ou nulo, a variação é zero.
+ * Value Object que encapsula o cálculo de variação percentual entre dois períodos. Regra de
+ * domínio: se o valor anterior for zero ou nulo, a variação é zero.
  */
 public final class VariacaoPercentual {
 
@@ -14,7 +14,7 @@ public final class VariacaoPercentual {
     /**
      * Calcula a variação percentual entre dois valores numéricos.
      *
-     * @param atual    valor do período atual
+     * @param atual valor do período atual
      * @param anterior valor do período anterior
      * @return variação em %, com 2 casas decimais; zero quando anterior é zero ou nulo
      */

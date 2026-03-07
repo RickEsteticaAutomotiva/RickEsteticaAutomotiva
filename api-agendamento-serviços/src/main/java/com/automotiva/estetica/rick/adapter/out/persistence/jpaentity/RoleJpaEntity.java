@@ -15,13 +15,13 @@ import lombok.experimental.SuperBuilder;
 /**
  * Entidade JPA que representa uma role de autorização.
  *
- * <p>Persistida na tabela {@code role}. A relação com {@code PessoaJpaEntity} é N:N
- * gerenciada pela tabela de junção {@code pessoa_roles}.
+ * <p>Persistida na tabela {@code role}. A relação com {@code PessoaJpaEntity} é N:N gerenciada pela
+ * tabela de junção {@code pessoa_roles}.
  *
  * <p>Camada: adapter/out/persistence/jpa (sem dependência das camadas internas).
  *
- * <p>Fonte: Spring Security Reference — Granting Authority,
- *           Baeldung "Spring Security — Roles and Privileges".
+ * <p>Fonte: Spring Security Reference — Granting Authority, Baeldung "Spring Security — Roles and
+ * Privileges".
  */
 @Entity
 @Getter
@@ -33,11 +33,10 @@ import lombok.experimental.SuperBuilder;
 public class RoleJpaEntity extends BaseJpaEntity<Long> {
 
     /**
-     * Nome da role armazenado como String (ex.: {@code "ROLE_ADMIN"}).
-     * Único para evitar duplicatas na tabela de referência.
+     * Nome da role armazenado como String (ex.: {@code "ROLE_ADMIN"}). Único para evitar duplicatas
+     * na tabela de referência.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "nome", length = 30, nullable = false, unique = true)
     private RoleEnum nome;
 }
-

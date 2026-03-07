@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Service de Log de Erros.
  *
- * <p>registrar() é @Async para nunca bloquear o response HTTP ao cliente.
- * purgaLogAntigos() roda toda madrugada e remove registros com mais de 90 dias.
+ * <p>registrar() é @Async para nunca bloquear o response HTTP ao cliente. purgaLogAntigos() roda
+ * toda madrugada e remove registros com mais de 90 dias.
  */
 @Service
 @RequiredArgsConstructor
@@ -38,7 +38,8 @@ public class ErroLogService implements ErroLogUseCase {
             erroLogRepositoryPort.salvar(erroLog);
         } catch (Exception ex) {
             // Nunca lançar exceção aqui — não pode interferir no response principal
-            LOGGER.error("[ErroLogService] Falha ao persistir log de erro: {}", ex.getMessage(), ex);
+            LOGGER.error(
+                    "[ErroLogService] Falha ao persistir log de erro: {}", ex.getMessage(), ex);
         }
     }
 
@@ -47,10 +48,13 @@ public class ErroLogService implements ErroLogUseCase {
         return erroLogRepositoryPort
                 .buscarPorId(id)
                 .map(this::toResponse)
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("Log de erro não encontrado com o ID: " + id)
-                        .detalhes("Verifique se o ID informado existe na tabela erro_log")
-                        .build());
+                .orElseThrow(
+                        () ->
+                                RecursoNaoEncontradoException.builder()
+                                        .mensagem("Log de erro não encontrado com o ID: " + id)
+                                        .detalhes(
+                                                "Verifique se o ID informado existe na tabela erro_log")
+                                        .build());
     }
 
     @Override
@@ -73,9 +77,8 @@ public class ErroLogService implements ErroLogUseCase {
     }
 
     /**
-     * Purga automática de logs antigos.
-     * Executa toda madrugada às 03:00 e remove registros com mais de 90 dias.
-     * Configurável via propriedade: app.erro-log.retencao-dias
+     * Purga automática de logs antigos. Executa toda madrugada às 03:00 e remove registros com mais
+     * de 90 dias. Configurável via propriedade: app.erro-log.retencao-dias
      */
     @Scheduled(cron = "0 0 3 * * *")
     @Transactional

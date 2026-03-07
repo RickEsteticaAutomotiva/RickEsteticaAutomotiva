@@ -26,7 +26,8 @@ class CarrinhoTest {
     void criar_pessoaNula_deveLancarExcecao() {
         Servico servico = Servico.builder().id(2L).build();
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Carrinho.criar(null, servico));
+        IllegalArgumentException ex =
+                assertThrows(IllegalArgumentException.class, () -> Carrinho.criar(null, servico));
 
         assertEquals("Pessoa não pode ser nula no carrinho", ex.getMessage());
     }
@@ -36,7 +37,8 @@ class CarrinhoTest {
     void criar_servicoNulo_deveLancarExcecao() {
         Pessoa pessoa = Pessoa.builder().id(1L).build();
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Carrinho.criar(pessoa, null));
+        IllegalArgumentException ex =
+                assertThrows(IllegalArgumentException.class, () -> Carrinho.criar(pessoa, null));
 
         assertEquals("Serviço não pode ser nulo no carrinho", ex.getMessage());
     }

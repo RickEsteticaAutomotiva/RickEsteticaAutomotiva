@@ -3,8 +3,8 @@ package com.automotiva.estetica.rick.application.service;
 import org.springframework.security.core.Authentication;
 
 /**
- * Porta interna para geração e validação de tokens JWT.
- * A implementação vive em infrastructure/security/.
+ * Porta interna para geração e validação de tokens JWT. A implementação vive em
+ * infrastructure/security/.
  */
 public interface JwtService {
 
@@ -12,5 +12,6 @@ public interface JwtService {
 
     String obterUsernameDoToken(String token);
 
-    boolean tokenValido(String token, org.springframework.security.core.userdetails.UserDetails userDetails);
+    boolean tokenValido(
+            String token, org.springframework.security.core.userdetails.UserDetails userDetails);
 }

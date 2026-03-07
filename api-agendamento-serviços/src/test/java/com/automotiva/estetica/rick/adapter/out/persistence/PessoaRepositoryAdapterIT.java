@@ -29,8 +29,8 @@ import org.springframework.test.context.ActiveProfiles;
 /**
  * Teste de persistência isolado com @DataJpaTest.
  *
- * <p>Sobe apenas a camada JPA (sem servidor web), usando H2 em memória.
- * Valida queries, specifications e o mapeamento Entity ↔ Domain Object.
+ * <p>Sobe apenas a camada JPA (sem servidor web), usando H2 em memória. Valida queries,
+ * specifications e o mapeamento Entity ↔ Domain Object.
  */
 @DataJpaTest
 @ActiveProfiles("test")
@@ -39,72 +39,79 @@ import org.springframework.test.context.ActiveProfiles;
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 class PessoaRepositoryAdapterIT {
 
-    @Autowired
-    private TestEntityManager entityManager;
+    @Autowired private TestEntityManager entityManager;
 
-    /** {@link EntityManager} bruto — necessário para queries SQL nativas que ignoram {@code @SQLRestriction}. */
-    @Autowired
-    private EntityManager em;
+    /**
+     * {@link EntityManager} bruto — necessário para queries SQL nativas que ignoram
+     * {@code @SQLRestriction}.
+     */
+    @Autowired private EntityManager em;
 
-    @Autowired
-    private PessoaRepositoryAdapter repositoryAdapter;
+    @Autowired private PessoaRepositoryAdapter repositoryAdapter;
 
     /**
      * Persiste uma {@link PessoaJpaEntity} sem roles via {@link TestEntityManager}.
      *
-     * <p>O campo {@code roles} é deixado com o valor default ({@code new HashSet<>()})
-     * porque o {@code TestEntityManager} opera fora do {@link PessoaRepositoryAdapter},
-     * que é quem resolve as {@link RoleJpaEntity} pelo {@link RoleJpaRepository}.
-     * Para testes que não exercitam roles, isso é suficiente.
+     * <p>O campo {@code roles} é deixado com o valor default ({@code new HashSet<>()}) porque o
+     * {@code TestEntityManager} opera fora do {@link PessoaRepositoryAdapter}, que é quem resolve
+     * as {@link RoleJpaEntity} pelo {@link RoleJpaRepository}. Para testes que não exercitam roles,
+     * isso é suficiente.
      */
     private PessoaJpaEntity criarPessoaJpa(String nome, String cpf, String email) {
-        return entityManager.persistFlushFind(PessoaJpaEntity.builder()
-                .nome(nome)
-                .cpf(cpf)
-                .email(email)
-                .telefone("11999990000")
-                .dataNascimento(LocalDate.of(1990, 1, 1))
-                .senha("$2a$10$hash")
-                .build());
+        return entityManager.persistFlushFind(
+                PessoaJpaEntity.builder()
+                        .nome(nome)
+                        .cpf(cpf)
+                        .email(email)
+                        .telefone("11999990000")
+                        .dataNascimento(LocalDate.of(1990, 1, 1))
+                        .senha("$2a$10$hash")
+                        .build());
     }
 
     /**
      * Persiste uma {@link PessoaJpaEntity} com roles via {@link TestEntityManager}.
      *
-     * <p>Cada {@link RoleEnum} informado é primeiro persistido como {@link RoleJpaEntity}
-     * (ou buscado, se já existir), garantindo integridade referencial na tabela
-     * {@code pessoa_roles} sem depender do {@link PessoaRepositoryAdapter}.
+     * <p>Cada {@link RoleEnum} informado é primeiro persistido como {@link RoleJpaEntity} (ou
+     * buscado, se já existir), garantindo integridade referencial na tabela {@code pessoa_roles}
+     * sem depender do {@link PessoaRepositoryAdapter}.
      */
-    private PessoaJpaEntity criarPessoaJpaComRoles(String nome, String cpf, String email, EnumSet<RoleEnum> roles) {
-        Set<RoleJpaEntity> roleEntities = roles.stream()
-                .map(roleEnum -> {
-                    RoleJpaEntity role = RoleJpaEntity.builder().nome(roleEnum).build();
-                    return entityManager.persistFlushFind(role);
-                })
-                .collect(Collectors.toSet());
+    private PessoaJpaEntity criarPessoaJpaComRoles(
+            String nome, String cpf, String email, EnumSet<RoleEnum> roles) {
+        Set<RoleJpaEntity> roleEntities =
+                roles.stream()
+                        .map(
+                                roleEnum -> {
+                                    RoleJpaEntity role =
+                                            RoleJpaEntity.builder().nome(roleEnum).build();
+                                    return entityManager.persistFlushFind(role);
+                                })
+                        .collect(Collectors.toSet());
 
-        return entityManager.persistFlushFind(PessoaJpaEntity.builder()
-                .nome(nome)
-                .cpf(cpf)
-                .email(email)
-                .telefone("11999990001")
-                .dataNascimento(LocalDate.of(1990, 1, 1))
-                .senha("$2a$10$hash")
-                .roles(roleEntities)
-                .build());
+        return entityManager.persistFlushFind(
+                PessoaJpaEntity.builder()
+                        .nome(nome)
+                        .cpf(cpf)
+                        .email(email)
+                        .telefone("11999990001")
+                        .dataNascimento(LocalDate.of(1990, 1, 1))
+                        .senha("$2a$10$hash")
+                        .roles(roleEntities)
+                        .build());
     }
 
     @Test
     @DisplayName("salvar → persiste e retorna domínio com ID gerado")
     void salvar_sucesso() {
-        Pessoa pessoa = Pessoa.builder()
-                .nome("Novo Usuário")
-                .cpf("11122233344")
-                .email("novo@email.com")
-                .telefone("11988887777")
-                .dataNascimento(LocalDate.of(1995, 6, 20))
-                .senha("$2a$10$hash")
-                .build();
+        Pessoa pessoa =
+                Pessoa.builder()
+                        .nome("Novo Usuário")
+                        .cpf("11122233344")
+                        .email("novo@email.com")
+                        .telefone("11988887777")
+                        .dataNascimento(LocalDate.of(1995, 6, 20))
+                        .senha("$2a$10$hash")
+                        .build();
 
         Pessoa salva = repositoryAdapter.salvar(pessoa);
 
@@ -195,8 +202,9 @@ class PessoaRepositoryAdapterIT {
 
         Page<Pessoa> resultado = repositoryAdapter.buscarTodos("Carlos", PageRequest.of(0, 10));
 
-        assertThat(resultado.getContent()).isNotEmpty().allSatisfy(p -> assertThat(p.getNome())
-                .containsIgnoringCase("Carlos"));
+        assertThat(resultado.getContent())
+                .isNotEmpty()
+                .allSatisfy(p -> assertThat(p.getNome()).containsIgnoringCase("Carlos"));
     }
 
     @Test
@@ -224,14 +232,15 @@ class PessoaRepositoryAdapterIT {
         // tornando o registro invisível após o soft-delete — por isso não podem ser usados aqui.
         // O H2 retorna java.sql.Timestamp para colunas TIMESTAMP em queries nativas,
         // por isso a conversão explícita para LocalDateTime é necessária.
-        Object resultado = em
-                .createNativeQuery("SELECT deletado_em FROM pessoa WHERE id = :id")
-                .setParameter("id", id)
-                .getSingleResult();
+        Object resultado =
+                em.createNativeQuery("SELECT deletado_em FROM pessoa WHERE id = :id")
+                        .setParameter("id", id)
+                        .getSingleResult();
 
-        LocalDateTime deletadoEm = resultado instanceof java.sql.Timestamp ts
-                ? ts.toLocalDateTime()
-                : (LocalDateTime) resultado;
+        LocalDateTime deletadoEm =
+                resultado instanceof java.sql.Timestamp ts
+                        ? ts.toLocalDateTime()
+                        : (LocalDateTime) resultado;
 
         assertThat(deletadoEm).isNotNull();
 
@@ -243,15 +252,20 @@ class PessoaRepositoryAdapterIT {
     @Test
     @DisplayName("salvar → persiste múltiplas roles e recupera todas via buscarPorId")
     void salvar_multiRole_devePersistirERecuperarTodasRoles() {
-        Pessoa pessoa = Pessoa.builder()
-                .nome("Admin Gerente")
-                .cpf("98765432100")
-                .email("admin.gerente@email.com")
-                .telefone("11988880000")
-                .dataNascimento(LocalDate.of(1988, 7, 15))
-                .senha("$2a$10$hash")
-                .roles(EnumSet.of(RoleEnum.ROLE_ADMIN, RoleEnum.ROLE_GERENTE, RoleEnum.ROLE_CLIENTE))
-                .build();
+        Pessoa pessoa =
+                Pessoa.builder()
+                        .nome("Admin Gerente")
+                        .cpf("98765432100")
+                        .email("admin.gerente@email.com")
+                        .telefone("11988880000")
+                        .dataNascimento(LocalDate.of(1988, 7, 15))
+                        .senha("$2a$10$hash")
+                        .roles(
+                                EnumSet.of(
+                                        RoleEnum.ROLE_ADMIN,
+                                        RoleEnum.ROLE_GERENTE,
+                                        RoleEnum.ROLE_CLIENTE))
+                        .build();
 
         Pessoa salva = repositoryAdapter.salvar(pessoa);
         entityManager.flush();
@@ -269,12 +283,13 @@ class PessoaRepositoryAdapterIT {
     @DisplayName("salvar → role padrão ROLE_CLIENTE é persistida quando nenhuma role informada")
     void salvar_semRoles_devePersistirRoleUserDefault() {
         // O builder default de Pessoa já atribui ROLE_CLIENTE via @Builder.Default
-        Pessoa pessoa = Pessoa.builder()
-                .nome("Usuário Padrão")
-                .cpf("12312312312")
-                .email("padrao@email.com")
-                .senha("$2a$10$hash")
-                .build();
+        Pessoa pessoa =
+                Pessoa.builder()
+                        .nome("Usuário Padrão")
+                        .cpf("12312312312")
+                        .email("padrao@email.com")
+                        .senha("$2a$10$hash")
+                        .build();
 
         Pessoa salva = repositoryAdapter.salvar(pessoa);
         entityManager.flush();
@@ -283,16 +298,16 @@ class PessoaRepositoryAdapterIT {
         Optional<Pessoa> recuperada = repositoryAdapter.buscarPorId(salva.getId());
 
         assertThat(recuperada).isPresent();
-        assertThat(recuperada.get().getRoles())
-                .hasSize(1)
-                .contains(RoleEnum.ROLE_CLIENTE);
+        assertThat(recuperada.get().getRoles()).hasSize(1).contains(RoleEnum.ROLE_CLIENTE);
     }
 
     @Test
     @DisplayName("buscarPorEmail → retorna roles corretas quando persistidas via TestEntityManager")
     void buscarPorEmail_comRoles_deveRetornarRolesCorretas() {
         criarPessoaJpaComRoles(
-                "Admin Direto", "10000000001", "admin.direto@email.com",
+                "Admin Direto",
+                "10000000001",
+                "admin.direto@email.com",
                 EnumSet.of(RoleEnum.ROLE_ADMIN, RoleEnum.ROLE_GERENTE));
 
         Optional<Pessoa> resultado = repositoryAdapter.buscarPorEmail("admin.direto@email.com");

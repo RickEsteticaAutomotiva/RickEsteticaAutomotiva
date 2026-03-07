@@ -5,14 +5,13 @@ import com.automotiva.estetica.rick.adapter.out.persistence.mapper.ServicoPersis
 import com.automotiva.estetica.rick.application.port.out.ServicoRepositoryPort;
 import com.automotiva.estetica.rick.domain.entity.Servico;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,11 +49,18 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
 
     @Override
     public void deletarPorId(Long id) {
-        ServicoJpaEntity entity = jpaRepository.findById(id)
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("o serviço com id " + id + " não foi encontrado")
-                        .detalhes("")
-                        .build());
+        ServicoJpaEntity entity =
+                jpaRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        RecursoNaoEncontradoException.builder()
+                                                .mensagem(
+                                                        "o serviço com id "
+                                                                + id
+                                                                + " não foi encontrado")
+                                                .detalhes("")
+                                                .build());
         entity.setDeletadoEm(LocalDateTime.now());
         jpaRepository.save(entity);
     }

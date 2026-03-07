@@ -31,7 +31,8 @@ public class ServicoController {
 
     @GetMapping
     @Operation(summary = "Lista todos os serviços paginados")
-    public ResponseEntity<Page<ServicoResponse>> buscarTodos(@Valid @ModelAttribute PageRequest pageRequest) {
+    public ResponseEntity<Page<ServicoResponse>> buscarTodos(
+            @Valid @ModelAttribute PageRequest pageRequest) {
         return ResponseEntity.ok(servicoUseCase.buscarTodos(pageRequest));
     }
 
@@ -51,7 +52,8 @@ public class ServicoController {
     @PatchMapping("/{id}")
     @ClienteOnly
     @Operation(summary = "Atualiza um serviço")
-    public ResponseEntity<ServicoResponse> atualizar(@PathVariable Long id, @RequestBody ServicoRequest request) {
+    public ResponseEntity<ServicoResponse> atualizar(
+            @PathVariable Long id, @RequestBody ServicoRequest request) {
         return ResponseEntity.ok(servicoUseCase.atualizar(id, request));
     }
 

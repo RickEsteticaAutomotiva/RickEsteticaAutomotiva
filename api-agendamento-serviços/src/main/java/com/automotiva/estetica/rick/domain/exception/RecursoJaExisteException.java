@@ -4,7 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public class RecursoJaExisteException extends DomainException {
 
-    public RecursoJaExisteException(String tipo, String mensagem, String detalhes, HttpStatus status) {
+    public RecursoJaExisteException(
+            String tipo, String mensagem, String detalhes, HttpStatus status) {
         super(tipo, mensagem, detalhes, status);
     }
 

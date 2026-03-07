@@ -22,11 +22,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CategoriaServiceTest {
 
-    @Mock
-    private CategoriaRepositoryPort categoriaRepositoryPort;
+    @Mock private CategoriaRepositoryPort categoriaRepositoryPort;
 
-    @InjectMocks
-    private CategoriaService categoriaService;
+    @InjectMocks private CategoriaService categoriaService;
 
     private Categoria categoriaMock(Long id, String nome) {
         return Categoria.builder().id(id).nome(nome).build();
@@ -79,7 +77,9 @@ class CategoriaServiceTest {
         CategoriaRequest request = new CategoriaRequest();
         request.setNome("Novo Nome");
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> categoriaService.atualizar(99L, request));
+        assertThrows(
+                RecursoNaoEncontradoException.class,
+                () -> categoriaService.atualizar(99L, request));
         verify(categoriaRepositoryPort, never()).salvar(any());
     }
 

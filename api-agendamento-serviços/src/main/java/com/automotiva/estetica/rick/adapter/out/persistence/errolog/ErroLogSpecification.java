@@ -17,19 +17,29 @@ public final class ErroLogSpecification {
     private ErroLogSpecification() {}
 
     public static Specification<ErroLogJpaEntity> comFiltros(
-            String tipoExcecao, Integer statusHttp, String usuarioEmail, LocalDateTime de, LocalDateTime ate) {
+            String tipoExcecao,
+            Integer statusHttp,
+            String usuarioEmail,
+            LocalDateTime de,
+            LocalDateTime ate) {
 
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             if (tipoExcecao != null && !tipoExcecao.isBlank()) {
-                predicates.add(cb.like(cb.lower(root.get("tipoExcecao")), "%" + tipoExcecao.toLowerCase() + "%"));
+                predicates.add(
+                        cb.like(
+                                cb.lower(root.get("tipoExcecao")),
+                                "%" + tipoExcecao.toLowerCase() + "%"));
             }
             if (statusHttp != null) {
                 predicates.add(cb.equal(root.get("statusHttp"), statusHttp));
             }
             if (usuarioEmail != null && !usuarioEmail.isBlank()) {
-                predicates.add(cb.like(cb.lower(root.get("usuarioEmail")), "%" + usuarioEmail.toLowerCase() + "%"));
+                predicates.add(
+                        cb.like(
+                                cb.lower(root.get("usuarioEmail")),
+                                "%" + usuarioEmail.toLowerCase() + "%"));
             }
             if (de != null) {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("timestamp"), de));

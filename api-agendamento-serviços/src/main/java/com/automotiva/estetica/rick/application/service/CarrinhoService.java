@@ -26,18 +26,28 @@ public class CarrinhoService implements CarrinhoUseCase {
 
     @Override
     public void adicionar(CarrinhoRequest request) {
-        Pessoa pessoa = pessoaRepositoryPort
-                .buscarPorId(request.getIdPessoa())
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("Usuário não encontrado: " + request.getIdPessoa())
-                        .detalhes("")
-                        .build());
-        Servico servico = servicoRepositoryPort
-                .buscarPorId(request.getIdServico())
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("Serviço não encontrado: " + request.getIdServico())
-                        .detalhes("")
-                        .build());
+        Pessoa pessoa =
+                pessoaRepositoryPort
+                        .buscarPorId(request.getIdPessoa())
+                        .orElseThrow(
+                                () ->
+                                        RecursoNaoEncontradoException.builder()
+                                                .mensagem(
+                                                        "Usuário não encontrado: "
+                                                                + request.getIdPessoa())
+                                                .detalhes("")
+                                                .build());
+        Servico servico =
+                servicoRepositoryPort
+                        .buscarPorId(request.getIdServico())
+                        .orElseThrow(
+                                () ->
+                                        RecursoNaoEncontradoException.builder()
+                                                .mensagem(
+                                                        "Serviço não encontrado: "
+                                                                + request.getIdServico())
+                                                .detalhes("")
+                                                .build());
 
         if (carrinhoRepositoryPort.existePorPessoaEServico(pessoa, servico)) {
             throw RecursoJaExisteException.builder()
@@ -53,22 +63,29 @@ public class CarrinhoService implements CarrinhoUseCase {
     @Override
     @Transactional
     public void remover(Long idCarrinho) {
-        carrinhoRepositoryPort.buscarPorId(idCarrinho).orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                .mensagem("Item do carrinho não encontrado.")
-                .detalhes("")
-                .build());
+        carrinhoRepositoryPort
+                .buscarPorId(idCarrinho)
+                .orElseThrow(
+                        () ->
+                                RecursoNaoEncontradoException.builder()
+                                        .mensagem("Item do carrinho não encontrado.")
+                                        .detalhes("")
+                                        .build());
         carrinhoRepositoryPort.deletarPorId(idCarrinho);
     }
 
     @Override
     @Transactional
     public void limparCarrinhoPessoa(Long idPessoa) {
-        Pessoa pessoa = pessoaRepositoryPort
-                .buscarPorId(idPessoa)
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("Usuário não encontrado: " + idPessoa)
-                        .detalhes("")
-                        .build());
+        Pessoa pessoa =
+                pessoaRepositoryPort
+                        .buscarPorId(idPessoa)
+                        .orElseThrow(
+                                () ->
+                                        RecursoNaoEncontradoException.builder()
+                                                .mensagem("Usuário não encontrado: " + idPessoa)
+                                                .detalhes("")
+                                                .build());
 
         List<Carrinho> itens = carrinhoRepositoryPort.buscarPorPessoaId(pessoa.getId());
         if (itens != null && !itens.isEmpty()) {
@@ -83,14 +100,16 @@ public class CarrinhoService implements CarrinhoUseCase {
         }
 
         return carrinhoRepositoryPort.buscarPorPessoaId(idPessoa).stream()
-                .map(c -> ServicoCarrinhoResponse.builder()
-                        .idCarrinho(c.getId())
-                        .idServico(c.getServico().getId())
-                        .nome(c.getServico().getNome())
-                        .descricao(c.getServico().getDescricao())
-                        .preco(c.getServico().getPreco())
-                        .imagem(c.getServico().getImagem())
-                        .build())
+                .map(
+                        c ->
+                                ServicoCarrinhoResponse.builder()
+                                        .idCarrinho(c.getId())
+                                        .idServico(c.getServico().getId())
+                                        .nome(c.getServico().getNome())
+                                        .descricao(c.getServico().getDescricao())
+                                        .preco(c.getServico().getPreco())
+                                        .imagem(c.getServico().getImagem())
+                                        .build())
                 .toList();
     }
 }

@@ -23,14 +23,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class VeiculoServiceTest {
 
-    @Mock
-    private VeiculoRepositoryPort veiculoRepositoryPort;
+    @Mock private VeiculoRepositoryPort veiculoRepositoryPort;
 
-    @Mock
-    private PessoaRepositoryPort pessoaRepositoryPort;
+    @Mock private PessoaRepositoryPort pessoaRepositoryPort;
 
-    @InjectMocks
-    private VeiculoService veiculoService;
+    @InjectMocks private VeiculoService veiculoService;
 
     private VeiculoRequest requestMock() {
         VeiculoRequest req = new VeiculoRequest();
@@ -63,7 +60,8 @@ class VeiculoServiceTest {
     void cadastrar_pessoaNaoEncontrada_deveLancarExcecao() {
         when(pessoaRepositoryPort.buscarPorId(1L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> veiculoService.cadastrar(requestMock()));
+        assertThrows(
+                RecursoNaoEncontradoException.class, () -> veiculoService.cadastrar(requestMock()));
     }
 
     @Test
@@ -105,7 +103,8 @@ class VeiculoServiceTest {
     }
 
     @Test
-    @DisplayName("Deve retornar lista vazia quando pessoa não existir ao buscar veículos por pessoa")
+    @DisplayName(
+            "Deve retornar lista vazia quando pessoa não existir ao buscar veículos por pessoa")
     void buscarPorPessoaId_pessoaNaoEncontrada_deveRetornarListaVazia() {
         when(pessoaRepositoryPort.existePorId(10L)).thenReturn(false);
 
@@ -144,7 +143,9 @@ class VeiculoServiceTest {
     void atualizar_inexistente_deveLancarExcecao() {
         when(veiculoRepositoryPort.buscarPorId(99L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> veiculoService.atualizar(99L, requestMock()));
+        assertThrows(
+                RecursoNaoEncontradoException.class,
+                () -> veiculoService.atualizar(99L, requestMock()));
     }
 
     @Test

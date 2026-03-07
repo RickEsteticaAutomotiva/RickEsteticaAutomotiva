@@ -15,9 +15,8 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 /**
  * Filtro que envolve o HttpServletRequest com ContentCachingRequestWrapper.
  *
- * <p>Isso permite que o GlobalExceptionHandler leia o body da requisição
- * APÓS ele já ter sido consumido pelo Spring MVC — necessário para logar
- * o payload que causou o erro.
+ * <p>Isso permite que o GlobalExceptionHandler leia o body da requisição APÓS ele já ter sido
+ * consumido pelo Spring MVC — necessário para logar o payload que causou o erro.
  *
  * <p>@Order(1) garante execução antes de todos os filtros de segurança.
  */

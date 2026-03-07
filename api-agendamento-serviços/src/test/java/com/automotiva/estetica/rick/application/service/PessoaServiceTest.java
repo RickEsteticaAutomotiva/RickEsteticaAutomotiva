@@ -41,24 +41,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ExtendWith(MockitoExtension.class)
 class PessoaServiceTest {
 
-    @Mock
-    private PessoaRepositoryPort pessoaRepositoryPort;
+    @Mock private PessoaRepositoryPort pessoaRepositoryPort;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @Mock private PasswordEncoder passwordEncoder;
 
-    @Mock
-    private JwtService jwtService;
+    @Mock private JwtService jwtService;
 
-    @Mock
-    private AuthenticationManager authenticationManager;
+    @Mock private AuthenticationManager authenticationManager;
 
     private PessoaService pessoaService;
 
     @BeforeEach
     void setUp() {
         // Instanciação manual para injetar @Lazy AuthenticationManager sem contexto Spring
-        pessoaService = new PessoaService(pessoaRepositoryPort, passwordEncoder, jwtService, authenticationManager);
+        pessoaService =
+                new PessoaService(
+                        pessoaRepositoryPort, passwordEncoder, jwtService, authenticationManager);
     }
 
     private Pessoa pessoaMock() {
@@ -145,7 +143,9 @@ class PessoaServiceTest {
     void cadastrar_cpfDuplicado_deveLancarExcecao() {
         when(pessoaRepositoryPort.existePorCpf("123.456.789-00")).thenReturn(true);
 
-        assertThrows(RecursoJaExisteException.class, () -> pessoaService.cadastrar(cadastroRequestMock()));
+        assertThrows(
+                RecursoJaExisteException.class,
+                () -> pessoaService.cadastrar(cadastroRequestMock()));
         verify(pessoaRepositoryPort, never()).salvar(any());
     }
 
@@ -155,7 +155,9 @@ class PessoaServiceTest {
         when(pessoaRepositoryPort.existePorCpf("123.456.789-00")).thenReturn(false);
         when(pessoaRepositoryPort.existePorEmail("joao@email.com")).thenReturn(true);
 
-        assertThrows(RecursoJaExisteException.class, () -> pessoaService.cadastrar(cadastroRequestMock()));
+        assertThrows(
+                RecursoJaExisteException.class,
+                () -> pessoaService.cadastrar(cadastroRequestMock()));
         verify(pessoaRepositoryPort, never()).salvar(any());
     }
 
@@ -193,14 +195,15 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve cadastrar com múltiplas roles quando informadas no request")
     void cadastrar_comMultiplasRoles_devePersistirTodas() {
-        Pessoa salva = Pessoa.builder()
-                .id(3L)
-                .nome("Admin Gerente")
-                .cpf("111.222.333-44")
-                .email("ag@email.com")
-                .senha("$2a$10$encodedPassword")
-                .roles(EnumSet.of(RoleEnum.ROLE_ADMIN, RoleEnum.ROLE_GERENTE))
-                .build();
+        Pessoa salva =
+                Pessoa.builder()
+                        .id(3L)
+                        .nome("Admin Gerente")
+                        .cpf("111.222.333-44")
+                        .email("ag@email.com")
+                        .senha("$2a$10$encodedPassword")
+                        .roles(EnumSet.of(RoleEnum.ROLE_ADMIN, RoleEnum.ROLE_GERENTE))
+                        .build();
 
         when(pessoaRepositoryPort.existePorCpf(any())).thenReturn(false);
         when(pessoaRepositoryPort.existePorEmail(any())).thenReturn(false);
@@ -304,7 +307,8 @@ class PessoaServiceTest {
         req.setSenhaAtual("atual");
         req.setNovaSenha("nova");
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> pessoaService.atualizarSenha(99L, req));
+        assertThrows(
+                RecursoNaoEncontradoException.class, () -> pessoaService.atualizarSenha(99L, req));
     }
 
     @Test
@@ -405,51 +409,61 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve lançar UsernameNotFoundException quando e-mail não existir")
     void loadUserByUsername_emailNaoEncontrado_deveLancarExcecao() {
-        when(pessoaRepositoryPort.buscarPorEmail("inexistente@email.com")).thenReturn(Optional.empty());
+        when(pessoaRepositoryPort.buscarPorEmail("inexistente@email.com"))
+                .thenReturn(Optional.empty());
 
-        assertThrows(UsernameNotFoundException.class, () -> pessoaService.loadUserByUsername("inexistente@email.com"));
+        assertThrows(
+                UsernameNotFoundException.class,
+                () -> pessoaService.loadUserByUsername("inexistente@email.com"));
     }
 
     @Test
     @DisplayName("Deve carregar UserDetails com sucesso e uma role")
     void loadUserByUsername_sucesso() {
-        when(pessoaRepositoryPort.buscarPorEmail("joao@email.com")).thenReturn(Optional.of(pessoaMock()));
+        when(pessoaRepositoryPort.buscarPorEmail("joao@email.com"))
+                .thenReturn(Optional.of(pessoaMock()));
 
         var userDetails = pessoaService.loadUserByUsername("joao@email.com");
 
         assertNotNull(userDetails);
         assertEquals("joao@email.com", userDetails.getUsername());
         assertEquals(1, userDetails.getAuthorities().size());
-        assertTrue(userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE")));
+        assertTrue(
+                userDetails.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE")));
     }
 
     @Test
     @DisplayName("Deve carregar UserDetails com múltiplas GrantedAuthorities para ADMIN+CLIENTE")
     void loadUserByUsername_multiRole_deveGerarMultiplasAuthorities() {
-        when(pessoaRepositoryPort.buscarPorEmail("admin@email.com")).thenReturn(Optional.of(pessoaAdminMock()));
+        when(pessoaRepositoryPort.buscarPorEmail("admin@email.com"))
+                .thenReturn(Optional.of(pessoaAdminMock()));
 
         var userDetails = pessoaService.loadUserByUsername("admin@email.com");
 
         assertEquals(2, userDetails.getAuthorities().size());
-        assertTrue(userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")));
-        assertTrue(userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE")));
+        assertTrue(
+                userDetails.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")));
+        assertTrue(
+                userDetails.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE")));
     }
 
     @Test
     @DisplayName("Deve aplicar ROLE_CLIENTE como fallback quando roles da pessoa estiver vazio")
     void loadUserByUsername_roleVazia_deveFallbackParaRoleUser() {
-        Pessoa semRole = Pessoa.builder()
-                .id(5L)
-                .nome("Sem Role")
-                .email("semrole@email.com")
-                .senha("$2a$10$hash")
-                .roles(EnumSet.noneOf(RoleEnum.class)) // set vazio
-                .build();
+        Pessoa semRole =
+                Pessoa.builder()
+                        .id(5L)
+                        .nome("Sem Role")
+                        .email("semrole@email.com")
+                        .senha("$2a$10$hash")
+                        .roles(EnumSet.noneOf(RoleEnum.class)) // set vazio
+                        .build();
 
-        when(pessoaRepositoryPort.buscarPorEmail("semrole@email.com")).thenReturn(Optional.of(semRole));
+        when(pessoaRepositoryPort.buscarPorEmail("semrole@email.com"))
+                .thenReturn(Optional.of(semRole));
 
         var userDetails = pessoaService.loadUserByUsername("semrole@email.com");
 

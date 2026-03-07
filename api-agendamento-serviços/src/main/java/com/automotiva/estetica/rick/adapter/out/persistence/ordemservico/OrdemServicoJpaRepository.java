@@ -14,7 +14,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 interface OrdemServicoJpaRepository
-        extends JpaRepository<OrdemServicoJpaEntity, Long>, JpaSpecificationExecutor<OrdemServicoJpaEntity> {
+        extends JpaRepository<OrdemServicoJpaEntity, Long>,
+                JpaSpecificationExecutor<OrdemServicoJpaEntity> {
 
     boolean existsByVeiculoIdAndDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
 
@@ -30,7 +31,8 @@ interface OrdemServicoJpaRepository
     """)
     BigDecimal somarFaturamentoDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
 
-    @Query("SELECT COUNT(o) FROM OrdemServicoJpaEntity o WHERE o.dataAgendamento BETWEEN :inicio AND :fim")
+    @Query(
+            "SELECT COUNT(o) FROM OrdemServicoJpaEntity o WHERE o.dataAgendamento BETWEEN :inicio AND :fim")
     Integer buscarQtdOrdensDoMes(LocalDateTime inicio, LocalDateTime fim);
 
     @Query(
@@ -38,7 +40,8 @@ interface OrdemServicoJpaRepository
         SELECT COUNT(o) FROM OrdemServicoJpaEntity o
         WHERE o.dataAgendamento BETWEEN :inicio AND :fim AND o.status.id = 5
     """)
-    Integer buscarQtdOrdensConcluidasNoMes(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+    Integer buscarQtdOrdensConcluidasNoMes(
+            @Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 
     @Query(
             """
@@ -47,7 +50,8 @@ interface OrdemServicoJpaRepository
         WHERE i.ordemServico.dataAgendamento BETWEEN :inicio AND :fim
           AND i.ordemServico.status.id = 5
     """)
-    BigDecimal calcularTicketMedioDoMes(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+    BigDecimal calcularTicketMedioDoMes(
+            @Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 
     @Query(
             """

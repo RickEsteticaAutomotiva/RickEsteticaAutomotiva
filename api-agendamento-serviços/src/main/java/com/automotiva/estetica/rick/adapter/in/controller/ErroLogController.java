@@ -30,7 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/erros-log")
 @RequiredArgsConstructor
 @AdminOnly
-@Tag(name = "Erros Log", description = "Consulta e análise de erros registrados em runtime (somente ADMIN)")
+@Tag(
+        name = "Erros Log",
+        description = "Consulta e análise de erros registrados em runtime (somente ADMIN)")
 public class ErroLogController {
 
     private final ErroLogUseCase erroLogUseCase;
@@ -38,7 +40,8 @@ public class ErroLogController {
     @GetMapping
     @Operation(
             summary = "Lista todos os erros paginados",
-            description = "Retorna todos os erros registrados, ordenados do mais recente para o mais antigo.")
+            description =
+                    "Retorna todos os erros registrados, ordenados do mais recente para o mais antigo.")
     public ResponseEntity<Page<ErroLogResponse>> buscarTodos(
             @ParameterObject @PageableDefault(size = 20, sort = "timestamp") Pageable pageable) {
         return ResponseEntity.ok(erroLogUseCase.buscarTodos(pageable));
@@ -47,7 +50,8 @@ public class ErroLogController {
     @GetMapping("/{id}")
     @Operation(
             summary = "Busca um erro por ID",
-            description = "Retorna todos os detalhes do erro, incluindo stack trace e payload da requisição.")
+            description =
+                    "Retorna todos os detalhes do erro, incluindo stack trace e payload da requisição.")
     public ResponseEntity<ErroLogResponse> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(erroLogUseCase.buscarPorId(id));
     }
@@ -55,17 +59,21 @@ public class ErroLogController {
     @GetMapping("/filtros")
     @Operation(
             summary = "Busca erros com filtros",
-            description = "Filtra erros por tipo de exceção, status HTTP, usuário, "
-                    + "e intervalo de datas (formato ISO: yyyy-MM-ddTHH:mm:ss).")
+            description =
+                    "Filtra erros por tipo de exceção, status HTTP, usuário, "
+                            + "e intervalo de datas (formato ISO: yyyy-MM-ddTHH:mm:ss).")
     public ResponseEntity<Page<ErroLogResponse>> buscarComFiltros(
             @RequestParam(required = false) String tipoExcecao,
             @RequestParam(required = false) Integer statusHttp,
             @RequestParam(required = false) String usuarioEmail,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime de,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    LocalDateTime de,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    LocalDateTime ate,
             @ParameterObject @PageableDefault(size = 20, sort = "timestamp") Pageable pageable) {
 
         return ResponseEntity.ok(
-                erroLogUseCase.buscarComFiltros(tipoExcecao, statusHttp, usuarioEmail, de, ate, pageable));
+                erroLogUseCase.buscarComFiltros(
+                        tipoExcecao, statusHttp, usuarioEmail, de, ate, pageable));
     }
 }

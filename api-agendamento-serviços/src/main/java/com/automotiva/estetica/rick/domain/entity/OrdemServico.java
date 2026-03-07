@@ -26,13 +26,18 @@ public class OrdemServico {
     private MotivoCancelamento motivoCancelamento;
 
     public void atualizar(
-            LocalDateTime dataAgendamento, BigDecimal precoMinimo, String observacoes, Long statusId, Long motivoId) {
+            LocalDateTime dataAgendamento,
+            BigDecimal precoMinimo,
+            String observacoes,
+            Long statusId,
+            Long motivoId) {
         if (dataAgendamento != null) this.dataAgendamento = dataAgendamento;
         if (precoMinimo != null) this.precoMinimo = precoMinimo;
         if (observacoes != null) this.observacoes = observacoes;
         if (statusId != null) {
             this.status = Status.builder().id(statusId).build();
-            // Regra de domínio: ao concluir a ordem, registra automaticamente a data/hora de conclusão
+            // Regra de domínio: ao concluir a ordem, registra automaticamente a data/hora de
+            // conclusão
             if (StatusOrdem.CONCLUIDO.getId().equals(statusId)) {
                 this.dtConclusao = LocalDateTime.now();
             }
@@ -42,11 +47,12 @@ public class OrdemServico {
     }
 
     /**
-     * Regra de domínio: cria um ItemServico vinculado a esta ordem,
-     * copiando o preço atual do serviço no momento do agendamento.
+     * Regra de domínio: cria um ItemServico vinculado a esta ordem, copiando o preço atual do
+     * serviço no momento do agendamento.
      */
     public ItemServico criarItem(Servico servico) {
-        if (servico == null) throw new IllegalArgumentException("Serviço não pode ser nulo ao criar item");
+        if (servico == null)
+            throw new IllegalArgumentException("Serviço não pode ser nulo ao criar item");
         return ItemServico.builder()
                 .servico(servico)
                 .ordemServico(this)

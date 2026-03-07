@@ -19,10 +19,7 @@ public interface OrdemServicoPersistenceMapper {
 
     default Status toDomain(StatusJpaEntity entity) {
         if (entity == null) return null;
-        return Status.builder()
-                .id(entity.getId())
-                .descricao(entity.getDescricao())
-                .build();
+        return Status.builder().id(entity.getId()).descricao(entity.getDescricao()).build();
     }
 
     default StatusJpaEntity toJpaEntity(Status domain) {

@@ -16,7 +16,9 @@ class FavoritoControllerIT extends AbstractIntegrationTest {
     @DisplayName("GET /favoritos/pessoa/{id} → 200 lista favoritos da pessoa")
     void listar_sucesso() throws Exception {
         // Pessoa 1 tem 1 favorito (seed-it.sql)
-        mockMvc.perform(get(BASE_PATH + "/favoritos/pessoa/1").header("Authorization", bearer(tokenAdmin)))
+        mockMvc.perform(
+                        get(BASE_PATH + "/favoritos/pessoa/1")
+                                .header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
     }
@@ -24,7 +26,9 @@ class FavoritoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("GET /favoritos/pessoa/{id} → lista vazia para pessoa sem favoritos")
     void listar_vazio() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/favoritos/pessoa/9999").header("Authorization", bearer(tokenAdmin)))
+        mockMvc.perform(
+                        get(BASE_PATH + "/favoritos/pessoa/9999")
+                                .header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -32,19 +36,20 @@ class FavoritoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("GET /favoritos/pessoa/{id} → 401 sem token")
     void listar_semToken() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/favoritos/pessoa/1")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get(BASE_PATH + "/favoritos/pessoa/1"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     @DisplayName("POST /favoritos → 201 ao adicionar serviço aos favoritos")
     void adicionar_sucesso() throws Exception {
-        FavoritoRequest req =
-                FavoritoRequest.builder().idPessoa(2L).idServico(2L).build();
+        FavoritoRequest req = FavoritoRequest.builder().idPessoa(2L).idServico(2L).build();
 
-        mockMvc.perform(post(BASE_PATH + "/favoritos")
-                        .header("Authorization", bearer(tokenAdmin))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        mockMvc.perform(
+                        post(BASE_PATH + "/favoritos")
+                                .header("Authorization", bearer(tokenAdmin))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated());
     }
 
@@ -53,10 +58,11 @@ class FavoritoControllerIT extends AbstractIntegrationTest {
     void adicionar_validacaoFalha() throws Exception {
         String json = "{\"idPessoa\":1}"; // idServico ausente
 
-        mockMvc.perform(post(BASE_PATH + "/favoritos")
-                        .header("Authorization", bearer(tokenAdmin))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+        mockMvc.perform(
+                        post(BASE_PATH + "/favoritos")
+                                .header("Authorization", bearer(tokenAdmin))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
                 .andExpect(status().isBadRequest());
     }
 
@@ -64,14 +70,18 @@ class FavoritoControllerIT extends AbstractIntegrationTest {
     @DisplayName("DELETE /favoritos/{id} → 204 ao remover favorito")
     void remover_sucesso() throws Exception {
         // Favorito id=1 inserido no seed-it.sql
-        mockMvc.perform(delete(BASE_PATH + "/favoritos/1").header("Authorization", bearer(tokenAdmin)))
+        mockMvc.perform(
+                        delete(BASE_PATH + "/favoritos/1")
+                                .header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("DELETE /favoritos/{id} → 404 quando favorito não existe")
     void remover_naoEncontrado() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/favoritos/9999").header("Authorization", bearer(tokenAdmin)))
+        mockMvc.perform(
+                        delete(BASE_PATH + "/favoritos/9999")
+                                .header("Authorization", bearer(tokenAdmin)))
                 .andExpect(status().isNotFound());
     }
 }

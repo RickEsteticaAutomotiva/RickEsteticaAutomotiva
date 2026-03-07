@@ -3,8 +3,8 @@ package com.automotiva.estetica.rick.domain.exception;
 import org.springframework.http.HttpStatus;
 
 /**
- * Exceção de domínio para falhas em integrações externas (Google Calendar, e-mail, etc.).
- * Retorna HTTP 502 Bad Gateway, indicando que o servidor externo retornou resposta inválida.
+ * Exceção de domínio para falhas em integrações externas (Google Calendar, e-mail, etc.). Retorna
+ * HTTP 502 Bad Gateway, indicando que o servidor externo retornou resposta inválida.
  */
 public class IntegracaoException extends DomainException {
 

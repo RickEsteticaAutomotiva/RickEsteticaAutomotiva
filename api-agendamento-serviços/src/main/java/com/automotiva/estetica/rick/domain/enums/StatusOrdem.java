@@ -3,8 +3,8 @@ package com.automotiva.estetica.rick.domain.enums;
 import java.util.Arrays;
 
 /**
- * Enumeração dos status possíveis de uma OrdemServico.
- * Centraliza os IDs de status para eliminar magic numbers no domínio.
+ * Enumeração dos status possíveis de uma OrdemServico. Centraliza os IDs de status para eliminar
+ * magic numbers no domínio.
  */
 public enum StatusOrdem {
     AGUARDANDO(1L),

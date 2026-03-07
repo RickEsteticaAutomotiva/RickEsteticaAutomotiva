@@ -4,7 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public class CampoInvalidoException extends DomainException {
 
-    public CampoInvalidoException(String tipo, String mensagem, String detalhes, HttpStatus status) {
+    public CampoInvalidoException(
+            String tipo, String mensagem, String detalhes, HttpStatus status) {
         super(tipo, mensagem, detalhes, status);
     }
 

@@ -35,9 +35,7 @@ public class CarrinhoRepositoryAdapter implements CarrinhoRepositoryPort {
 
     @Override
     public List<Carrinho> buscarPorPessoaId(Long pessoaId) {
-        return jpaRepository.findByPessoaId(pessoaId).stream()
-                .map(mapper::toDomain)
-                .toList();
+        return jpaRepository.findByPessoaId(pessoaId).stream().map(mapper::toDomain).toList();
     }
 
     @Override

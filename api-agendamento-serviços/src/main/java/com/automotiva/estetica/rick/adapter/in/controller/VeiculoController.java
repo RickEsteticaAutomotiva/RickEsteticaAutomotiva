@@ -48,7 +48,8 @@ public class VeiculoController {
 
     @PatchMapping("/{id}")
     @Operation(summary = "Atualiza um veículo")
-    public ResponseEntity<Void> atualizar(@PathVariable Long id, @RequestBody VeiculoRequest request) {
+    public ResponseEntity<Void> atualizar(
+            @PathVariable Long id, @RequestBody VeiculoRequest request) {
         veiculoUseCase.atualizar(id, request);
         return ResponseEntity.noContent().build();
     }

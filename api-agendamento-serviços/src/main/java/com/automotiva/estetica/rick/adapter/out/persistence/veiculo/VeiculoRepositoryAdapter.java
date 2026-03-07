@@ -35,9 +35,7 @@ public class VeiculoRepositoryAdapter implements VeiculoRepositoryPort {
 
     @Override
     public List<Veiculo> buscarPorPessoaId(Long pessoaId) {
-        return jpaRepository.findByPessoa_Id(pessoaId).stream()
-                .map(mapper::toDomain)
-                .toList();
+        return jpaRepository.findByPessoa_Id(pessoaId).stream().map(mapper::toDomain).toList();
     }
 
     @Override
@@ -47,11 +45,18 @@ public class VeiculoRepositoryAdapter implements VeiculoRepositoryPort {
 
     @Override
     public void deletarPorId(Long id) {
-        VeiculoJpaEntity entity = jpaRepository.findById(id)
-                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                        .mensagem("o veículo com id " + id + " não foi encontrado")
-                        .detalhes("")
-                        .build());
+        VeiculoJpaEntity entity =
+                jpaRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        RecursoNaoEncontradoException.builder()
+                                                .mensagem(
+                                                        "o veículo com id "
+                                                                + id
+                                                                + " não foi encontrado")
+                                                .detalhes("")
+                                                .build());
         entity.setDeletadoEm(LocalDateTime.now());
         jpaRepository.save(entity);
     }

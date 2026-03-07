@@ -28,11 +28,9 @@ import org.springframework.data.domain.Pageable;
 @ExtendWith(MockitoExtension.class)
 class ServicoServiceTest {
 
-    @Mock
-    private ServicoRepositoryPort servicoRepositoryPort;
+    @Mock private ServicoRepositoryPort servicoRepositoryPort;
 
-    @InjectMocks
-    private ServicoService servicoService;
+    @InjectMocks private ServicoService servicoService;
 
     private Servico servicoMock(Long id) {
         return Servico.builder()
@@ -136,7 +134,9 @@ class ServicoServiceTest {
     void atualizar_inexistente_deveLancarExcecao() {
         when(servicoRepositoryPort.buscarPorId(99L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class, () -> servicoService.atualizar(99L, requestMock()));
+        assertThrows(
+                RecursoNaoEncontradoException.class,
+                () -> servicoService.atualizar(99L, requestMock()));
         verify(servicoRepositoryPort, never()).salvar(any());
     }
 

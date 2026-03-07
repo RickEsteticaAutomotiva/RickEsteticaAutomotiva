@@ -24,13 +24,13 @@ class CategoriaControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("POST /categorias → 201 ao criar categoria autenticado")
     void criar_sucesso() throws Exception {
-        CategoriaRequest req =
-                CategoriaRequest.builder().nome("Higienização IT").build();
+        CategoriaRequest req = CategoriaRequest.builder().nome("Higienização IT").build();
 
-        mockMvc.perform(post(BASE_PATH + "/categorias")
-                        .header("Authorization", bearer(tokenAdmin))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        mockMvc.perform(
+                        post(BASE_PATH + "/categorias")
+                                .header("Authorization", bearer(tokenAdmin))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated());
     }
 
@@ -39,10 +39,11 @@ class CategoriaControllerIT extends AbstractIntegrationTest {
     void criar_nomeVazio() throws Exception {
         CategoriaRequest req = CategoriaRequest.builder().nome("").build();
 
-        mockMvc.perform(post(BASE_PATH + "/categorias")
-                        .header("Authorization", bearer(tokenAdmin))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        mockMvc.perform(
+                        post(BASE_PATH + "/categorias")
+                                .header("Authorization", bearer(tokenAdmin))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -51,22 +52,23 @@ class CategoriaControllerIT extends AbstractIntegrationTest {
     void criar_semToken() throws Exception {
         CategoriaRequest req = CategoriaRequest.builder().nome("Sem Auth").build();
 
-        mockMvc.perform(post(BASE_PATH + "/categorias")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        mockMvc.perform(
+                        post(BASE_PATH + "/categorias")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @DisplayName("PATCH /categorias/{id} → 200 ao atualizar categoria")
     void atualizar_sucesso() throws Exception {
-        CategoriaRequest req =
-                CategoriaRequest.builder().nome("Lavagem Atualizada IT").build();
+        CategoriaRequest req = CategoriaRequest.builder().nome("Lavagem Atualizada IT").build();
 
-        mockMvc.perform(patch(BASE_PATH + "/categorias/1")
-                        .header("Authorization", bearer(tokenAdmin))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        mockMvc.perform(
+                        patch(BASE_PATH + "/categorias/1")
+                                .header("Authorization", bearer(tokenAdmin))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome", is("Lavagem Atualizada IT")));
     }
@@ -76,10 +78,11 @@ class CategoriaControllerIT extends AbstractIntegrationTest {
     void atualizar_naoEncontrada() throws Exception {
         CategoriaRequest req = CategoriaRequest.builder().nome("Inexistente").build();
 
-        mockMvc.perform(patch(BASE_PATH + "/categorias/9999")
-                        .header("Authorization", bearer(tokenAdmin))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+        mockMvc.perform(
+                        patch(BASE_PATH + "/categorias/9999")
+                                .header("Authorization", bearer(tokenAdmin))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isNotFound());
     }
 }
