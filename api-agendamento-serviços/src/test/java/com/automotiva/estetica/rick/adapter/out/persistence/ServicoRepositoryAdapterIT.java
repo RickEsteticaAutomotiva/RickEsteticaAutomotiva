@@ -11,6 +11,7 @@ import com.automotiva.estetica.rick.domain.entity.Servico;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +59,7 @@ class ServicoRepositoryAdapterIT {
                         .nome(nome)
                         .descricao("Descrição " + nome)
                         .preco(preco)
-                        .duracaoHoras(1)
+                        .duracaoHoras(LocalTime.of(1, 0))
                         .categoria(categoria)
                         .build());
     }
@@ -71,7 +72,7 @@ class ServicoRepositoryAdapterIT {
                         .nome("Polimento IT")
                         .descricao("Polimento de teste")
                         .preco(BigDecimal.valueOf(99.90))
-                        .duracaoHoras(2)
+                        .duracaoHoras(LocalTime.of(2, 0))
                         .categoria(
                                 com.automotiva.estetica.rick.domain.entity.Categoria.builder()
                                         .id(categoria.getId())

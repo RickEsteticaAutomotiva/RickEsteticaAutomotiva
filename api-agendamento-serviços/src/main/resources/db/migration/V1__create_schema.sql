@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS servico (
     descricao      VARCHAR(255),
     preco          DECIMAL(10, 2) NOT NULL,
     imagem         VARCHAR(512),
-    duracao_horas  INT,
+    duracao_horas  TIME,
     deletado_em    TIMESTAMP NULL DEFAULT NULL,
     fk_categoria   BIGINT NOT NULL,
     CONSTRAINT fk_servico_categoria FOREIGN KEY (fk_categoria) REFERENCES categoria (id)

@@ -38,11 +38,11 @@ INSERT INTO categoria (id, nome) VALUES
 
 -- SERVIÇOS
 INSERT INTO servico (id, nome, descricao, preco, duracao_horas, fk_categoria) VALUES
-(1, 'Lavagem Simples',       'Lavagem externa básica do veículo',                 25.00, 1, 1),
-(2, 'Lavagem Completa',      'Lavagem externa e interna completa',                45.00, 2, 1),
-(3, 'Enceramento',           'Aplicação de cera protetora na pintura',            80.00, 2, 2),
-(4, 'Lavagem + Cera',        'Lavagem completa com enceramento',                 120.00, 3, 2),
-(5, 'Detalhamento Completo', 'Serviço completo de detalhamento automotivo',      200.00, 4, 3);
+(1, 'Lavagem Simples',       'Lavagem externa básica do veículo',                 25.00, '01:00:00', 1),
+(2, 'Lavagem Completa',      'Lavagem externa e interna completa',                45.00, '02:00:00', 1),
+(3, 'Enceramento',           'Aplicação de cera protetora na pintura',            80.00, '02:00:00', 2),
+(4, 'Lavagem + Cera',        'Lavagem completa com enceramento',                 120.00, '03:00:00', 2),
+(5, 'Detalhamento Completo', 'Serviço completo de detalhamento automotivo',      200.00, '04:00:00', 3);
 
 -- STATUS
 INSERT INTO status (id, descricao) VALUES
