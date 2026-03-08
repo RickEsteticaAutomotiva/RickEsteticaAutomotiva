@@ -1,13 +1,62 @@
 services:
-  rabbitmq:
-    image: rabbitmq:4.2.4-management
-    container_name: rabbitmq
+  # -------------------------------------------------------
+  # MySQL 8 — banco de dados para perfil dev e homolog
+  # Acesso: localhost:3306  usuário: rick  senha: rick@dev2024
+  # Os bancos (rick_dev, rick_homolog) são criados pelo script
+  # 01-create-databases.sql via docker-entrypoint-initdb.d.
+  # As TABELAS são criadas pelo Flyway ao subir a aplicação.
+  # -------------------------------------------------------
+  mysql:
+    image: mysql:8.4
+    container_name: rick_mysql
     restart: always
     ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - ./dados:/var/lib/rabbitmq
+      - "3306:3306"
     environment:
-      RABBITMQ_DEFAULT_USER: "guest"
-      RABBITMQ_DEFAULT_PASS: "guest"
+      MYSQL_ROOT_PASSWORD: root@dev2024
+      MYSQL_DATABASE: rick_dev
+      MYSQL_USER: rick
+      MYSQL_PASSWORD: rick@dev2024
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d   # apenas cria bancos e permissões
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "rick", "-prick@dev2024"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-time-zone='-03:00'
+
+  # -------------------------------------------------------
+  # RabbitMQ 3.13 LTS — mensageria
+  # Management UI: http://localhost:15672  (guest/guest)
+  # AMQP:          localhost:5672
+  # -------------------------------------------------------
+  rabbitmq:
+    image: rabbitmq:4.2.4-management
+    container_name: rick_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: "admin"
+      RABBITMQ_DEFAULT_PASS: "123456"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mysql_data:
+    driver: local
+  rabbitmq_data:
+    driver: local

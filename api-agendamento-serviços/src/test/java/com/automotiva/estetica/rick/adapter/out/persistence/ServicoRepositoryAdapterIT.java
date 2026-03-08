@@ -58,6 +58,7 @@ class ServicoRepositoryAdapterIT {
                         .nome(nome)
                         .descricao("Descrição " + nome)
                         .preco(preco)
+                        .duracaoHoras(1)
                         .categoria(categoria)
                         .build());
     }
@@ -70,6 +71,7 @@ class ServicoRepositoryAdapterIT {
                         .nome("Polimento IT")
                         .descricao("Polimento de teste")
                         .preco(BigDecimal.valueOf(99.90))
+                        .duracaoHoras(2)
                         .categoria(
                                 com.automotiva.estetica.rick.domain.entity.Categoria.builder()
                                         .id(categoria.getId())

@@ -19,6 +19,7 @@ public class ServicoResponse {
     private String descricao;
     private BigDecimal preco;
     private String imagem;
+    private Integer duracaoHoras;
     private Long categoriaId;
     private String categoriaNome;
 }

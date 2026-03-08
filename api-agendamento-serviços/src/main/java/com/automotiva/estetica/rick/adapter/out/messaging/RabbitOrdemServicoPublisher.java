@@ -1,12 +1,12 @@
 package com.automotiva.estetica.rick.adapter.out.messaging;
 
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
-import com.automotiva.estetica.rick.application.dto.request.event.OrdemServicoCriadaEvent;
 import com.automotiva.estetica.rick.application.port.out.OrdemServicoEventPublisherPort;
 import com.automotiva.estetica.rick.application.port.out.ServicoRepositoryPort;
+import com.automotiva.estetica.rick.constantes.RabbitMqConsts;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import com.automotiva.estetica.rick.domain.entity.Servico;
-import com.automotiva.estetica.rick.infrastructure.messaging.rabbitMq.RabbitMqConsts;
+import com.automotiva.estetica.rick.dto.OrdemServicoCriadaEvent;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

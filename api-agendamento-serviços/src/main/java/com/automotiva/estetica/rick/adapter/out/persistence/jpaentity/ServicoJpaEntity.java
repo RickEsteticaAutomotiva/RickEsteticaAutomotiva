@@ -37,6 +37,9 @@ public class ServicoJpaEntity extends BaseJpaEntity<Long> {
     @Column(name = "imagem")
     private String imagem;
 
+    @Column(name = "duracao_horas")
+    private Integer duracaoHoras;
+
     /**
      * Data e hora em que o serviço foi inativado (soft delete). {@code null} indica que o registro
      * está ativo.

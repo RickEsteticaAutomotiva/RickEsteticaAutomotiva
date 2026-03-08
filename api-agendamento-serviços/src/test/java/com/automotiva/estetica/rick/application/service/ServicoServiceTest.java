@@ -39,6 +39,7 @@ class ServicoServiceTest {
                 .descricao("Polimento completo")
                 .preco(BigDecimal.valueOf(300))
                 .imagem("pol.jpg")
+                .duracaoHoras(2)
                 .categoria(Categoria.builder().id(2L).nome("Polimento").build())
                 .build();
     }
@@ -49,6 +50,7 @@ class ServicoServiceTest {
         req.setDescricao("Polimento completo");
         req.setPreco(BigDecimal.valueOf(300));
         req.setImagem("pol.jpg");
+        req.setDuracaoHoras(2);
         req.setCategoriaId(2L);
         return req;
     }

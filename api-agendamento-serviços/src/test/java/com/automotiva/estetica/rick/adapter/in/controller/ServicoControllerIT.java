@@ -48,6 +48,7 @@ class ServicoControllerIT extends AbstractIntegrationTest {
                         .nome("Lavagem Premium IT")
                         .descricao("Lavagem ultra premium")
                         .preco(BigDecimal.valueOf(99.90))
+                        .duracaoHoras(2)
                         .categoriaId(1L)
                         .build();
 
@@ -68,6 +69,7 @@ class ServicoControllerIT extends AbstractIntegrationTest {
                 ServicoRequest.builder()
                         .nome("Sem Auth")
                         .preco(BigDecimal.valueOf(10))
+                        .duracaoHoras(1)
                         .categoriaId(1L)
                         .build();
 
@@ -99,6 +101,7 @@ class ServicoControllerIT extends AbstractIntegrationTest {
                 ServicoRequest.builder()
                         .nome("Lavagem Simples Atualizada")
                         .preco(BigDecimal.valueOf(30.00))
+                        .duracaoHoras(1)
                         .categoriaId(1L)
                         .build();
 

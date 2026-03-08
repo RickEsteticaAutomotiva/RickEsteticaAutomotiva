@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.infrastructure.messaging.rabbitMq;
 
+import com.automotiva.estetica.rick.constantes.RabbitMqConsts;
 import jakarta.annotation.PostConstruct;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
