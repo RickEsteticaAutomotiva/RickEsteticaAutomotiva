@@ -91,7 +91,7 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
                                 .header("Authorization", bearer(tokenAdmin))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isCreated())
+                .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.id", notNullValue()));
     }
 

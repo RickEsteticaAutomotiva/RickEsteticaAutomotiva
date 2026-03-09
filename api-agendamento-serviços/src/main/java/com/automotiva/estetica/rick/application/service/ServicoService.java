@@ -49,6 +49,7 @@ public class ServicoService implements ServicoUseCase {
                         .descricao(request.getDescricao())
                         .preco(request.getPreco())
                         .imagem(request.getImagem())
+                        .duracaoHoras(request.getDuracaoHoras())
                         .categoria(Categoria.builder().id(request.getCategoriaId()).build())
                         .build();
         return toResponse(servicoRepositoryPort.salvar(servico));
@@ -74,7 +75,8 @@ public class ServicoService implements ServicoUseCase {
                 request.getDescricao(),
                 request.getPreco(),
                 request.getImagem(),
-                request.getCategoriaId());
+                request.getCategoriaId(),
+                request.getDuracaoHoras());
 
         return toResponse(servicoRepositoryPort.salvar(servico));
     }
@@ -97,6 +99,7 @@ public class ServicoService implements ServicoUseCase {
                 .descricao(s.getDescricao())
                 .preco(s.getPreco())
                 .imagem(s.getImagem())
+                .duracaoHoras(s.getDuracaoHoras())
                 .categoriaId(s.getCategoria() != null ? s.getCategoria().getId() : null)
                 .categoriaNome(s.getCategoria() != null ? s.getCategoria().getNome() : null)
                 .build();
