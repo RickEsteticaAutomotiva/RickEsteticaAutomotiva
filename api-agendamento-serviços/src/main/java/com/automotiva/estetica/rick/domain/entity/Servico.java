@@ -24,7 +24,11 @@ public class Servico {
     private Categoria categoria;
 
     public void atualizar(
-            String nome, String descricao, BigDecimal preco, String imagem, Long categoriaId,
+            String nome,
+            String descricao,
+            BigDecimal preco,
+            String imagem,
+            Long categoriaId,
             LocalTime duracaoHoras) {
         if (nome != null) this.nome = nome;
         if (descricao != null) this.descricao = descricao;

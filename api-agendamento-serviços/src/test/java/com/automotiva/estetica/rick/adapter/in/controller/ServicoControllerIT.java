@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.automotiva.estetica.rick.application.dto.request.ServicoRequest;
 import java.math.BigDecimal;
 import java.time.LocalTime;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -71,7 +70,7 @@ class ServicoControllerIT extends AbstractIntegrationTest {
                 ServicoRequest.builder()
                         .nome("Sem Auth")
                         .preco(BigDecimal.valueOf(10))
-                        .duracaoHoras(LocalTime.of(1,0))
+                        .duracaoHoras(LocalTime.of(1, 0))
                         .categoriaId(1L)
                         .build();
 
@@ -103,7 +102,7 @@ class ServicoControllerIT extends AbstractIntegrationTest {
                 ServicoRequest.builder()
                         .nome("Lavagem Simples Atualizada")
                         .preco(BigDecimal.valueOf(30.00))
-                        .duracaoHoras(LocalTime.of(1,0))
+                        .duracaoHoras(LocalTime.of(1, 0))
                         .categoriaId(1L)
                         .build();
 

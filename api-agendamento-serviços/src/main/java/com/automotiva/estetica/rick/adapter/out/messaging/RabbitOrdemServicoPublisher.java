@@ -26,8 +26,7 @@ public class RabbitOrdemServicoPublisher implements OrdemServicoEventPublisherPo
             OrdemServico ordemServico, OrdemServicoRequest ordemServicoRequest) {
 
         List<String> servicos =
-                servicoRepositoryPort.buscarPorIds(ordemServicoRequest.getServicos())
-                        .stream()
+                servicoRepositoryPort.buscarPorIds(ordemServicoRequest.getServicos()).stream()
                         .map(Servico::getNome)
                         .toList();
 
@@ -44,7 +43,7 @@ public class RabbitOrdemServicoPublisher implements OrdemServicoEventPublisherPo
                         servicos,
                         observacoes);
 
-        log.info("Enviando evento para a fila de criação de ordem de serviço: {}", event);
+        log.info("Enviando evento para a fila de criação de ordem de serviço | id ordem de serviço: {}", event.IdOrdemServico());
 
         rabbitTemplate.convertAndSend(RabbitMqConsts.ORDEM_SERVICO_CRIADA_QUEUE, event);
     }

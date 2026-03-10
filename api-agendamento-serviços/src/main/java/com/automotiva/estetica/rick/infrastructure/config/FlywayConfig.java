@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Profile;
  * <ul>
  *   <li>Aplica convenções obrigatórias de migração (encoding, validação, sem out-of-order).
  *   <li>Desabilita o comando {@code flyway:clean} em produção via {@code cleanDisabled=true}.
- *   <li>Habilitado apenas nos profiles que usam banco real (dev, homolog, prod).
- *       Profiles "test" e "integration-test" configuram Flyway diretamente via properties.
+ *   <li>Habilitado apenas nos profiles que usam banco real (dev, homolog, prod). Profiles "test" e
+ *       "integration-test" configuram Flyway diretamente via properties.
  * </ul>
  *
  * <p>Não é necessário declarar um Bean {@link Flyway} manualmente — o Spring Boot auto-configura
@@ -47,4 +47,3 @@ public class FlywayConfig {
                         .loggers("slf4j");
     }
 }
-
