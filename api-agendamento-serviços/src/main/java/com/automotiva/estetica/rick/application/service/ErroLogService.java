@@ -19,8 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Service de Log de Erros.
  *
- * <p>registrar() é @Async para nunca bloquear o response HTTP ao cliente. purgaLogAntigos() roda
- * toda madrugada e remove registros com mais de 90 dias.
+ * <p>
+ * registrar() é @Async para nunca bloquear o response HTTP ao cliente.
+ * purgaLogAntigos() roda toda madrugada e remove registros com mais de 90 dias.
  */
 @Service
 @RequiredArgsConstructor
@@ -38,23 +39,16 @@ public class ErroLogService implements ErroLogUseCase {
             erroLogRepositoryPort.salvar(erroLog);
         } catch (Exception ex) {
             // Nunca lançar exceção aqui — não pode interferir no response principal
-            LOGGER.error(
-                    "[ErroLogService] Falha ao persistir log de erro: {}", ex.getMessage(), ex);
+            LOGGER.error("[ErroLogService] Falha ao persistir log de erro: {}", ex.getMessage(), ex);
         }
     }
 
     @Override
     public ErroLogResponse buscarPorId(Long id) {
-        return erroLogRepositoryPort
-                .buscarPorId(id)
-                .map(this::toResponse)
-                .orElseThrow(
-                        () ->
-                                RecursoNaoEncontradoException.builder()
-                                        .mensagem("Log de erro não encontrado com o ID: " + id)
-                                        .detalhes(
-                                                "Verifique se o ID informado existe na tabela erro_log")
-                                        .build());
+        return erroLogRepositoryPort.buscarPorId(id).map(this::toResponse)
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("Log de erro não encontrado com o ID: " + id)
+                        .detalhes("Verifique se o ID informado existe na tabela erro_log").build());
     }
 
     @Override
@@ -63,22 +57,17 @@ public class ErroLogService implements ErroLogUseCase {
     }
 
     @Override
-    public Page<ErroLogResponse> buscarComFiltros(
-            String tipoExcecao,
-            Integer statusHttp,
-            String usuarioEmail,
-            LocalDateTime de,
-            LocalDateTime ate,
-            Pageable pageable) {
+    public Page<ErroLogResponse> buscarComFiltros(String tipoExcecao, Integer statusHttp, String usuarioEmail,
+            LocalDateTime de, LocalDateTime ate, Pageable pageable) {
 
-        return erroLogRepositoryPort
-                .buscarComFiltros(tipoExcecao, statusHttp, usuarioEmail, de, ate, pageable)
+        return erroLogRepositoryPort.buscarComFiltros(tipoExcecao, statusHttp, usuarioEmail, de, ate, pageable)
                 .map(this::toResponse);
     }
 
     /**
-     * Purga automática de logs antigos. Executa toda madrugada às 03:00 e remove registros com mais
-     * de 90 dias. Configurável via propriedade: app.erro-log.retencao-dias
+     * Purga automática de logs antigos. Executa toda madrugada às 03:00 e remove
+     * registros com mais de 90 dias. Configurável via propriedade:
+     * app.erro-log.retencao-dias
      */
     @Scheduled(cron = "0 0 3 * * *")
     @Transactional
@@ -94,22 +83,11 @@ public class ErroLogService implements ErroLogUseCase {
     // -------------------------------------------------------------------------
 
     private ErroLogResponse toResponse(ErroLog e) {
-        return ErroLogResponse.builder()
-                .id(e.getId())
-                .timestamp(e.getTimestamp())
-                .tipoExcecao(e.getTipoExcecao())
-                .mensagem(e.getMensagem())
-                .stackTrace(e.getStackTrace())
-                .endpoint(e.getEndpoint())
-                .metodoHttp(e.getMetodoHttp())
-                .payloadRequisicao(e.getPayloadRequisicao())
-                .queryParams(e.getQueryParams())
-                .headersRequisicao(e.getHeadersRequisicao())
-                .usuarioEmail(e.getUsuarioEmail())
-                .statusHttp(e.getStatusHttp())
-                .ambiente(e.getAmbiente())
-                .ipCliente(e.getIpCliente())
-                .userAgent(e.getUserAgent())
-                .build();
+        return ErroLogResponse.builder().id(e.getId()).timestamp(e.getTimestamp()).tipoExcecao(e.getTipoExcecao())
+                .mensagem(e.getMensagem()).stackTrace(e.getStackTrace()).endpoint(e.getEndpoint())
+                .metodoHttp(e.getMetodoHttp()).payloadRequisicao(e.getPayloadRequisicao())
+                .queryParams(e.getQueryParams()).headersRequisicao(e.getHeadersRequisicao())
+                .usuarioEmail(e.getUsuarioEmail()).statusHttp(e.getStatusHttp()).ambiente(e.getAmbiente())
+                .ipCliente(e.getIpCliente()).userAgent(e.getUserAgent()).build();
     }
 }

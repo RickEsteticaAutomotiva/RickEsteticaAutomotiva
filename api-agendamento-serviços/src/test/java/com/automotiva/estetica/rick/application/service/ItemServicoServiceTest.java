@@ -23,19 +23,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ItemServicoServiceTest {
 
-    @Mock private ItemServicoRepositoryPort itemServicoRepositoryPort;
+    @Mock
+    private ItemServicoRepositoryPort itemServicoRepositoryPort;
 
-    @InjectMocks private ItemServicoService itemServicoService;
+    @InjectMocks
+    private ItemServicoService itemServicoService;
 
     private ItemServico itemMock() {
         Servico servico = Servico.builder().id(1L).build();
         OrdemServico ordem = OrdemServico.builder().id(10L).build();
-        return ItemServico.builder()
-                .id(1L)
-                .servico(servico)
-                .ordemServico(ordem)
-                .preco(BigDecimal.valueOf(100))
-                .build();
+        return ItemServico.builder().id(1L).servico(servico).ordemServico(ordem).preco(BigDecimal.valueOf(100)).build();
     }
 
     @Test

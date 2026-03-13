@@ -4,9 +4,7 @@ import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.FavoritoJp
 import com.automotiva.estetica.rick.domain.entity.Favorito;
 import org.mapstruct.Mapper;
 
-@Mapper(
-        componentModel = "spring",
-        uses = {PessoaPersistenceMapper.class, ServicoPersistenceMapper.class})
+@Mapper(componentModel = "spring", uses = {PessoaPersistenceMapper.class, ServicoPersistenceMapper.class})
 public interface FavoritoPersistenceMapper {
 
     Favorito toDomain(FavoritoJpaEntity entity);

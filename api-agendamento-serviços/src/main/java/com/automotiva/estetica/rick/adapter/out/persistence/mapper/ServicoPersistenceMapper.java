@@ -4,9 +4,7 @@ import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.ServicoJpa
 import com.automotiva.estetica.rick.domain.entity.Servico;
 import org.mapstruct.Mapper;
 
-@Mapper(
-        componentModel = "spring",
-        uses = {CategoriaPersistenceMapper.class})
+@Mapper(componentModel = "spring", uses = {CategoriaPersistenceMapper.class})
 public interface ServicoPersistenceMapper {
 
     Servico toDomain(ServicoJpaEntity entity);

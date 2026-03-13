@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 interface ErroLogJpaRepository
-        extends JpaRepository<ErroLogJpaEntity, Long>, JpaSpecificationExecutor<ErroLogJpaEntity> {
+        extends
+            JpaRepository<ErroLogJpaEntity, Long>,
+            JpaSpecificationExecutor<ErroLogJpaEntity> {
 
     @Modifying
     @Transactional

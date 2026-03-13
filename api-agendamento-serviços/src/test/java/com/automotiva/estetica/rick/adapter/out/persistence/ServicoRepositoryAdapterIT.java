@@ -27,24 +27,23 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import({
-    ServicoRepositoryAdapter.class,
-    ServicoPersistenceMapperImpl.class,
-    CategoriaPersistenceMapperImpl.class
-})
+@Import({ServicoRepositoryAdapter.class, ServicoPersistenceMapperImpl.class, CategoriaPersistenceMapperImpl.class})
 @DisplayName("Persistência — ServicoRepositoryAdapter")
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 class ServicoRepositoryAdapterIT {
 
-    @Autowired private TestEntityManager em;
+    @Autowired
+    private TestEntityManager em;
 
     /**
      * {@link EntityManager} bruto — necessário para queries SQL nativas que ignoram
      * {@code @SQLRestriction}.
      */
-    @Autowired private EntityManager rawEm;
+    @Autowired
+    private EntityManager rawEm;
 
-    @Autowired private ServicoRepositoryAdapter repositoryAdapter;
+    @Autowired
+    private ServicoRepositoryAdapter repositoryAdapter;
 
     private CategoriaJpaEntity categoria;
 
@@ -54,30 +53,17 @@ class ServicoRepositoryAdapterIT {
     }
 
     private ServicoJpaEntity persistirServico(String nome, BigDecimal preco) {
-        return em.persistFlushFind(
-                ServicoJpaEntity.builder()
-                        .nome(nome)
-                        .descricao("Descrição " + nome)
-                        .preco(preco)
-                        .duracaoHoras(LocalTime.of(1, 0))
-                        .categoria(categoria)
-                        .build());
+        return em.persistFlushFind(ServicoJpaEntity.builder().nome(nome).descricao("Descrição " + nome).preco(preco)
+                .duracaoHoras(LocalTime.of(1, 0)).categoria(categoria).build());
     }
 
     @Test
     @DisplayName("salvar → persiste novo serviço e retorna domínio com ID")
     void salvar_sucesso() {
-        Servico servico =
-                Servico.builder()
-                        .nome("Polimento IT")
-                        .descricao("Polimento de teste")
-                        .preco(BigDecimal.valueOf(99.90))
-                        .duracaoHoras(LocalTime.of(2, 0))
-                        .categoria(
-                                com.automotiva.estetica.rick.domain.entity.Categoria.builder()
-                                        .id(categoria.getId())
-                                        .build())
-                        .build();
+        Servico servico = Servico.builder().nome("Polimento IT").descricao("Polimento de teste")
+                .preco(BigDecimal.valueOf(99.90)).duracaoHoras(LocalTime.of(2, 0))
+                .categoria(com.automotiva.estetica.rick.domain.entity.Categoria.builder().id(categoria.getId()).build())
+                .build();
 
         Servico salvo = repositoryAdapter.salvar(servico);
 
@@ -109,11 +95,9 @@ class ServicoRepositoryAdapterIT {
         persistirServico("Enceramento Premium", BigDecimal.valueOf(80));
         persistirServico("Detalhamento Básico", BigDecimal.valueOf(150));
 
-        Page<Servico> resultado =
-                repositoryAdapter.buscarTodos("Enceramento", PageRequest.of(0, 10));
+        Page<Servico> resultado = repositoryAdapter.buscarTodos("Enceramento", PageRequest.of(0, 10));
 
-        assertThat(resultado.getContent())
-                .isNotEmpty()
+        assertThat(resultado.getContent()).isNotEmpty()
                 .allSatisfy(s -> assertThat(s.getNome()).containsIgnoringCase("Enceramento"));
     }
 
@@ -136,9 +120,7 @@ class ServicoRepositoryAdapterIT {
         List<Servico> resultado = repositoryAdapter.buscarPorIds(List.of(s1.getId(), s2.getId()));
 
         assertThat(resultado).hasSize(2);
-        assertThat(resultado)
-                .extracting(Servico::getNome)
-                .containsExactlyInAnyOrder("Serviço A", "Serviço B");
+        assertThat(resultado).extracting(Servico::getNome).containsExactlyInAnyOrder("Serviço A", "Serviço B");
     }
 
     @Test
@@ -158,21 +140,15 @@ class ServicoRepositoryAdapterIT {
     @Test
     @DisplayName("buscarTodos → filtra por nome da categoria via ServicoSpecification")
     void buscarTodos_filtroNomeCategoria() {
-        CategoriaJpaEntity outraCategoria =
-                em.persistFlushFind(CategoriaJpaEntity.builder().nome("Vitrificação IT").build());
+        CategoriaJpaEntity outraCategoria = em
+                .persistFlushFind(CategoriaJpaEntity.builder().nome("Vitrificação IT").build());
 
-        em.persistFlushFind(
-                ServicoJpaEntity.builder()
-                        .nome("Serviço de Vidro")
-                        .descricao("Descrição genérica")
-                        .preco(BigDecimal.valueOf(200))
-                        .categoria(outraCategoria)
-                        .build());
+        em.persistFlushFind(ServicoJpaEntity.builder().nome("Serviço de Vidro").descricao("Descrição genérica")
+                .preco(BigDecimal.valueOf(200)).categoria(outraCategoria).build());
 
         persistirServico("Polimento Básico", BigDecimal.valueOf(100)); // categoria "Lavagem IT"
 
-        Page<Servico> resultado =
-                repositoryAdapter.buscarTodos("Vitrificação", PageRequest.of(0, 10));
+        Page<Servico> resultado = repositoryAdapter.buscarTodos("Vitrificação", PageRequest.of(0, 10));
 
         assertThat(resultado.getContent()).hasSize(1);
         assertThat(resultado.getContent().getFirst().getNome()).isEqualTo("Serviço de Vidro");
@@ -188,20 +164,19 @@ class ServicoRepositoryAdapterIT {
         em.flush();
         em.clear();
 
-        // Query SQL nativa: bypassa o @SQLRestriction("deletado_em IS NULL") do Hibernate.
+        // Query SQL nativa: bypassa o @SQLRestriction("deletado_em IS NULL") do
+        // Hibernate.
         // em.find() e qualquer método JPA derivado aplicam o filtro automaticamente,
-        // tornando o registro invisível após o soft-delete — por isso não podem ser usados aqui.
+        // tornando o registro invisível após o soft-delete — por isso não podem ser
+        // usados aqui.
         // O H2 retorna java.sql.Timestamp para colunas TIMESTAMP em queries nativas,
         // por isso a conversão explícita para LocalDateTime é necessária.
-        Object resultado =
-                rawEm.createNativeQuery("SELECT deletado_em FROM servico WHERE id = :id")
-                        .setParameter("id", id)
-                        .getSingleResult();
+        Object resultado = rawEm.createNativeQuery("SELECT deletado_em FROM servico WHERE id = :id")
+                .setParameter("id", id).getSingleResult();
 
-        LocalDateTime deletadoEm =
-                resultado instanceof java.sql.Timestamp ts
-                        ? ts.toLocalDateTime()
-                        : (LocalDateTime) resultado;
+        LocalDateTime deletadoEm = resultado instanceof java.sql.Timestamp ts
+                ? ts.toLocalDateTime()
+                : (LocalDateTime) resultado;
 
         assertThat(deletadoEm).isNotNull();
 

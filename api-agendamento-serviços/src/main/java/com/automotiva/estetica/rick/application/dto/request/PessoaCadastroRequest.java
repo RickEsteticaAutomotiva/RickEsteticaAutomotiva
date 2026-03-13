@@ -36,8 +36,9 @@ public class PessoaCadastroRequest {
     private String senha;
 
     /**
-     * Roles do usuário. Opcional: quando ausente o serviço atribui {@code ROLE_USER} por padrão.
-     * Somente ADMIN pode cadastrar usuários com roles elevadas (validação no service).
+     * Roles do usuário. Opcional: quando ausente o serviço atribui
+     * {@code ROLE_USER} por padrão. Somente ADMIN pode cadastrar usuários com roles
+     * elevadas (validação no service).
      */
     private Set<RoleEnum> roles;
 }

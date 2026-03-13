@@ -8,10 +8,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
- * Configura o pool de threads dedicado para persistência assíncrona de logs de erro.
+ * Configura o pool de threads dedicado para persistência assíncrona de logs de
+ * erro.
  *
- * <p>O uso de um pool separado (erroLogTaskExecutor) garante que a gravação de logs nunca consuma
- * threads do pool principal da aplicação.
+ * <p>
+ * O uso de um pool separado (erroLogTaskExecutor) garante que a gravação de
+ * logs nunca consuma threads do pool principal da aplicação.
  */
 @Configuration
 @EnableAsync
@@ -22,9 +24,9 @@ public class AsyncConfig {
      * Pool dedicado para o ErroLogService.
      *
      * <ul>
-     *   <li>corePoolSize=2 — threads mínimas sempre ativas
-     *   <li>maxPoolSize=5 — limite em picos de erros
-     *   <li>queueCapacity=500 — fila para absorver rajadas sem perder logs
+     * <li>corePoolSize=2 — threads mínimas sempre ativas
+     * <li>maxPoolSize=5 — limite em picos de erros
+     * <li>queueCapacity=500 — fila para absorver rajadas sem perder logs
      * </ul>
      */
     @Bean(name = "erroLogTaskExecutor")

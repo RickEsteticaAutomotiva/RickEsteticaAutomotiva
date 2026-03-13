@@ -29,20 +29,16 @@ import org.springframework.data.domain.Pageable;
 @ExtendWith(MockitoExtension.class)
 class ServicoServiceTest {
 
-    @Mock private ServicoRepositoryPort servicoRepositoryPort;
+    @Mock
+    private ServicoRepositoryPort servicoRepositoryPort;
 
-    @InjectMocks private ServicoService servicoService;
+    @InjectMocks
+    private ServicoService servicoService;
 
     private Servico servicoMock(Long id) {
-        return Servico.builder()
-                .id(id)
-                .nome("Polimento")
-                .descricao("Polimento completo")
-                .preco(BigDecimal.valueOf(300))
-                .imagem("pol.jpg")
-                .duracaoHoras(LocalTime.of(2, 0))
-                .categoria(Categoria.builder().id(2L).nome("Polimento").build())
-                .build();
+        return Servico.builder().id(id).nome("Polimento").descricao("Polimento completo").preco(BigDecimal.valueOf(300))
+                .imagem("pol.jpg").duracaoHoras(LocalTime.of(2, 0))
+                .categoria(Categoria.builder().id(2L).nome("Polimento").build()).build();
     }
 
     private ServicoRequest requestMock() {

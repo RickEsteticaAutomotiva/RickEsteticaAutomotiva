@@ -14,7 +14,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 interface ServicoJpaRepository
-        extends JpaRepository<ServicoJpaEntity, Long>, JpaSpecificationExecutor<ServicoJpaEntity> {
+        extends
+            JpaRepository<ServicoJpaEntity, Long>,
+            JpaSpecificationExecutor<ServicoJpaEntity> {
 
     @Override
     @NonNull
@@ -24,8 +26,7 @@ interface ServicoJpaRepository
     @Override
     @NonNull
     @EntityGraph(attributePaths = "categoria")
-    Page<ServicoJpaEntity> findAll(
-            Specification<ServicoJpaEntity> spec, @NonNull Pageable pageable);
+    Page<ServicoJpaEntity> findAll(Specification<ServicoJpaEntity> spec, @NonNull Pageable pageable);
 
     @EntityGraph(attributePaths = "categoria")
     List<ServicoJpaEntity> findByIdIn(List<Long> ids);

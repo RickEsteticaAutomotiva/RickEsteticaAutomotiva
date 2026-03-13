@@ -38,38 +38,27 @@ public class OrdemServicoService implements OrdemServicoUseCase {
     @Override
     public Page<OrdemServicoResponse> buscarTodos(PageRequest pageRequest) {
         Pageable pageable = PageableFactory.from(pageRequest);
-        return ordemServicoRepositoryPort
-                .buscarTodos(pageRequest.getFiltro(), pageable)
-                .map(this::toResponse);
+        return ordemServicoRepositoryPort.buscarTodos(pageRequest.getFiltro(), pageable).map(this::toResponse);
     }
 
     @Override
     @Transactional
     public OrdemServicoResponse criar(OrdemServicoRequest request) {
-        if (ordemServicoRepositoryPort.existePorVeiculoIdEDataAgendamento(
-                request.getVeiculo(), request.getDataAgendamento())) {
-            throw RecursoJaExisteException.builder()
-                    .mensagem("um agendamento já existe nessa hora e data")
-                    .detalhes("")
+        if (ordemServicoRepositoryPort.existePorVeiculoIdEDataAgendamento(request.getVeiculo(),
+                request.getDataAgendamento())) {
+            throw RecursoJaExisteException.builder().mensagem("um agendamento já existe nessa hora e data").detalhes("")
                     .build();
         }
 
-        OrdemServico ordemServico =
-                OrdemServico.builder()
-                        .dataAgendamento(request.getDataAgendamento())
-                        .precoMinimo(request.getPrecoMinimo())
-                        .veiculo(Veiculo.builder().id(request.getVeiculo()).build())
-                        .status(Status.builder().id(1L).build())
-                        .observacoes(request.getObservacoes())
-                        .build();
+        OrdemServico ordemServico = OrdemServico.builder().dataAgendamento(request.getDataAgendamento())
+                .precoMinimo(request.getPrecoMinimo()).veiculo(Veiculo.builder().id(request.getVeiculo()).build())
+                .status(Status.builder().id(1L).build()).observacoes(request.getObservacoes()).build();
 
         try {
             ordemServico = ordemServicoRepositoryPort.salvar(ordemServico);
 
-            OrdemServico ordemComDetalhes =
-                    ordemServicoRepositoryPort
-                            .buscarPorIdComDetalhes(ordemServico.getId())
-                            .orElseThrow();
+            OrdemServico ordemComDetalhes = ordemServicoRepositoryPort.buscarPorIdComDetalhes(ordemServico.getId())
+                    .orElseThrow();
 
             ordemServicoPublisher.publicarOrdemServicoCriada(ordemComDetalhes, request);
 
@@ -77,13 +66,12 @@ public class OrdemServicoService implements OrdemServicoUseCase {
             carrinhoUseCase.limparCarrinhoPessoa(ordemComDetalhes.getVeiculo().getPessoa().getId());
 
         } catch (com.automotiva.estetica.rick.domain.exception.DomainException e) {
-            // Exceções de domínio sobem diretamente — já tratadas pelo GlobalExceptionHandler
+            // Exceções de domínio sobem diretamente — já tratadas pelo
+            // GlobalExceptionHandler
             throw e;
         } catch (Exception e) {
             log.error("Falha ao criar ordem de serviço: {}", e.getMessage(), e);
-            throw IntegracaoException.builder()
-                    .mensagem("Falha ao criar ordem de serviço")
-                    .detalhes(e.getMessage())
+            throw IntegracaoException.builder().mensagem("Falha ao criar ordem de serviço").detalhes(e.getMessage())
                     .build();
         }
 
@@ -94,18 +82,9 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
     @Override
     public OrdemServicoResponse buscarPorId(Long id) {
-        OrdemServico ordemServico =
-                ordemServicoRepositoryPort
-                        .buscarPorId(id)
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "a ordem de serviço com id "
-                                                                + id
-                                                                + " não foi encontrada")
-                                                .detalhes("")
-                                                .build());
+        OrdemServico ordemServico = ordemServicoRepositoryPort.buscarPorId(id)
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("a ordem de serviço com id " + id + " não foi encontrada").detalhes("").build());
 
         OrdemServicoResponse response = toResponse(ordemServico);
         response.setServicos(buscarIdsServicoPorOrdem(id));
@@ -114,39 +93,23 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
     @Override
     public List<OrdemServicoResponse> buscarPorUsuarioId(Long usuarioId) {
-        return ordemServicoRepositoryPort.buscarPorVeiculoPessoaId(usuarioId).stream()
-                .map(
-                        ordem -> {
-                            OrdemServicoResponse response = toResponse(ordem);
-                            response.setServicos(buscarIdsServicoPorOrdem(ordem.getId()));
-                            return response;
-                        })
-                .toList();
+        return ordemServicoRepositoryPort.buscarPorVeiculoPessoaId(usuarioId).stream().map(ordem -> {
+            OrdemServicoResponse response = toResponse(ordem);
+            response.setServicos(buscarIdsServicoPorOrdem(ordem.getId()));
+            return response;
+        }).toList();
     }
 
     @Override
     @Transactional
     public OrdemServicoResponse atualizar(Long id, OrdemServicoRequest request) {
-        OrdemServico ordemServico =
-                ordemServicoRepositoryPort
-                        .buscarPorIdComDetalhes(id)
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "a ordem de serviço com id "
-                                                                + id
-                                                                + " não foi encontrada")
-                                                .detalhes("")
-                                                .build());
+        OrdemServico ordemServico = ordemServicoRepositoryPort.buscarPorIdComDetalhes(id)
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("a ordem de serviço com id " + id + " não foi encontrada").detalhes("").build());
 
         // Aplica atualização via método de domínio
-        ordemServico.atualizar(
-                request.getDataAgendamento(),
-                request.getPrecoMinimo(),
-                request.getObservacoes(),
-                request.getStatus(),
-                request.getMotivo());
+        ordemServico.atualizar(request.getDataAgendamento(), request.getPrecoMinimo(), request.getObservacoes(),
+                request.getStatus(), request.getMotivo());
 
         // Regra de notificação encapsulada no domínio
         if (ordemServico.deveNotificarPorEmail()) {
@@ -164,63 +127,43 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
     private void criarItensServico(List<Long> servicoIds, OrdemServico ordemServico) {
         for (Long servicoId : servicoIds) {
-            Servico servico =
-                    servicoRepositoryPort
-                            .buscarPorId(servicoId)
-                            .orElseThrow(
-                                    () ->
-                                            RecursoNaoEncontradoException.builder()
-                                                    .mensagem(
-                                                            "serviço "
-                                                                    + servicoId
-                                                                    + " não encontrado")
-                                                    .detalhes("")
-                                                    .build());
+            Servico servico = servicoRepositoryPort.buscarPorId(servicoId)
+                    .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                            .mensagem("serviço " + servicoId + " não encontrado").detalhes("").build());
             itemServicoRepositoryPort.salvar(ordemServico.criarItem(servico));
         }
     }
 
     private List<Long> buscarIdsServicoPorOrdem(Long ordemId) {
         return itemServicoRepositoryPort.buscarPorOrdemServicoId(ordemId).stream()
-                .map(item -> item.getServico().getId())
-                .toList();
+                .map(item -> item.getServico().getId()).toList();
     }
 
     private void enviarEmailAtualizacao(OrdemServico ordemServico) {
         try {
             Email email = new Email();
             email.setAssunto("Atualização de Status da Ordem de Serviço #" + ordemServico.getId());
-            email.setCorpo(
-                    String.format(
-                            "A ordem de serviço #%d teve seu status atualizado para: %s%nCliente: %s%nVeículo: %s%nData: %s",
-                            ordemServico.getId(),
-                            ordemServico.getStatus().getDescricao(),
-                            ordemServico.getVeiculo().getPessoa().getNome(),
-                            ordemServico.getVeiculo().getModelo(),
-                            ordemServico.getDataAgendamento()));
+            email.setCorpo(String.format(
+                    "A ordem de serviço #%d teve seu status atualizado para: %s%nCliente: %s%nVeículo: %s%nData: %s",
+                    ordemServico.getId(),
+                    ordemServico.getStatus().getDescricao(),
+                    ordemServico.getVeiculo().getPessoa().getNome(),
+                    ordemServico.getVeiculo().getModelo(),
+                    ordemServico.getDataAgendamento()));
             email.setDestinatario(ordemServico.getVeiculo().getPessoa().getEmail());
             emailPort.enviarEmailComAnexos(email, null);
         } catch (Exception e) {
-            log.warn(
-                    "Falha ao enviar e-mail de atualização para ordem {}: {}",
-                    ordemServico.getId(),
-                    e.getMessage());
+            log.warn("Falha ao enviar e-mail de atualização para ordem {}: {}", ordemServico.getId(), e.getMessage());
         }
     }
 
     private OrdemServicoResponse toResponse(OrdemServico o) {
-        return OrdemServicoResponse.builder()
-                .id(o.getId())
-                .dataAgendamento(o.getDataAgendamento())
+        return OrdemServicoResponse.builder().id(o.getId()).dataAgendamento(o.getDataAgendamento())
                 .precoMinimo(o.getPrecoMinimo())
                 .veiculo(o.getVeiculo() != null ? o.getVeiculo().getId() : null)
                 .status(o.getStatus() != null ? o.getStatus().getId() : null)
                 .observacoes(o.getObservacoes())
                 .dtConclusao(o.getDtConclusao())
-                .motivo(
-                        o.getMotivoCancelamento() != null
-                                ? o.getMotivoCancelamento().getId()
-                                : null)
-                .build();
+                .motivo(o.getMotivoCancelamento() != null ? o.getMotivoCancelamento().getId() : null).build();
     }
 }

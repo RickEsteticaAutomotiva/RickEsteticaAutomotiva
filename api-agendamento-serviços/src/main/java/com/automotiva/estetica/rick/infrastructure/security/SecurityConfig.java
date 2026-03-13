@@ -37,34 +37,20 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
 
-    private static final String[] URLS_PUBLICAS = {
-        "/swagger-ui/**",
-        "/v3/api-docs/**",
-        "/swagger-resources/**",
-        "/webjars/**",
-        "/pessoas/login",
-        "/pessoas/",
-        "/servicos",
-        "/servicos/**",
-        "/categorias",
-        "/h2-console/**",
-        "/error"
-    };
+    private static final String[] URLS_PUBLICAS = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
+            "/webjars/**", "/pessoas/login", "/pessoas/", "/servicos", "/servicos/**", "/categorias", "/h2-console/**",
+            "/error"};
 
     @Bean
     public AuthenticationProvider authenticationProvider(PasswordEncoder encoder) {
         return new AuthenticationProvider() {
             @Override
-            public Authentication authenticate(Authentication authentication)
-                    throws AuthenticationException {
-                UserDetails userDetails =
-                        userDetailsService.loadUserByUsername(authentication.getName());
-                if (!encoder.matches(
-                        authentication.getCredentials().toString(), userDetails.getPassword())) {
+            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+                if (!encoder.matches(authentication.getCredentials().toString(), userDetails.getPassword())) {
                     throw new BadCredentialsException("E-mail ou senha incorretos");
                 }
-                return new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             }
 
             @Override
@@ -75,38 +61,22 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            HttpSecurity http, AuthenticationProvider authProvider) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .authenticationProvider(authProvider)
-                .build();
+    public AuthenticationManager authenticationManager(HttpSecurity http, AuthenticationProvider authProvider)
+            throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class).authenticationProvider(authProvider).build();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        http.csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(
-                        ex ->
-                                ex.authenticationEntryPoint(
-                                                (request, response, authException) ->
-                                                        response.sendError(
-                                                                HttpServletResponse.SC_UNAUTHORIZED,
-                                                                "Acesso não autorizado"))
-                                        .accessDeniedHandler(
-                                                (request, response, accessDeniedException) ->
-                                                        response.sendError(
-                                                                HttpServletResponse.SC_FORBIDDEN,
-                                                                "Acesso negado")))
-                .authorizeHttpRequests(
-                        auth ->
-                                auth.requestMatchers(URLS_PUBLICAS)
-                                        .permitAll()
-                                        .requestMatchers(HttpMethod.OPTIONS, "/**")
-                                        .permitAll()
-                                        .anyRequest()
-                                        .authenticated())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> response
+                                .sendError(HttpServletResponse.SC_UNAUTHORIZED, "Acesso não autorizado"))
+                        .accessDeniedHandler((request, response, accessDeniedException) -> response
+                                .sendError(HttpServletResponse.SC_FORBIDDEN, "Acesso negado")))
+                .authorizeHttpRequests(auth -> auth.requestMatchers(URLS_PUBLICAS).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers.frameOptions(fo -> fo.sameOrigin()));
 

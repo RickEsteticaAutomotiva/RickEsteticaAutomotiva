@@ -25,34 +25,16 @@ public class FavoritoService implements FavoritoUseCase {
 
     @Override
     public void adicionar(FavoritoRequest request) {
-        Pessoa pessoa =
-                pessoaRepositoryPort
-                        .buscarPorId(request.getIdPessoa())
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "Usuário não encontrado: "
-                                                                + request.getIdPessoa())
-                                                .detalhes("")
-                                                .build());
-        Servico servico =
-                servicoRepositoryPort
-                        .buscarPorId(request.getIdServico())
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "Serviço não encontrado: "
-                                                                + request.getIdServico())
-                                                .detalhes("")
-                                                .build());
+        Pessoa pessoa = pessoaRepositoryPort.buscarPorId(request.getIdPessoa())
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("Usuário não encontrado: " + request.getIdPessoa()).detalhes("").build());
+        Servico servico = servicoRepositoryPort.buscarPorId(request.getIdServico())
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("Serviço não encontrado: " + request.getIdServico()).detalhes("").build());
 
         if (favoritoRepositoryPort.existePorPessoaEServico(pessoa, servico)) {
-            throw RecursoJaExisteException.builder()
-                    .mensagem("Esse serviço já está nos favoritos deste usuário.")
-                    .detalhes("")
-                    .build();
+            throw RecursoJaExisteException.builder().mensagem("Esse serviço já está nos favoritos deste usuário.")
+                    .detalhes("").build();
         }
 
         favoritoRepositoryPort.salvar(Favorito.criar(pessoa, servico));
@@ -60,14 +42,8 @@ public class FavoritoService implements FavoritoUseCase {
 
     @Override
     public void remover(Long idFavorito) {
-        favoritoRepositoryPort
-                .buscarPorId(idFavorito)
-                .orElseThrow(
-                        () ->
-                                RecursoNaoEncontradoException.builder()
-                                        .mensagem("Favorito não encontrado.")
-                                        .detalhes("")
-                                        .build());
+        favoritoRepositoryPort.buscarPorId(idFavorito).orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                .mensagem("Favorito não encontrado.").detalhes("").build());
         favoritoRepositoryPort.deletarPorId(idFavorito);
     }
 
@@ -77,16 +53,9 @@ public class FavoritoService implements FavoritoUseCase {
             return List.of();
         }
         return favoritoRepositoryPort.buscarPorPessoaId(idPessoa).stream()
-                .map(
-                        f ->
-                                ServicoFavoritoResponse.builder()
-                                        .idFavorito(f.getId())
-                                        .idServico(f.getServico().getId())
-                                        .nome(f.getServico().getNome())
-                                        .descricao(f.getServico().getDescricao())
-                                        .preco(f.getServico().getPreco())
-                                        .imagem(f.getServico().getImagem())
-                                        .build())
+                .map(f -> ServicoFavoritoResponse.builder().idFavorito(f.getId()).idServico(f.getServico().getId())
+                        .nome(f.getServico().getNome()).descricao(f.getServico().getDescricao())
+                        .preco(f.getServico().getPreco()).imagem(f.getServico().getImagem()).build())
                 .toList();
     }
 }

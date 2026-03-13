@@ -7,7 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** Entidade de domínio que representa o registro de um erro capturado em runtime. */
+/**
+ * Entidade de domínio que representa o registro de um erro capturado em
+ * runtime.
+ */
 @Getter
 @Setter
 @Builder

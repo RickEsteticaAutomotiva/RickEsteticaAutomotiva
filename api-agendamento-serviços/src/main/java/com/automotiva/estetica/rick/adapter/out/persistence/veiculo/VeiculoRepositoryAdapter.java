@@ -45,18 +45,8 @@ public class VeiculoRepositoryAdapter implements VeiculoRepositoryPort {
 
     @Override
     public void deletarPorId(Long id) {
-        VeiculoJpaEntity entity =
-                jpaRepository
-                        .findById(id)
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "o veículo com id "
-                                                                + id
-                                                                + " não foi encontrado")
-                                                .detalhes("")
-                                                .build());
+        VeiculoJpaEntity entity = jpaRepository.findById(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                .mensagem("o veículo com id " + id + " não foi encontrado").detalhes("").build());
         entity.setDeletadoEm(LocalDateTime.now());
         jpaRepository.save(entity);
     }

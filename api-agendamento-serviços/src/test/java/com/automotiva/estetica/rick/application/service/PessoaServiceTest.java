@@ -41,48 +41,37 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ExtendWith(MockitoExtension.class)
 class PessoaServiceTest {
 
-    @Mock private PessoaRepositoryPort pessoaRepositoryPort;
+    @Mock
+    private PessoaRepositoryPort pessoaRepositoryPort;
 
-    @Mock private PasswordEncoder passwordEncoder;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
-    @Mock private JwtService jwtService;
+    @Mock
+    private JwtService jwtService;
 
-    @Mock private AuthenticationManager authenticationManager;
+    @Mock
+    private AuthenticationManager authenticationManager;
 
     private PessoaService pessoaService;
 
     @BeforeEach
     void setUp() {
-        // Instanciação manual para injetar @Lazy AuthenticationManager sem contexto Spring
-        pessoaService =
-                new PessoaService(
-                        pessoaRepositoryPort, passwordEncoder, jwtService, authenticationManager);
+        // Instanciação manual para injetar @Lazy AuthenticationManager sem contexto
+        // Spring
+        pessoaService = new PessoaService(pessoaRepositoryPort, passwordEncoder, jwtService, authenticationManager);
     }
 
     private Pessoa pessoaMock() {
-        return Pessoa.builder()
-                .id(1L)
-                .nome("João Silva")
-                .cpf("123.456.789-00")
-                .email("joao@email.com")
-                .telefone("11999999999")
-                .dataNascimento(LocalDate.of(1990, 1, 15))
-                .senha("$2a$10$encodedPassword")
-                .roles(EnumSet.of(RoleEnum.ROLE_CLIENTE))
-                .build();
+        return Pessoa.builder().id(1L).nome("João Silva").cpf("123.456.789-00").email("joao@email.com")
+                .telefone("11999999999").dataNascimento(LocalDate.of(1990, 1, 15)).senha("$2a$10$encodedPassword")
+                .roles(EnumSet.of(RoleEnum.ROLE_CLIENTE)).build();
     }
 
     private Pessoa pessoaAdminMock() {
-        return Pessoa.builder()
-                .id(2L)
-                .nome("Admin User")
-                .cpf("000.000.000-01")
-                .email("admin@email.com")
-                .telefone("11999990000")
-                .dataNascimento(LocalDate.of(1985, 3, 10))
-                .senha("$2a$10$encodedPassword")
-                .roles(EnumSet.of(RoleEnum.ROLE_ADMIN, RoleEnum.ROLE_CLIENTE))
-                .build();
+        return Pessoa.builder().id(2L).nome("Admin User").cpf("000.000.000-01").email("admin@email.com")
+                .telefone("11999990000").dataNascimento(LocalDate.of(1985, 3, 10)).senha("$2a$10$encodedPassword")
+                .roles(EnumSet.of(RoleEnum.ROLE_ADMIN, RoleEnum.ROLE_CLIENTE)).build();
     }
 
     private PessoaCadastroRequest cadastroRequestMock() {
@@ -195,15 +184,8 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve cadastrar com múltiplas roles quando informadas no request")
     void cadastrar_comMultiplasRoles_devePersistirTodas() {
-        Pessoa salva =
-                Pessoa.builder()
-                        .id(3L)
-                        .nome("Admin Gerente")
-                        .cpf("111.222.333-44")
-                        .email("ag@email.com")
-                        .senha("$2a$10$encodedPassword")
-                        .roles(EnumSet.of(RoleEnum.ROLE_ADMIN, RoleEnum.ROLE_GERENTE))
-                        .build();
+        Pessoa salva = Pessoa.builder().id(3L).nome("Admin Gerente").cpf("111.222.333-44").email("ag@email.com")
+                .senha("$2a$10$encodedPassword").roles(EnumSet.of(RoleEnum.ROLE_ADMIN, RoleEnum.ROLE_GERENTE)).build();
 
         when(pessoaRepositoryPort.existePorCpf(any())).thenReturn(false);
         when(pessoaRepositoryPort.existePorEmail(any())).thenReturn(false);
@@ -363,8 +345,7 @@ class PessoaServiceTest {
         Pessoa pessoa = pessoaMock();
         Authentication auth = mock(Authentication.class);
 
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(auth);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(auth);
         when(pessoaRepositoryPort.buscarPorEmail("joao@email.com")).thenReturn(Optional.of(pessoa));
         when(jwtService.gerarToken(auth)).thenReturn("jwt.token.aqui");
 
@@ -388,8 +369,7 @@ class PessoaServiceTest {
         Pessoa admin = pessoaAdminMock();
         Authentication auth = mock(Authentication.class);
 
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(auth);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(auth);
         when(pessoaRepositoryPort.buscarPorEmail("admin@email.com")).thenReturn(Optional.of(admin));
         when(jwtService.gerarToken(auth)).thenReturn("jwt.admin.token");
 
@@ -453,17 +433,11 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve aplicar ROLE_CLIENTE como fallback quando roles da pessoa estiver vazio")
     void loadUserByUsername_roleVazia_deveFallbackParaRoleUser() {
-        Pessoa semRole =
-                Pessoa.builder()
-                        .id(5L)
-                        .nome("Sem Role")
-                        .email("semrole@email.com")
-                        .senha("$2a$10$hash")
-                        .roles(EnumSet.noneOf(RoleEnum.class)) // set vazio
-                        .build();
+        Pessoa semRole = Pessoa.builder().id(5L).nome("Sem Role").email("semrole@email.com").senha("$2a$10$hash")
+                .roles(EnumSet.noneOf(RoleEnum.class)) // set vazio
+                .build();
 
-        when(pessoaRepositoryPort.buscarPorEmail("semrole@email.com"))
-                .thenReturn(Optional.of(semRole));
+        when(pessoaRepositoryPort.buscarPorEmail("semrole@email.com")).thenReturn(Optional.of(semRole));
 
         var userDetails = pessoaService.loadUserByUsername("semrole@email.com");
 
