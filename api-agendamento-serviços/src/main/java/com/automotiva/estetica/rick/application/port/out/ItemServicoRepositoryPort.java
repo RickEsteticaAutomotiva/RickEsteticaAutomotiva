@@ -13,4 +13,10 @@ public interface ItemServicoRepositoryPort {
     List<ItemServico> buscarTodos();
 
     List<ItemServico> buscarPorOrdemServicoId(Long ordemServicoId);
+
+    Optional<ItemServico> buscarPorOrdemServicoIdEServicoId(Long ordemServicoId, Long servicoId);
+
+    boolean existePorOrdemServicoIdEServicoId(Long ordemServicoId, Long servicoId);
+
+    void removerPorId(Long id);
 }

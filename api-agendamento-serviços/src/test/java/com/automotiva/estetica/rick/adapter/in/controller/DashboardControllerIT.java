@@ -57,7 +57,7 @@ class DashboardControllerIT extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("GET /dashboard/faturamento-periodo → 200 retorna faturamento dos últimos 30 dias")
+    @DisplayName("GET /dashboard/faturamento-periodo → 200 retorna contrato com dia e totalDia")
     void buscarFaturamentoPeriodo_sucesso() throws Exception {
         mockMvc.perform(
                         get(BASE_PATH + "/dashboard/faturamento-periodo")
@@ -71,6 +71,96 @@ class DashboardControllerIT extends AbstractIntegrationTest {
     void buscarFaturamentoPeriodo_semPermissao() throws Exception {
         mockMvc.perform(
                         get(BASE_PATH + "/dashboard/faturamento-periodo")
+                                .header("Authorization", bearer(tokenUser)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("GET /dashboard/faturamento-servicos → 200 retorna faturamento agrupado por serviço")
+    void buscarFaturamentoServicos_sucesso() throws Exception {
+        mockMvc.perform(
+                        get(BASE_PATH + "/dashboard/faturamento-servicos")
+                                .header("Authorization", bearer(tokenGerente)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @DisplayName("GET /dashboard/faturamento-servicos → 403 para usuário sem ROLE_GERENTE")
+    void buscarFaturamentoServicos_semPermissao() throws Exception {
+        mockMvc.perform(
+                        get(BASE_PATH + "/dashboard/faturamento-servicos")
+                                .header("Authorization", bearer(tokenUser)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("GET /dashboard/fluxo-caixa → 200 retorna objeto consolidado")
+    void buscarFluxoCaixa_sucesso() throws Exception {
+        mockMvc.perform(
+                        get(BASE_PATH + "/dashboard/fluxo-caixa")
+                                .header("Authorization", bearer(tokenGerente)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total").exists())
+                .andExpect(jsonPath("$.lucro").exists())
+                .andExpect(jsonPath("$.custo").exists())
+                .andExpect(jsonPath("$.percentualLucro").exists())
+                .andExpect(jsonPath("$.percentualCusto").exists());
+    }
+
+    @Test
+    @DisplayName("GET /dashboard/fluxo-caixa → 403 para usuário sem ROLE_GERENTE")
+    void buscarFluxoCaixa_semPermissao() throws Exception {
+        mockMvc.perform(
+                        get(BASE_PATH + "/dashboard/fluxo-caixa")
+                                .header("Authorization", bearer(tokenUser)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("GET /dashboard/cancelamentos → 200 retorna array de cancelamentos por tipo")
+    void buscarCancelamentos_sucesso() throws Exception {
+        mockMvc.perform(
+                        get(BASE_PATH + "/dashboard/cancelamentos")
+                                .header("Authorization", bearer(tokenGerente)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @DisplayName("GET /dashboard/cancelamentos → 403 para usuário sem ROLE_GERENTE")
+    void buscarCancelamentos_semPermissao() throws Exception {
+        mockMvc.perform(
+                        get(BASE_PATH + "/dashboard/cancelamentos")
+                                .header("Authorization", bearer(tokenUser)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("GET /dashboard/home-resumo → 200 retorna objeto com chaves esperadas")
+    void buscarHomeResumo_sucesso() throws Exception {
+        mockMvc.perform(
+                        get(BASE_PATH + "/dashboard/home-resumo")
+                                .header("Authorization", bearer(tokenGerente)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.agendamentosHoje").exists())
+                .andExpect(jsonPath("$.faturamentoEstimadoHoje").exists())
+                .andExpect(jsonPath("$.ticketMedioEstimadoHoje").exists())
+                .andExpect(jsonPath("$.proximoAgendamento").exists());
+    }
+
+    @Test
+    @DisplayName("GET /dashboard/home-resumo → 401 sem token")
+    void buscarHomeResumo_semToken() throws Exception {
+        mockMvc.perform(get(BASE_PATH + "/dashboard/home-resumo"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("GET /dashboard/home-resumo → 403 para usuário sem ROLE_GERENTE")
+    void buscarHomeResumo_semPermissao() throws Exception {
+        mockMvc.perform(
+                        get(BASE_PATH + "/dashboard/home-resumo")
                                 .header("Authorization", bearer(tokenUser)))
                 .andExpect(status().isForbidden());
     }

@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.application;
 
+import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPageRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,5 +33,36 @@ public final class PageableFactory {
 
         return org.springframework.data.domain.PageRequest.of(
                 pageRequest.getPagina(), pageRequest.getTamanho(), Sort.by(campos));
+    }
+
+    /**
+     * Constrói um {@link Pageable} a partir do {@link OrdemServicoGestaoPageRequest} da aplicação.
+     * Se o campo ordenarPor não for informado, ordena por "dataAgendamento" como padrão. Se a
+     * direção não for informada, considera "desc" como padrão.
+     *
+     * @param pageRequest DTO com parâmetros de paginação para gestão de ordens
+     * @return Pageable pronto para uso no repositório
+     */
+    public static Pageable from(OrdemServicoGestaoPageRequest pageRequest) {
+        String ordenarPor =
+                (pageRequest.getOrdenarPor() == null || pageRequest.getOrdenarPor().isBlank())
+                        ? "dataAgendamento"
+                        : pageRequest.getOrdenarPor();
+
+        String direcao =
+                (pageRequest.getDirecao() == null || pageRequest.getDirecao().isBlank())
+                        ? "desc"
+                        : pageRequest.getDirecao();
+
+        Sort.Direction sortDirection =
+                "asc".equalsIgnoreCase(direcao) ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        String[] campos = ordenarPor.split(",");
+        for (int i = 0; i < campos.length; i++) {
+            campos[i] = campos[i].trim();
+        }
+
+        return org.springframework.data.domain.PageRequest.of(
+                pageRequest.getPagina(), pageRequest.getTamanho(), Sort.by(sortDirection, campos));
     }
 }
