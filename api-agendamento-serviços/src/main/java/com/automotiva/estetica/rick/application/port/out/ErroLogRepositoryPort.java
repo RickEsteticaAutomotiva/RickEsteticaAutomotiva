@@ -15,13 +15,8 @@ public interface ErroLogRepositoryPort {
 
     Page<ErroLog> buscarTodos(Pageable pageable);
 
-    Page<ErroLog> buscarComFiltros(
-            String tipoExcecao,
-            Integer statusHttp,
-            String usuarioEmail,
-            LocalDateTime de,
-            LocalDateTime ate,
-            Pageable pageable);
+    Page<ErroLog> buscarComFiltros(String tipoExcecao, Integer statusHttp, String usuarioEmail, LocalDateTime de,
+            LocalDateTime ate, Pageable pageable);
 
     void deletarAnterioresA(LocalDateTime dataLimite);
 }

@@ -12,16 +12,9 @@ import org.junit.jupiter.api.Test;
 class PessoaTest {
 
     private Pessoa pessoaMock() {
-        return Pessoa.builder()
-                .id(1L)
-                .nome("João Silva")
-                .cpf("123.456.789-00")
-                .email("joao@email.com")
-                .telefone("11999999999")
-                .dataNascimento(LocalDate.of(1990, 1, 15))
-                .senha("senhaEncodada")
-                .roles(EnumSet.of(RoleEnum.ROLE_CLIENTE))
-                .build();
+        return Pessoa.builder().id(1L).nome("João Silva").cpf("123.456.789-00").email("joao@email.com")
+                .telefone("11999999999").dataNascimento(LocalDate.of(1990, 1, 15)).senha("senhaEncodada")
+                .roles(EnumSet.of(RoleEnum.ROLE_CLIENTE)).build();
     }
 
     @Test
@@ -58,8 +51,7 @@ class PessoaTest {
     void validarDadosSenha_senhaAtualNula_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        assertThrows(
-                CampoInvalidoException.class, () -> pessoa.validarDadosSenha(null, "novaSenha"));
+        assertThrows(CampoInvalidoException.class, () -> pessoa.validarDadosSenha(null, "novaSenha"));
     }
 
     @Test
@@ -67,8 +59,7 @@ class PessoaTest {
     void validarDadosSenha_senhaAtualEmBranco_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        assertThrows(
-                CampoInvalidoException.class, () -> pessoa.validarDadosSenha("  ", "novaSenha"));
+        assertThrows(CampoInvalidoException.class, () -> pessoa.validarDadosSenha("  ", "novaSenha"));
     }
 
     @Test
@@ -76,8 +67,7 @@ class PessoaTest {
     void validarDadosSenha_novaSenhaNula_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        assertThrows(
-                CampoInvalidoException.class, () -> pessoa.validarDadosSenha("senhaAtual", null));
+        assertThrows(CampoInvalidoException.class, () -> pessoa.validarDadosSenha("senhaAtual", null));
     }
 
     @Test
@@ -85,8 +75,7 @@ class PessoaTest {
     void validarDadosSenha_novaSenhaEmBranco_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        assertThrows(
-                CampoInvalidoException.class, () -> pessoa.validarDadosSenha("senhaAtual", "   "));
+        assertThrows(CampoInvalidoException.class, () -> pessoa.validarDadosSenha("senhaAtual", "   "));
     }
 
     @Test
@@ -129,14 +118,8 @@ class PessoaTest {
     @Test
     @DisplayName("temRole deve suportar múltiplas roles")
     void temRole_multiRole_deveReconhecerAmbas() {
-        Pessoa pessoa =
-                Pessoa.builder()
-                        .id(2L)
-                        .nome("Gerente")
-                        .email("gerente@email.com")
-                        .senha("hash")
-                        .roles(EnumSet.of(RoleEnum.ROLE_GERENTE, RoleEnum.ROLE_CLIENTE))
-                        .build();
+        Pessoa pessoa = Pessoa.builder().id(2L).nome("Gerente").email("gerente@email.com").senha("hash")
+                .roles(EnumSet.of(RoleEnum.ROLE_GERENTE, RoleEnum.ROLE_CLIENTE)).build();
 
         assertTrue(pessoa.temRole(RoleEnum.ROLE_GERENTE));
         assertTrue(pessoa.temRole(RoleEnum.ROLE_CLIENTE));
@@ -146,13 +129,7 @@ class PessoaTest {
     @Test
     @DisplayName("Builder sem roles explícitas deve inicializar com ROLE_CLIENTE por padrão")
     void builder_semRoles_deveUsarRoleUserComoDefault() {
-        Pessoa pessoa =
-                Pessoa.builder()
-                        .id(3L)
-                        .nome("Default")
-                        .email("default@email.com")
-                        .senha("hash")
-                        .build();
+        Pessoa pessoa = Pessoa.builder().id(3L).nome("Default").email("default@email.com").senha("hash").build();
 
         assertNotNull(pessoa.getRoles());
         assertTrue(pessoa.getRoles().contains(RoleEnum.ROLE_CLIENTE));

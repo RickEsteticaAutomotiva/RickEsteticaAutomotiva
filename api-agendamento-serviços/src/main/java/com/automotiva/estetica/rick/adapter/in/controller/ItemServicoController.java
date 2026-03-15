@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/itens-servico")
 @RequiredArgsConstructor
 @ClienteOnly
-@Tag(
-        name = "Itens de Serviço",
-        description = "Gerenciamento de itens vinculados às ordens de serviço")
+@Tag(name = "Itens de Serviço", description = "Gerenciamento de itens vinculados às ordens de serviço")
 public class ItemServicoController {
 
     private final ItemServicoUseCase itemServicoUseCase;

@@ -8,15 +8,8 @@ import org.junit.jupiter.api.Test;
 class VeiculoTest {
 
     private Veiculo veiculoMock() {
-        return Veiculo.builder()
-                .id(1L)
-                .placa("ABC-1234")
-                .modelo("Civic")
-                .marca("Honda")
-                .porte("Médio")
-                .cor("Preto")
-                .ano("2022")
-                .build();
+        return Veiculo.builder().id(1L).placa("ABC-1234").modelo("Civic").marca("Honda").porte("Médio").cor("Preto")
+                .ano("2022").build();
     }
 
     @Test

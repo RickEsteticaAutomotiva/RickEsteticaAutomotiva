@@ -28,17 +28,11 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String gerarToken(Authentication authentication) {
-        String authorities =
-                authentication.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.joining(","));
-        return Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim("roles", authorities)
-                .setIssuedAt(new Date())
+        String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+        return Jwts.builder().setSubject(authentication.getName()).claim("roles", authorities).setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtTokenValidity * 1_000))
-                .signWith(parseSecret(), SignatureAlgorithm.HS512)
-                .compact();
+                .signWith(parseSecret(), SignatureAlgorithm.HS512).compact();
     }
 
     @Override
@@ -55,7 +49,8 @@ public class JwtServiceImpl implements JwtService {
     public List<String> getRolesFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
         String roles = claims.get("roles", String.class);
-        if (roles == null || roles.isBlank()) return List.of();
+        if (roles == null || roles.isBlank())
+            return List.of();
         return List.of(roles.split(","));
     }
 
@@ -68,11 +63,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(parseSecret())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parserBuilder().setSigningKey(parseSecret()).build().parseClaimsJws(token).getBody();
     }
 
     private SecretKey parseSecret() {

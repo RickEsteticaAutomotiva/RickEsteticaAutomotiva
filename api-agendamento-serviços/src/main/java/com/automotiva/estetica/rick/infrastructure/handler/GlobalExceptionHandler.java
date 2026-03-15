@@ -33,10 +33,12 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 /**
  * Handler global de exceções com persistência de log.
  *
- * <p>Todo erro capturado aqui é salvo de forma assíncrona na tabela erro_log, contendo todos os
- * insumos necessários para reprodução posterior.
+ * <p>
+ * Todo erro capturado aqui é salvo de forma assíncrona na tabela erro_log,
+ * contendo todos os insumos necessários para reprodução posterior.
  *
- * <p>Camada: infrastructure/handler.
+ * <p>
+ * Camada: infrastructure/handler.
  */
 @Slf4j
 @RestControllerAdvice
@@ -56,11 +58,9 @@ public class GlobalExceptionHandler {
     // -------------------------------------------------------------------------
 
     @ExceptionHandler(DomainException.class)
-    public ResponseEntity<ProblemDetail> handleDomainException(
-            DomainException ex, HttpServletRequest request) {
+    public ResponseEntity<ProblemDetail> handleDomainException(DomainException ex, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(ex.getStatus(), ex.getMensagem());
-        problem.setType(
-                URI.create("https://api.rickestetica.com.br/errors/" + ex.getTipo().toLowerCase()));
+        problem.setType(URI.create("https://api.rickestetica.com.br/errors/" + ex.getTipo().toLowerCase()));
         problem.setTitle(ex.getTipo());
         problem.setProperty("timestamp", Instant.now());
         problem.setProperty("detalhes", ex.getDetalhes());
@@ -70,18 +70,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ProblemDetail> handleValidation(
-            MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity<ProblemDetail> handleValidation(MethodArgumentNotValidException ex,
+            HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problem.setType(URI.create("https://api.rickestetica.com.br/errors/validacao"));
         problem.setTitle("Erro de validação");
         problem.setDetail("Um ou mais campos possuem valores inválidos");
         problem.setProperty("timestamp", Instant.now());
-        problem.setProperty(
-                "campos",
-                ex.getBindingResult().getFieldErrors().stream()
-                        .map(FieldError::getDefaultMessage)
-                        .toList());
+        problem.setProperty("campos",
+                ex.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage).toList());
 
         registrarLog(ex, HttpStatus.BAD_REQUEST.value(), request);
         return ResponseEntity.badRequest().body(problem);
@@ -90,38 +87,39 @@ public class GlobalExceptionHandler {
     /**
      * Trata campos de ordenação (sort) inválidos enviados na query string.
      *
-     * <p>O Spring Data lança {@link PropertyReferenceException} quando o parâmetro {@code sort}
-     * contém um nome de propriedade que não existe na entidade (ex: {@code sort=["string"]}). Isso
-     * é erro do cliente, portanto retorna 400 Bad Request — nunca 500.
+     * <p>
+     * O Spring Data lança {@link PropertyReferenceException} quando o parâmetro
+     * {@code sort} contém um nome de propriedade que não existe na entidade (ex:
+     * {@code sort=["string"]}). Isso é erro do cliente, portanto retorna 400 Bad
+     * Request — nunca 500.
      */
     @ExceptionHandler(PropertyReferenceException.class)
-    public ResponseEntity<ProblemDetail> handlePropertyReference(
-            PropertyReferenceException ex, HttpServletRequest request) {
+    public ResponseEntity<ProblemDetail> handlePropertyReference(PropertyReferenceException ex,
+            HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problem.setType(URI.create("https://api.rickestetica.com.br/errors/parametro-invalido"));
         problem.setTitle("Parâmetro de ordenação inválido");
-        problem.setDetail(
-                "O campo informado no parâmetro 'sort' não existe: '" + ex.getPropertyName() + "'");
+        problem.setDetail("O campo informado no parâmetro 'sort' não existe: '" + ex.getPropertyName() + "'");
         problem.setProperty("timestamp", Instant.now());
         problem.setProperty("sort", request.getParameter("sort"));
         return ResponseEntity.badRequest().body(problem);
     }
 
     /**
-     * Trata negações de acesso lançadas pelo Spring Security (@PreAuthorize, @Secured, etc.).
+     * Trata negações de acesso lançadas pelo Spring Security
+     * (@PreAuthorize, @Secured, etc.).
      *
-     * <p>Se o usuário não está autenticado (anônimo), relança a exceção para que o {@code
-     * authenticationEntryPoint} do Spring Security devolva 401 UNAUTHORIZED. Se está autenticado
-     * mas sem permissão, retorna 403 FORBIDDEN com ProblemDetail.
+     * <p>
+     * Se o usuário não está autenticado (anônimo), relança a exceção para que o
+     * {@code
+     * authenticationEntryPoint} do Spring Security devolva 401 UNAUTHORIZED. Se
+     * está autenticado mas sem permissão, retorna 403 FORBIDDEN com ProblemDetail.
      */
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ProblemDetail> handleAccessDenied(
-            AccessDeniedException ex, HttpServletRequest request) throws AccessDeniedException {
+    public ResponseEntity<ProblemDetail> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request)
+            throws AccessDeniedException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAnonymous =
-                auth == null
-                        || !auth.isAuthenticated()
-                        || "anonymousUser".equals(auth.getPrincipal());
+        boolean isAnonymous = auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal());
         if (isAnonymous) {
             // Não autenticado — deixa o authenticationEntryPoint devolver 401
             throw ex;
@@ -137,19 +135,17 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Trata falhas de autenticação por credenciais inválidas (e-mail ou senha errados).
+     * Trata falhas de autenticação por credenciais inválidas (e-mail ou senha
+     * errados).
      *
-     * <p>Retorna 401 UNAUTHORIZED com mensagem genérica para evitar <em>user enumeration
-     * attack</em>. Não persiste no erro_log pois é um evento de segurança esperado, não um erro de
-     * servidor.
+     * <p>
+     * Retorna 401 UNAUTHORIZED com mensagem genérica para evitar <em>user
+     * enumeration attack</em>. Não persiste no erro_log pois é um evento de
+     * segurança esperado, não um erro de servidor.
      */
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ProblemDetail> handleBadCredentials(
-            BadCredentialsException ex, HttpServletRequest request) {
-        log.debug(
-                "Tentativa de login com credenciais inválidas em [{}]: {}",
-                request.getRequestURI(),
-                ex.getMessage());
+    public ResponseEntity<ProblemDetail> handleBadCredentials(BadCredentialsException ex, HttpServletRequest request) {
+        log.debug("Tentativa de login com credenciais inválidas em [{}]: {}", request.getRequestURI(), ex.getMessage());
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
         problem.setType(URI.create("https://api.rickestetica.com.br/errors/credenciais-invalidas"));
         problem.setTitle("Credenciais inválidas");
@@ -160,40 +156,39 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Trata o wrapper lançado pelo Spring Security quando o UserDetailsService lança qualquer
-     * exceção durante a autenticação (ex: UsernameNotFoundException).
+     * Trata o wrapper lançado pelo Spring Security quando o UserDetailsService
+     * lança qualquer exceção durante a autenticação (ex:
+     * UsernameNotFoundException).
      *
-     * <p>O Spring Security captura exceções não-checadas lançadas dentro do AuthenticationProvider
-     * e as re-lança envoltas em InternalAuthenticationServiceException — por isso a
-     * UsernameNotFoundException nunca chega diretamente ao handler. Este método desempacota e
-     * delega para handleBadCredentials para retornar 401 com mensagem genérica.
+     * <p>
+     * O Spring Security captura exceções não-checadas lançadas dentro do
+     * AuthenticationProvider e as re-lança envoltas em
+     * InternalAuthenticationServiceException — por isso a UsernameNotFoundException
+     * nunca chega diretamente ao handler. Este método desempacota e delega para
+     * handleBadCredentials para retornar 401 com mensagem genérica.
      */
     @ExceptionHandler(InternalAuthenticationServiceException.class)
-    public ResponseEntity<ProblemDetail> handleInternalAuthService(
-            InternalAuthenticationServiceException ex, HttpServletRequest request) {
-        log.debug(
-                "Falha interna de autenticação em [{}] — causa: {}",
-                request.getRequestURI(),
+    public ResponseEntity<ProblemDetail> handleInternalAuthService(InternalAuthenticationServiceException ex,
+            HttpServletRequest request) {
+        log.debug("Falha interna de autenticação em [{}] — causa: {}", request.getRequestURI(),
                 ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage());
-        return handleBadCredentials(
-                new BadCredentialsException("E-mail ou senha incorretos", ex), request);
+        return handleBadCredentials(new BadCredentialsException("E-mail ou senha incorretos", ex), request);
     }
 
     /**
      * Trata o caso em que o e-mail informado no login não existe na base.
      *
-     * <p>O {@link org.springframework.security.authentication.AuthenticationProvider} customizado
-     * não herda de {@code DaoAuthenticationProvider}, portanto a {@code UsernameNotFoundException}
-     * não é convertida automaticamente em {@code BadCredentialsException}. Este handler garante que
-     * qualquer um dos dois caminhos retorne sempre 401 com a mesma mensagem genérica.
+     * <p>
+     * O {@link org.springframework.security.authentication.AuthenticationProvider}
+     * customizado não herda de {@code DaoAuthenticationProvider}, portanto a
+     * {@code UsernameNotFoundException} não é convertida automaticamente em
+     * {@code BadCredentialsException}. Este handler garante que qualquer um dos
+     * dois caminhos retorne sempre 401 com a mesma mensagem genérica.
      */
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ProblemDetail> handleUsernameNotFound(
-            UsernameNotFoundException ex, HttpServletRequest request) {
-        log.debug(
-                "Tentativa de login com e-mail inexistente em [{}]: {}",
-                request.getRequestURI(),
-                ex.getMessage());
+    public ResponseEntity<ProblemDetail> handleUsernameNotFound(UsernameNotFoundException ex,
+            HttpServletRequest request) {
+        log.debug("Tentativa de login com e-mail inexistente em [{}]: {}", request.getRequestURI(), ex.getMessage());
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
         problem.setType(URI.create("https://api.rickestetica.com.br/errors/credenciais-invalidas"));
         problem.setTitle("Credenciais inválidas");
@@ -221,23 +216,12 @@ public class GlobalExceptionHandler {
 
     private void registrarLog(Exception ex, int statusHttp, HttpServletRequest request) {
         try {
-            ErroLog erroLog =
-                    ErroLog.builder()
-                            .timestamp(LocalDateTime.now())
-                            .tipoExcecao(ex.getClass().getName())
-                            .mensagem(ex.getMessage())
-                            .stackTrace(extrairStackTrace(ex))
-                            .endpoint(request.getRequestURI())
-                            .metodoHttp(request.getMethod())
-                            .payloadRequisicao(extrairPayload(request))
-                            .queryParams(request.getQueryString())
-                            .headersRequisicao(extrairHeaders(request))
-                            .usuarioEmail(obterUsuarioAutenticado())
-                            .statusHttp(statusHttp)
-                            .ambiente(obterAmbiente())
-                            .ipCliente(obterIpCliente(request))
-                            .userAgent(request.getHeader("User-Agent"))
-                            .build();
+            ErroLog erroLog = ErroLog.builder().timestamp(LocalDateTime.now()).tipoExcecao(ex.getClass().getName())
+                    .mensagem(ex.getMessage()).stackTrace(extrairStackTrace(ex)).endpoint(request.getRequestURI())
+                    .metodoHttp(request.getMethod()).payloadRequisicao(extrairPayload(request))
+                    .queryParams(request.getQueryString()).headersRequisicao(extrairHeaders(request))
+                    .usuarioEmail(obterUsuarioAutenticado()).statusHttp(statusHttp).ambiente(obterAmbiente())
+                    .ipCliente(obterIpCliente(request)).userAgent(request.getHeader("User-Agent")).build();
 
             erroLogUseCase.registrar(erroLog);
         } catch (Exception logEx) {

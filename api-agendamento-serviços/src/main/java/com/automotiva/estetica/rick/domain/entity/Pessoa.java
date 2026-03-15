@@ -26,36 +26,39 @@ public class Pessoa {
     private LocalDate dataNascimento;
     private String senha;
 
-    /** Conjunto de roles do usuário. Default: {@code ROLE_USER} quando vazio ou nulo. */
-    @Builder.Default private Set<RoleEnum> roles = EnumSet.of(RoleEnum.ROLE_CLIENTE);
+    /**
+     * Conjunto de roles do usuário. Default: {@code ROLE_USER} quando vazio ou
+     * nulo.
+     */
+    @Builder.Default
+    private Set<RoleEnum> roles = EnumSet.of(RoleEnum.ROLE_CLIENTE);
 
     /** Retorna {@code true} se o usuário possuir a role informada. */
     public boolean temRole(RoleEnum role) {
         return roles != null && roles.contains(role);
     }
 
-    public void atualizar(
-            String nome, String cpf, String email, String telefone, LocalDate dataNascimento) {
-        if (nome != null) this.nome = nome;
-        if (cpf != null) this.cpf = cpf;
-        if (email != null) this.email = email;
-        if (telefone != null) this.telefone = telefone;
-        if (dataNascimento != null) this.dataNascimento = dataNascimento;
+    public void atualizar(String nome, String cpf, String email, String telefone, LocalDate dataNascimento) {
+        if (nome != null)
+            this.nome = nome;
+        if (cpf != null)
+            this.cpf = cpf;
+        if (email != null)
+            this.email = email;
+        if (telefone != null)
+            this.telefone = telefone;
+        if (dataNascimento != null)
+            this.dataNascimento = dataNascimento;
     }
 
     /**
-     * Regra de domínio: valida que os campos de troca de senha não são nulos nem em branco. Deve
-     * ser chamado antes de codificar a nova senha na camada de aplicação.
+     * Regra de domínio: valida que os campos de troca de senha não são nulos nem em
+     * branco. Deve ser chamado antes de codificar a nova senha na camada de
+     * aplicação.
      */
     public void validarDadosSenha(String senhaAtual, String novaSenha) {
-        if (senhaAtual == null
-                || senhaAtual.isBlank()
-                || novaSenha == null
-                || novaSenha.isBlank()) {
-            throw CampoInvalidoException.builder()
-                    .mensagem("dados de senha inválidos")
-                    .detalhes("")
-                    .build();
+        if (senhaAtual == null || senhaAtual.isBlank() || novaSenha == null || novaSenha.isBlank()) {
+            throw CampoInvalidoException.builder().mensagem("dados de senha inválidos").detalhes("").build();
         }
     }
 

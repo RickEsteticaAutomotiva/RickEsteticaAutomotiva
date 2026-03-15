@@ -29,17 +29,12 @@ public class DashboardService implements DashboardUseCase {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
         PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
-        BigDecimal atual =
-                ordemServicoRepositoryPort.somarFaturamentoDoPeriodo(
-                        mesAtual.inicio(), mesAtual.fim());
-        BigDecimal anterior =
-                ordemServicoRepositoryPort.somarFaturamentoDoPeriodo(
-                        mesAnterior.inicio(), mesAnterior.fim());
+        BigDecimal atual = ordemServicoRepositoryPort.somarFaturamentoDoPeriodo(mesAtual.inicio(), mesAtual.fim());
+        BigDecimal anterior = ordemServicoRepositoryPort.somarFaturamentoDoPeriodo(mesAnterior.inicio(),
+                mesAnterior.fim());
 
-        return FaturamentoResponse.builder()
-                .faturamentoAtual(atual)
-                .variacaoPercentual(VariacaoPercentual.calcular(atual, anterior))
-                .build();
+        return FaturamentoResponse.builder().faturamentoAtual(atual)
+                .variacaoPercentual(VariacaoPercentual.calcular(atual, anterior)).build();
     }
 
     @Override
@@ -47,16 +42,11 @@ public class DashboardService implements DashboardUseCase {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
         PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
-        Integer atual =
-                ordemServicoRepositoryPort.buscarQtdOrdensDoMes(mesAtual.inicio(), mesAtual.fim());
-        Integer anterior =
-                ordemServicoRepositoryPort.buscarQtdOrdensDoMes(
-                        mesAnterior.inicio(), mesAnterior.fim());
+        Integer atual = ordemServicoRepositoryPort.buscarQtdOrdensDoMes(mesAtual.inicio(), mesAtual.fim());
+        Integer anterior = ordemServicoRepositoryPort.buscarQtdOrdensDoMes(mesAnterior.inicio(), mesAnterior.fim());
 
-        return QtdOrdensMensalResponse.builder()
-                .totalOrdens(atual)
-                .variacaoPercentual(VariacaoPercentual.calcular(atual, anterior))
-                .build();
+        return QtdOrdensMensalResponse.builder().totalOrdens(atual)
+                .variacaoPercentual(VariacaoPercentual.calcular(atual, anterior)).build();
     }
 
     @Override
@@ -64,17 +54,12 @@ public class DashboardService implements DashboardUseCase {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
         PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
-        Integer atual =
-                ordemServicoRepositoryPort.buscarQtdOrdensConcluidasNoMes(
-                        mesAtual.inicio(), mesAtual.fim());
-        Integer anterior =
-                ordemServicoRepositoryPort.buscarQtdOrdensConcluidasNoMes(
-                        mesAnterior.inicio(), mesAnterior.fim());
+        Integer atual = ordemServicoRepositoryPort.buscarQtdOrdensConcluidasNoMes(mesAtual.inicio(), mesAtual.fim());
+        Integer anterior = ordemServicoRepositoryPort.buscarQtdOrdensConcluidasNoMes(mesAnterior.inicio(),
+                mesAnterior.fim());
 
-        return QtdOrdensConcluidasMensalResponse.builder()
-                .totalOrdensConcluidas(atual)
-                .variacaoPercentual(VariacaoPercentual.calcular(atual, anterior))
-                .build();
+        return QtdOrdensConcluidasMensalResponse.builder().totalOrdensConcluidas(atual)
+                .variacaoPercentual(VariacaoPercentual.calcular(atual, anterior)).build();
     }
 
     @Override
@@ -82,31 +67,20 @@ public class DashboardService implements DashboardUseCase {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
         PeriodoMensal mesAnterior = getPeriodoMesAnterior();
 
-        BigDecimal atual =
-                ordemServicoRepositoryPort.calcularTicketMedioDoMes(
-                        mesAtual.inicio(), mesAtual.fim());
-        BigDecimal anterior =
-                ordemServicoRepositoryPort.calcularTicketMedioDoMes(
-                        mesAnterior.inicio(), mesAnterior.fim());
+        BigDecimal atual = ordemServicoRepositoryPort.calcularTicketMedioDoMes(mesAtual.inicio(), mesAtual.fim());
+        BigDecimal anterior = ordemServicoRepositoryPort.calcularTicketMedioDoMes(mesAnterior.inicio(),
+                mesAnterior.fim());
 
-        return TicketMedioMensalResponse.builder()
-                .totalTicketMedioMesAtual(atual)
-                .variacaoPercentual(VariacaoPercentual.calcular(atual, anterior))
-                .build();
+        return TicketMedioMensalResponse.builder().totalTicketMedioMesAtual(atual)
+                .variacaoPercentual(VariacaoPercentual.calcular(atual, anterior)).build();
     }
 
     @Override
     public List<FaturamentoPeriodoResponse> buscarFaturamentoPeriodo() {
         LocalDateTime dataInicial = LocalDate.now().minusDays(30).atStartOfDay();
-        List<FaturamentoDiarioDto> rows =
-                ordemServicoRepositoryPort.buscarFaturamentoPorDia(dataInicial);
+        List<FaturamentoDiarioDto> rows = ordemServicoRepositoryPort.buscarFaturamentoPorDia(dataInicial);
         return rows.stream()
-                .map(
-                        dto ->
-                                FaturamentoPeriodoResponse.builder()
-                                        .dia(dto.dia())
-                                        .totalDia(dto.totalDia())
-                                        .build())
+                .map(dto -> FaturamentoPeriodoResponse.builder().dia(dto.dia()).totalDia(dto.totalDia()).build())
                 .toList();
     }
 
@@ -123,5 +97,6 @@ public class DashboardService implements DashboardUseCase {
         return new PeriodoMensal(inicio.atStartOfDay(), fim.atTime(23, 59, 59));
     }
 
-    private record PeriodoMensal(LocalDateTime inicio, LocalDateTime fim) {}
+    private record PeriodoMensal(LocalDateTime inicio, LocalDateTime fim) {
+    }
 }

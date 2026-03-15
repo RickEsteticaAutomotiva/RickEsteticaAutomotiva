@@ -43,15 +43,12 @@ public class PessoaService implements PessoaUseCase, UserDetailsService {
     private final AuthenticationManager authenticationManager;
 
     /**
-     * {@code @Lazy} no AuthenticationManager quebra o ciclo circular: PessoaService →
-     * AuthenticationManager (SecurityConfig) → JwtAuthFilter({@code @Lazy}
+     * {@code @Lazy} no AuthenticationManager quebra o ciclo circular: PessoaService
+     * → AuthenticationManager (SecurityConfig) → JwtAuthFilter({@code @Lazy}
      * UserDetailsService=PessoaService)
      */
-    public PessoaService(
-            PessoaRepositoryPort pessoaRepositoryPort,
-            PasswordEncoder passwordEncoder,
-            JwtService jwtService,
-            @Lazy AuthenticationManager authenticationManager) {
+    public PessoaService(PessoaRepositoryPort pessoaRepositoryPort, PasswordEncoder passwordEncoder,
+            JwtService jwtService, @Lazy AuthenticationManager authenticationManager) {
         this.pessoaRepositoryPort = pessoaRepositoryPort;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -61,95 +58,52 @@ public class PessoaService implements PessoaUseCase, UserDetailsService {
     @Override
     public Page<PessoaResponse> buscarTodos(PageRequest pageRequest) {
         Pageable pageable = PageableFactory.from(pageRequest);
-        return pessoaRepositoryPort
-                .buscarTodos(pageRequest.getFiltro(), pageable)
-                .map(this::toResponse);
+        return pessoaRepositoryPort.buscarTodos(pageRequest.getFiltro(), pageable).map(this::toResponse);
     }
 
     @Override
     public PessoaResponse buscarPorId(Long id) {
-        return pessoaRepositoryPort
-                .buscarPorId(id)
-                .map(this::toResponse)
-                .orElseThrow(
-                        () ->
-                                RecursoNaoEncontradoException.builder()
-                                        .mensagem("a pessoa com id " + id + " não foi encontrada")
-                                        .detalhes("")
-                                        .build());
+        return pessoaRepositoryPort.buscarPorId(id).map(this::toResponse)
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("a pessoa com id " + id + " não foi encontrada").detalhes("").build());
     }
 
     @Override
     public PessoaResponse cadastrar(PessoaCadastroRequest request) {
         if (pessoaRepositoryPort.existePorCpf(request.getCpf())) {
-            throw RecursoJaExisteException.builder()
-                    .mensagem("o cpf já existe no sistema")
-                    .detalhes("")
-                    .build();
+            throw RecursoJaExisteException.builder().mensagem("o cpf já existe no sistema").detalhes("").build();
         }
         if (pessoaRepositoryPort.existePorEmail(request.getEmail())) {
-            throw RecursoJaExisteException.builder()
-                    .mensagem("o email já existe no sistema")
-                    .detalhes("")
-                    .build();
+            throw RecursoJaExisteException.builder().mensagem("o email já existe no sistema").detalhes("").build();
         }
 
-        // Roles: usa as informadas no request ou ROLE_USER por padrão (auto-cadastro público)
-        Set<RoleEnum> roles =
-                (request.getRoles() != null && !request.getRoles().isEmpty())
-                        ? EnumSet.copyOf(request.getRoles())
-                        : EnumSet.of(RoleEnum.ROLE_CLIENTE);
+        // Roles: usa as informadas no request ou ROLE_USER por padrão (auto-cadastro
+        // público)
+        Set<RoleEnum> roles = (request.getRoles() != null && !request.getRoles().isEmpty())
+                ? EnumSet.copyOf(request.getRoles())
+                : EnumSet.of(RoleEnum.ROLE_CLIENTE);
 
-        Pessoa pessoa =
-                Pessoa.builder()
-                        .nome(request.getNome())
-                        .cpf(request.getCpf())
-                        .email(request.getEmail())
-                        .telefone(request.getTelefone())
-                        .dataNascimento(request.getDataNascimento())
-                        .senha(passwordEncoder.encode(request.getSenha()))
-                        .roles(roles)
-                        .build();
+        Pessoa pessoa = Pessoa.builder().nome(request.getNome()).cpf(request.getCpf()).email(request.getEmail())
+                .telefone(request.getTelefone()).dataNascimento(request.getDataNascimento())
+                .senha(passwordEncoder.encode(request.getSenha())).roles(roles).build();
         return toResponse(pessoaRepositoryPort.salvar(pessoa));
     }
 
     @Override
     public PessoaResponse atualizar(Long id, PessoaAtualizacaoRequest request) {
-        Pessoa pessoa =
-                pessoaRepositoryPort
-                        .buscarPorId(id)
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "a pessoa com id "
-                                                                + id
-                                                                + " não foi encontrada")
-                                                .detalhes("")
-                                                .build());
+        Pessoa pessoa = pessoaRepositoryPort.buscarPorId(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                .mensagem("a pessoa com id " + id + " não foi encontrada").detalhes("").build());
 
-        if (request.getCpf() != null
-                && !request.getCpf().equals(pessoa.getCpf())
+        if (request.getCpf() != null && !request.getCpf().equals(pessoa.getCpf())
                 && pessoaRepositoryPort.existePorCpf(request.getCpf())) {
-            throw RecursoJaExisteException.builder()
-                    .mensagem("o cpf já existe no sistema")
-                    .detalhes("")
-                    .build();
+            throw RecursoJaExisteException.builder().mensagem("o cpf já existe no sistema").detalhes("").build();
         }
-        if (request.getEmail() != null
-                && !request.getEmail().equals(pessoa.getEmail())
+        if (request.getEmail() != null && !request.getEmail().equals(pessoa.getEmail())
                 && pessoaRepositoryPort.existePorEmail(request.getEmail())) {
-            throw RecursoJaExisteException.builder()
-                    .mensagem("o email já existe no sistema")
-                    .detalhes("")
-                    .build();
+            throw RecursoJaExisteException.builder().mensagem("o email já existe no sistema").detalhes("").build();
         }
 
-        pessoa.atualizar(
-                request.getNome(),
-                request.getCpf(),
-                request.getEmail(),
-                request.getTelefone(),
+        pessoa.atualizar(request.getNome(), request.getCpf(), request.getEmail(), request.getTelefone(),
                 request.getDataNascimento());
 
         return toResponse(pessoaRepositoryPort.salvar(pessoa));
@@ -158,18 +112,16 @@ public class PessoaService implements PessoaUseCase, UserDetailsService {
     @Override
     public void deletar(Long id) {
         if (!pessoaRepositoryPort.existePorId(id)) {
-            throw RecursoNaoEncontradoException.builder()
-                    .mensagem("a pessoa com id " + id + " não foi encontrada")
-                    .detalhes("")
-                    .build();
+            throw RecursoNaoEncontradoException.builder().mensagem("a pessoa com id " + id + " não foi encontrada")
+                    .detalhes("").build();
         }
         pessoaRepositoryPort.deletarPorId(id);
     }
 
     @Override
     public TokenResponse login(LoginRequest request) {
-        UsernamePasswordAuthenticationToken credentials =
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getSenha());
+        UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(request.getEmail(),
+                request.getSenha());
 
         Authentication authentication;
         try {
@@ -180,93 +132,57 @@ public class PessoaService implements PessoaUseCase, UserDetailsService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Pessoa pessoa =
-                pessoaRepositoryPort
-                        .buscarPorEmail(request.getEmail())
-                        .orElseThrow(
-                                () ->
-                                        new UsernameNotFoundException(
-                                                "Usuário não encontrado após autenticação"));
+        Pessoa pessoa = pessoaRepositoryPort.buscarPorEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado após autenticação"));
 
         String token = jwtService.gerarToken(authentication);
-        return TokenResponse.builder()
-                .id(pessoa.getId())
-                .email(pessoa.getEmail())
-                .nome(pessoa.getNome())
-                .token(token)
-                .roles(pessoa.getRoles())
-                .build();
+        return TokenResponse.builder().id(pessoa.getId()).email(pessoa.getEmail()).nome(pessoa.getNome()).token(token)
+                .roles(pessoa.getRoles()).build();
     }
 
     @Override
     public void atualizarSenha(Long id, SenhaRequest request) {
-        Pessoa pessoa =
-                pessoaRepositoryPort
-                        .buscarPorId(id)
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "a pessoa com id "
-                                                                + id
-                                                                + " não foi encontrada")
-                                                .detalhes("")
-                                                .build());
+        Pessoa pessoa = pessoaRepositoryPort.buscarPorId(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                .mensagem("a pessoa com id " + id + " não foi encontrada").detalhes("").build());
 
-        // Validação de campos nulos/em branco é regra de domínio; lança CampoInvalidoException se
+        // Validação de campos nulos/em branco é regra de domínio; lança
+        // CampoInvalidoException se
         // inválido
         String senhaAtual = request != null ? request.getSenhaAtual() : null;
         String novaSenha = request != null ? request.getNovaSenha() : null;
         pessoa.validarDadosSenha(senhaAtual, novaSenha);
 
         if (!passwordEncoder.matches(senhaAtual, pessoa.getSenha())) {
-            throw CampoInvalidoException.builder()
-                    .mensagem("dados de senha inválidos")
-                    .detalhes("")
-                    .build();
+            throw CampoInvalidoException.builder().mensagem("dados de senha inválidos").detalhes("").build();
         }
-        // Encode feito no service (infraestrutura); domínio recebe apenas a string já encodada
+        // Encode feito no service (infraestrutura); domínio recebe apenas a string já
+        // encodada
         pessoa.alterarSenha(passwordEncoder.encode(novaSenha));
         pessoaRepositoryPort.salvar(pessoa);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Pessoa pessoa =
-                pessoaRepositoryPort
-                        .buscarPorEmail(username)
-                        .orElseThrow(
-                                () ->
-                                        new UsernameNotFoundException(
-                                                "Usuário não encontrado: " + username));
+        Pessoa pessoa = pessoaRepositoryPort.buscarPorEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
 
         // Garante ao menos ROLE_USER quando roles estiver vazio/nulo
-        Set<RoleEnum> roles =
-                (pessoa.getRoles() != null && !pessoa.getRoles().isEmpty())
-                        ? pessoa.getRoles()
-                        : EnumSet.of(RoleEnum.ROLE_CLIENTE);
+        Set<RoleEnum> roles = (pessoa.getRoles() != null && !pessoa.getRoles().isEmpty())
+                ? pessoa.getRoles()
+                : EnumSet.of(RoleEnum.ROLE_CLIENTE);
 
         // Cada role do Set vira uma GrantedAuthority — Spring Security avalia TODAS
-        var authorities =
-                roles.stream()
-                        .map(r -> new SimpleGrantedAuthority(r.authority()))
-                        .collect(Collectors.toList());
+        var authorities = roles.stream().map(r -> new SimpleGrantedAuthority(r.authority()))
+                .collect(Collectors.toList());
 
-        return new org.springframework.security.core.userdetails.User(
-                pessoa.getEmail(), pessoa.getSenha(), authorities);
+        return new org.springframework.security.core.userdetails.User(pessoa.getEmail(), pessoa.getSenha(),
+                authorities);
     }
 
     // ─── helpers ──────────────────────────────────────────────────────────────
 
     private PessoaResponse toResponse(Pessoa p) {
-        return PessoaResponse.builder()
-                .id(p.getId())
-                .nome(p.getNome())
-                .cpf(p.getCpf())
-                .email(p.getEmail())
-                .telefone(p.getTelefone())
-                .dataNascimento(p.getDataNascimento())
-                .roles(p.getRoles())
-                .build();
+        return PessoaResponse.builder().id(p.getId()).nome(p.getNome()).cpf(p.getCpf()).email(p.getEmail())
+                .telefone(p.getTelefone()).dataNascimento(p.getDataNascimento()).roles(p.getRoles()).build();
     }
 }

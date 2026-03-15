@@ -22,13 +22,18 @@ public class Veiculo {
     private String ano;
     private Pessoa pessoa;
 
-    public void atualizar(
-            String placa, String modelo, String marca, String porte, String cor, String ano) {
-        if (placa != null) this.placa = placa;
-        if (modelo != null) this.modelo = modelo;
-        if (marca != null) this.marca = marca;
-        if (porte != null) this.porte = porte;
-        if (cor != null) this.cor = cor;
-        if (ano != null) this.ano = ano;
+    public void atualizar(String placa, String modelo, String marca, String porte, String cor, String ano) {
+        if (placa != null)
+            this.placa = placa;
+        if (modelo != null)
+            this.modelo = modelo;
+        if (marca != null)
+            this.marca = marca;
+        if (porte != null)
+            this.porte = porte;
+        if (cor != null)
+            this.cor = cor;
+        if (ano != null)
+            this.ano = ano;
     }
 }

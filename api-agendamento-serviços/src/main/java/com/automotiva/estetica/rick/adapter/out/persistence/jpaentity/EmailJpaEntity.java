@@ -49,7 +49,9 @@ public class EmailJpaEntity extends BaseJpaEntity<Long> {
     @Enumerated(EnumType.STRING)
     private StatusEmailEnum statusEmail;
 
-    @Transient private List<byte[]> anexos;
+    @Transient
+    private List<byte[]> anexos;
 
-    @Transient private List<String> nomesAnexos;
+    @Transient
+    private List<String> nomesAnexos;
 }

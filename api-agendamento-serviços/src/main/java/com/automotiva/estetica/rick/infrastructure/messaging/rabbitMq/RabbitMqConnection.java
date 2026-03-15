@@ -26,12 +26,7 @@ public class RabbitMqConnection {
     }
 
     private Binding binding(Queue queue, DirectExchange exchange) {
-        return new Binding(
-                queue.getName(),
-                Binding.DestinationType.QUEUE,
-                exchange.getName(),
-                queue.getName(),
-                null);
+        return new Binding(queue.getName(), Binding.DestinationType.QUEUE, exchange.getName(), queue.getName(), null);
     }
 
     @PostConstruct

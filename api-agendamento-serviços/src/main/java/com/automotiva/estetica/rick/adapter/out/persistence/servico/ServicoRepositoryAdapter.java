@@ -32,9 +32,7 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
 
     @Override
     public Page<Servico> buscarTodos(String filtro, Pageable pageable) {
-        return jpaRepository
-                .findAll(ServicoSpecification.filtroUnico(filtro), pageable)
-                .map(mapper::toDomain);
+        return jpaRepository.findAll(ServicoSpecification.filtroUnico(filtro), pageable).map(mapper::toDomain);
     }
 
     @Override
@@ -49,18 +47,8 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
 
     @Override
     public void deletarPorId(Long id) {
-        ServicoJpaEntity entity =
-                jpaRepository
-                        .findById(id)
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "o serviço com id "
-                                                                + id
-                                                                + " não foi encontrado")
-                                                .detalhes("")
-                                                .build());
+        ServicoJpaEntity entity = jpaRepository.findById(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                .mensagem("o serviço com id " + id + " não foi encontrado").detalhes("").build());
         entity.setDeletadoEm(LocalDateTime.now());
         jpaRepository.save(entity);
     }

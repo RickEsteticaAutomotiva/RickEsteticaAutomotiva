@@ -27,26 +27,25 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FavoritoServiceTest {
 
-    @Mock private FavoritoRepositoryPort favoritoRepositoryPort;
+    @Mock
+    private FavoritoRepositoryPort favoritoRepositoryPort;
 
-    @Mock private PessoaRepositoryPort pessoaRepositoryPort;
+    @Mock
+    private PessoaRepositoryPort pessoaRepositoryPort;
 
-    @Mock private ServicoRepositoryPort servicoRepositoryPort;
+    @Mock
+    private ServicoRepositoryPort servicoRepositoryPort;
 
-    @InjectMocks private FavoritoService favoritoService;
+    @InjectMocks
+    private FavoritoService favoritoService;
 
     private Pessoa pessoaMock() {
         return Pessoa.builder().id(1L).nome("Maria").build();
     }
 
     private Servico servicoMock() {
-        return Servico.builder()
-                .id(5L)
-                .nome("Lavagem")
-                .descricao("Lavagem completa")
-                .preco(BigDecimal.valueOf(80))
-                .imagem("lavagem.jpg")
-                .build();
+        return Servico.builder().id(5L).nome("Lavagem").descricao("Lavagem completa").preco(BigDecimal.valueOf(80))
+                .imagem("lavagem.jpg").build();
     }
 
     private FavoritoRequest requestMock() {
@@ -91,8 +90,7 @@ class FavoritoServiceTest {
         when(servicoRepositoryPort.buscarPorId(5L)).thenReturn(Optional.of(servico));
         when(favoritoRepositoryPort.existePorPessoaEServico(pessoa, servico)).thenReturn(true);
 
-        assertThrows(
-                RecursoJaExisteException.class, () -> favoritoService.adicionar(requestMock()));
+        assertThrows(RecursoJaExisteException.class, () -> favoritoService.adicionar(requestMock()));
         verify(favoritoRepositoryPort, never()).salvar(any());
     }
 

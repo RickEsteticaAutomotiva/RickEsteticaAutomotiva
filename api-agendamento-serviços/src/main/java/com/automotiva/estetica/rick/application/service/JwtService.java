@@ -12,6 +12,5 @@ public interface JwtService {
 
     String obterUsernameDoToken(String token);
 
-    boolean tokenValido(
-            String token, org.springframework.security.core.userdetails.UserDetails userDetails);
+    boolean tokenValido(String token, org.springframework.security.core.userdetails.UserDetails userDetails);
 }

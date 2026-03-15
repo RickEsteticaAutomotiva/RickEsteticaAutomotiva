@@ -13,7 +13,8 @@ import lombok.experimental.SuperBuilder;
 /**
  * Entidade JPA que persiste o log de erros em runtime.
  *
- * <p>Camada: adapter/out/persistence/jpa — infraestrutura de persistência.
+ * <p>
+ * Camada: adapter/out/persistence/jpa — infraestrutura de persistência.
  */
 @Entity
 @Getter

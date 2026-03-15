@@ -4,9 +4,7 @@ import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.EmailJpaEn
 import com.automotiva.estetica.rick.domain.entity.Email;
 import org.mapstruct.Mapper;
 
-@Mapper(
-        componentModel = "spring",
-        uses = {PessoaPersistenceMapper.class})
+@Mapper(componentModel = "spring", uses = {PessoaPersistenceMapper.class})
 public interface EmailPersistenceMapper {
 
     Email toDomain(EmailJpaEntity entity);

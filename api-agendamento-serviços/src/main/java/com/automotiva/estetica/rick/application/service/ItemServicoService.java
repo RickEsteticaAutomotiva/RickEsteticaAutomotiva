@@ -19,9 +19,7 @@ public class ItemServicoService implements ItemServicoUseCase {
     public List<ItemServicoResponse> buscarTodos() {
         List<ItemServico> itens = itemServicoRepositoryPort.buscarTodos();
         if (itens.isEmpty()) {
-            throw RecursoNaoEncontradoException.builder()
-                    .mensagem("nenhum item de serviço foi encontrado")
-                    .detalhes("")
+            throw RecursoNaoEncontradoException.builder().mensagem("nenhum item de serviço foi encontrado").detalhes("")
                     .build();
         }
         return itens.stream().map(this::toResponse).toList();
@@ -29,30 +27,20 @@ public class ItemServicoService implements ItemServicoUseCase {
 
     @Override
     public ItemServicoResponse buscarPorId(Long id) {
-        return itemServicoRepositoryPort
-                .buscarPorId(id)
-                .map(this::toResponse)
-                .orElseThrow(
-                        () ->
-                                RecursoNaoEncontradoException.builder()
-                                        .mensagem("o item com id " + id + " não foi encontrado")
-                                        .detalhes("")
-                                        .build());
+        return itemServicoRepositoryPort.buscarPorId(id).map(this::toResponse)
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("o item com id " + id + " não foi encontrado").detalhes("").build());
     }
 
     @Override
     public List<ItemServicoResponse> listarPorOrdem(Long idOrdem) {
-        return itemServicoRepositoryPort.buscarPorOrdemServicoId(idOrdem).stream()
-                .map(this::toResponse)
-                .toList();
+        return itemServicoRepositoryPort.buscarPorOrdemServicoId(idOrdem).stream().map(this::toResponse).toList();
     }
 
     private ItemServicoResponse toResponse(ItemServico i) {
-        return ItemServicoResponse.builder()
-                .id(i.getId())
+        return ItemServicoResponse.builder().id(i.getId())
                 .idServico(i.getServico() != null ? i.getServico().getId() : null)
-                .idOrdemServico(i.getOrdemServico() != null ? i.getOrdemServico().getId() : null)
-                .preco(i.getPreco())
+                .idOrdemServico(i.getOrdemServico() != null ? i.getOrdemServico().getId() : null).preco(i.getPreco())
                 .build();
     }
 }

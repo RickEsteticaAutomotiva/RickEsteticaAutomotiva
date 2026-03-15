@@ -27,26 +27,25 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CarrinhoServiceTest {
 
-    @Mock private CarrinhoRepositoryPort carrinhoRepositoryPort;
+    @Mock
+    private CarrinhoRepositoryPort carrinhoRepositoryPort;
 
-    @Mock private PessoaRepositoryPort pessoaRepositoryPort;
+    @Mock
+    private PessoaRepositoryPort pessoaRepositoryPort;
 
-    @Mock private ServicoRepositoryPort servicoRepositoryPort;
+    @Mock
+    private ServicoRepositoryPort servicoRepositoryPort;
 
-    @InjectMocks private CarrinhoService carrinhoService;
+    @InjectMocks
+    private CarrinhoService carrinhoService;
 
     private Pessoa pessoaMock() {
         return Pessoa.builder().id(1L).nome("João").build();
     }
 
     private Servico servicoMock() {
-        return Servico.builder()
-                .id(10L)
-                .nome("Polimento")
-                .descricao("Polimento completo")
-                .preco(BigDecimal.valueOf(250))
-                .imagem("imagem.jpg")
-                .build();
+        return Servico.builder().id(10L).nome("Polimento").descricao("Polimento completo")
+                .preco(BigDecimal.valueOf(250)).imagem("imagem.jpg").build();
     }
 
     private CarrinhoRequest requestMock() {
@@ -91,8 +90,7 @@ class CarrinhoServiceTest {
         when(servicoRepositoryPort.buscarPorId(10L)).thenReturn(Optional.of(servico));
         when(carrinhoRepositoryPort.existePorPessoaEServico(pessoa, servico)).thenReturn(true);
 
-        assertThrows(
-                RecursoJaExisteException.class, () -> carrinhoService.adicionar(requestMock()));
+        assertThrows(RecursoJaExisteException.class, () -> carrinhoService.adicionar(requestMock()));
         verify(carrinhoRepositoryPort, never()).salvar(any());
     }
 

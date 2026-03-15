@@ -23,29 +23,30 @@ import org.springframework.test.web.servlet.MvcResult;
 /**
  * Classe base para testes de integração.
  *
- * <p>Sobe o contexto Spring completo com H2 em memória, mocka os adaptadores externos
- * (CalendarioPort e EmailPort) e disponibiliza utilitários como MockMvc, ObjectMapper e helper para
- * autenticação JWT.
+ * <p>
+ * Sobe o contexto Spring completo com H2 em memória, mocka os adaptadores
+ * externos (CalendarioPort e EmailPort) e disponibiliza utilitários como
+ * MockMvc, ObjectMapper e helper para autenticação JWT.
  *
- * <p>A anotação @Sql garante que o banco seja resetado (drop + create + seed) antes de cada classe
- * de teste, mantendo o isolamento entre as suítes.
+ * <p>
+ * A anotação @Sql garante que o banco seja resetado (drop + create + seed)
+ * antes de cada classe de teste, mantendo o isolamento entre as suítes.
  *
- * <p>As senhas dos usuários de teste são codificadas dinamicamente pelo PasswordEncoder real do
- * contexto Spring, eliminando dependência de hashes BCrypt hardcoded no seed SQL.
+ * <p>
+ * As senhas dos usuários de teste são codificadas dinamicamente pelo
+ * PasswordEncoder real do contexto Spring, eliminando dependência de hashes
+ * BCrypt hardcoded no seed SQL.
  */
-@SpringBootTest(
-        classes = ApiAgendamentoApplication.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = ApiAgendamentoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-@Sql(
-        scripts = {"/reset-it.sql", "/seed-it.sql"},
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/reset-it.sql", "/seed-it.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public abstract class AbstractIntegrationTest {
 
     /**
-     * BASE_PATH vazio: com server.servlet.context-path=/ no profile integration-test, o MockMvc não
-     * precisa de nenhum prefixo. As URLs nos testes são diretas: "/pessoas/login".
+     * BASE_PATH vazio: com server.servlet.context-path=/ no profile
+     * integration-test, o MockMvc não precisa de nenhum prefixo. As URLs nos testes
+     * são diretas: "/pessoas/login".
      */
     protected static final String BASE_PATH = "";
 
@@ -57,13 +58,17 @@ public abstract class AbstractIntegrationTest {
     protected static final String EMAIL_GERENTE = "rick.souza@email.com";
     protected static final String SENHA_GERENTE = "gerente@2024";
 
-    @Autowired protected MockMvc mockMvc;
+    @Autowired
+    protected MockMvc mockMvc;
 
-    @Autowired protected ObjectMapper objectMapper;
+    @Autowired
+    protected ObjectMapper objectMapper;
 
-    @Autowired private DataSource dataSource;
+    @Autowired
+    private DataSource dataSource;
 
-    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /** Mock do e-mail — impede envio real de mensagens durante os testes */
     @MockitoBean
@@ -75,9 +80,9 @@ public abstract class AbstractIntegrationTest {
     protected String tokenGerente;
 
     /**
-     * Garante que as senhas no banco H2 correspondem às credenciais de teste, codificando-as com o
-     * PasswordEncoder real do contexto Spring. Depois obtém os tokens JWT reais via POST
-     * /pessoas/login.
+     * Garante que as senhas no banco H2 correspondem às credenciais de teste,
+     * codificando-as com o PasswordEncoder real do contexto Spring. Depois obtém os
+     * tokens JWT reais via POST /pessoas/login.
      */
     @BeforeEach
     void autenticar() throws Exception {
@@ -91,32 +96,29 @@ public abstract class AbstractIntegrationTest {
     }
 
     /**
-     * Atualiza a senha do usuário diretamente no H2 usando o BCrypt encoder real, garantindo que o
-     * hash no banco sempre bate com a credencial usada nos testes.
+     * Atualiza a senha do usuário diretamente no H2 usando o BCrypt encoder real,
+     * garantindo que o hash no banco sempre bate com a credencial usada nos testes.
      */
     private void atualizarSenhaNoBank(String email, String senha) {
         String hash = passwordEncoder.encode(senha);
-        new JdbcTemplate(dataSource)
-                .update("UPDATE pessoa SET senha = ? WHERE email = ?", hash, email);
+        new JdbcTemplate(dataSource).update("UPDATE pessoa SET senha = ? WHERE email = ?", hash, email);
     }
 
     private String obterToken(String email, String senha) throws Exception {
         String body = String.format("{\"email\":\"%s\",\"senha\":\"%s\"}", email, senha);
 
-        MvcResult result =
-                mockMvc.perform(
-                                post(BASE_PATH + "/pessoas/login")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(body))
-                        .andExpect(status().isOk())
-                        .andReturn();
+        MvcResult result = mockMvc
+                .perform(post(BASE_PATH + "/pessoas/login").contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk()).andReturn();
 
         String response = result.getResponse().getContentAsString();
         // Extrai o token do JSON { "token": "..." }
         return objectMapper.readTree(response).get("token").asText();
     }
 
-    /** Monta o header Authorization Bearer para uso nas requisições autenticadas. */
+    /**
+     * Monta o header Authorization Bearer para uso nas requisições autenticadas.
+     */
     protected String bearer(String token) {
         return "Bearer " + token;
     }

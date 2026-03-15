@@ -32,8 +32,7 @@ public class OrdemServicoController {
 
     @GetMapping
     @Operation(summary = "Lista todas as ordens de serviço paginadas")
-    public ResponseEntity<Page<OrdemServicoResponse>> buscarTodos(
-            @Valid @ModelAttribute PageRequest pageRequest) {
+    public ResponseEntity<Page<OrdemServicoResponse>> buscarTodos(@Valid @ModelAttribute PageRequest pageRequest) {
         return ResponseEntity.ok(ordemServicoUseCase.buscarTodos(pageRequest));
     }
 
@@ -51,15 +50,14 @@ public class OrdemServicoController {
 
     @PostMapping
     @Operation(summary = "Cria uma nova ordem de serviço")
-    public ResponseEntity<OrdemServicoResponse> criar(
-            @Valid @RequestBody OrdemServicoRequest request) {
+    public ResponseEntity<OrdemServicoResponse> criar(@Valid @RequestBody OrdemServicoRequest request) {
         return ResponseEntity.status(202).body(ordemServicoUseCase.criar(request));
     }
 
     @PatchMapping("/{id}")
     @Operation(summary = "Atualiza uma ordem de serviço")
-    public ResponseEntity<OrdemServicoResponse> atualizar(
-            @PathVariable Long id, @RequestBody OrdemServicoRequest request) {
+    public ResponseEntity<OrdemServicoResponse> atualizar(@PathVariable Long id,
+            @RequestBody OrdemServicoRequest request) {
         return ResponseEntity.ok(ordemServicoUseCase.atualizar(id, request));
     }
 }

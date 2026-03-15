@@ -47,26 +47,26 @@ public class PessoaJpaEntity extends BaseJpaEntity<Long> {
     private String senha;
 
     /**
-     * Data e hora em que a pessoa foi inativada (soft delete). {@code null} indica que o registro
-     * está ativo.
+     * Data e hora em que a pessoa foi inativada (soft delete). {@code null} indica
+     * que o registro está ativo.
      */
     @Column(name = "deletado_em")
     private LocalDateTime deletadoEm;
 
     /**
-     * Conjunto de roles do usuário persistido na tabela de junção {@code pessoa_roles}.
+     * Conjunto de roles do usuário persistido na tabela de junção
+     * {@code pessoa_roles}.
      *
-     * <p>EAGER é aceitável aqui pois roles são pequenas e sempre necessárias no carregamento do
-     * usuário para autenticação (Spring Security).
+     * <p>
+     * EAGER é aceitável aqui pois roles são pequenas e sempre necessárias no
+     * carregamento do usuário para autenticação (Spring Security).
      *
-     * <p>Sem CascadeType: roles são entidades de referência independentes — nunca devem ser
-     * criadas/removidas em cascata a partir de Pessoa. Fonte: Spring Security Reference —
-     * GrantedAuthority; Hibernate ORM Guide — @ManyToMany.
+     * <p>
+     * Sem CascadeType: roles são entidades de referência independentes — nunca
+     * devem ser criadas/removidas em cascata a partir de Pessoa. Fonte: Spring
+     * Security Reference — GrantedAuthority; Hibernate ORM Guide — @ManyToMany.
      */
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "pessoa_roles",
-            joinColumns = @JoinColumn(name = "pessoa_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "pessoa_roles", joinColumns = @JoinColumn(name = "pessoa_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleJpaEntity> roles = new HashSet<>();
 }
