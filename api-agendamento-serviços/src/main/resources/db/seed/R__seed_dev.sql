@@ -10,6 +10,7 @@
 
 -- Limpa dados na ordem inversa de dependência (idempotente)
 DELETE FROM item_servico;
+DELETE FROM calendario_evento;
 DELETE FROM ordem_servico;
 DELETE FROM carrinho;
 DELETE FROM favorito;
@@ -79,6 +80,3 @@ INSERT INTO ordem_servico (data_agendamento, preco_minimo, observacoes, dt_concl
 ('2024-01-20 08:00:00', 180.00, 'Cliente muito satisfeito',              '2024-01-22 17:15:00', 3, 1, NULL),
 ('2024-01-21 11:45:00', 120.00, 'Iniciado hoje',                         NULL,                  4, 2, NULL),
 ('2025-10-04 09:20:00', 100.00, 'Lavagem completa realizada',            '2025-10-04 12:15:00', 2, 1, NULL);
-
-
-
