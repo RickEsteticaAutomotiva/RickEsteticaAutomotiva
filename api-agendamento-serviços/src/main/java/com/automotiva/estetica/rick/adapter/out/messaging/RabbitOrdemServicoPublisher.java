@@ -22,29 +22,20 @@ public class RabbitOrdemServicoPublisher implements OrdemServicoEventPublisherPo
     private final ServicoRepositoryPort servicoRepositoryPort;
 
     @Override
-    public void publicarOrdemServicoCriada(
-            OrdemServico ordemServico, OrdemServicoRequest ordemServicoRequest) {
+    public void publicarOrdemServicoCriada(OrdemServico ordemServico, OrdemServicoRequest ordemServicoRequest) {
 
-        List<String> servicos =
-                servicoRepositoryPort.buscarPorIds(ordemServicoRequest.getServicos())
-                        .stream()
-                        .map(Servico::getNome)
-                        .toList();
+        List<String> servicos = servicoRepositoryPort.buscarPorIds(ordemServicoRequest.getServicos()).stream()
+                .map(Servico::getNome).toList();
 
-        String observacoes =
-                (ordemServico.getObservacoes() != null && !ordemServico.getObservacoes().isBlank())
-                        ? ordemServico.getObservacoes()
-                        : null;
+        String observacoes = (ordemServico.getObservacoes() != null && !ordemServico.getObservacoes().isBlank())
+                ? ordemServico.getObservacoes()
+                : null;
 
-        OrdemServicoCriadaEvent event =
-                new OrdemServicoCriadaEvent(
-                        ordemServico.getId(),
-                        ordemServico.getVeiculo().getPlaca(),
-                        ordemServico.getDataAgendamento(),
-                        servicos,
-                        observacoes);
+        OrdemServicoCriadaEvent event = new OrdemServicoCriadaEvent(ordemServico.getId(),
+                ordemServico.getVeiculo().getPlaca(), ordemServico.getDataAgendamento(), servicos, observacoes);
 
-        log.info("Enviando evento para a fila de criação de ordem de serviço: {}", event);
+        log.info("Enviando evento para a fila de criação de ordem de serviço | id ordem de serviço: {}",
+                event.IdOrdemServico());
 
         rabbitTemplate.convertAndSend(RabbitMqConsts.ORDEM_SERVICO_CRIADA_QUEUE, event);
     }

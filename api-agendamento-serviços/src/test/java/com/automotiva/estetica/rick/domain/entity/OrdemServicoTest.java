@@ -10,13 +10,9 @@ import org.junit.jupiter.api.Test;
 class OrdemServicoTest {
 
     private OrdemServico ordemMock() {
-        return OrdemServico.builder()
-                .id(1L)
-                .dataAgendamento(LocalDateTime.of(2026, 3, 10, 9, 0))
-                .precoMinimo(BigDecimal.valueOf(200))
-                .observacoes("Observação inicial")
-                .status(Status.builder().id(1L).build())
-                .build();
+        return OrdemServico.builder().id(1L).dataAgendamento(LocalDateTime.of(2026, 3, 10, 9, 0))
+                .precoMinimo(BigDecimal.valueOf(200)).observacoes("Observação inicial")
+                .status(Status.builder().id(1L).build()).build();
     }
 
     @Test

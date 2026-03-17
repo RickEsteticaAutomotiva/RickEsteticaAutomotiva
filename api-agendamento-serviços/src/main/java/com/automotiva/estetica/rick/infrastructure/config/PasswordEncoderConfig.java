@@ -8,10 +8,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 /**
  * Configuração isolada do PasswordEncoder.
  *
- * <p>Manter este bean em uma classe separada de SecurityConfig é obrigatório para evitar
- * dependência circular: PessoaService precisa de PasswordEncoder, e SecurityConfig precisaria de
- * UserDetailsService (PessoaService). Ao extrair o bean para cá, o Spring consegue instanciar
- * PasswordEncoderConfig → PessoaService → SecurityConfig sem ciclos.
+ * <p>
+ * Manter este bean em uma classe separada de SecurityConfig é obrigatório para
+ * evitar dependência circular: PessoaService precisa de PasswordEncoder, e
+ * SecurityConfig precisaria de UserDetailsService (PessoaService). Ao extrair o
+ * bean para cá, o Spring consegue instanciar PasswordEncoderConfig →
+ * PessoaService → SecurityConfig sem ciclos.
  */
 @Configuration
 public class PasswordEncoderConfig {

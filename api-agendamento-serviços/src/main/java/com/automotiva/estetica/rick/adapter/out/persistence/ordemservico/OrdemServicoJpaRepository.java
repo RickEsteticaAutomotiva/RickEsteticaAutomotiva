@@ -14,8 +14,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 interface OrdemServicoJpaRepository
-        extends JpaRepository<OrdemServicoJpaEntity, Long>,
-                JpaSpecificationExecutor<OrdemServicoJpaEntity> {
+        extends
+            JpaRepository<OrdemServicoJpaEntity, Long>,
+            JpaSpecificationExecutor<OrdemServicoJpaEntity> {
 
     boolean existsByVeiculoIdAndDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
 
@@ -24,26 +25,20 @@ interface OrdemServicoJpaRepository
 
     List<OrdemServicoJpaEntity> findByVeiculo_Pessoa_Id(Long id);
 
-    @Query(
-            """
-        SELECT COALESCE(SUM(o.precoMinimo), 0) FROM OrdemServicoJpaEntity o
-        WHERE o.dataAgendamento BETWEEN :inicio AND :fim
-    """)
-    BigDecimal somarFaturamentoDoPeriodo(
-            @Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+    @Query("""
+                SELECT COALESCE(SUM(o.precoMinimo), 0) FROM OrdemServicoJpaEntity o
+                WHERE o.dataAgendamento BETWEEN :inicio AND :fim
+            """)
+    BigDecimal somarFaturamentoDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
 
-    @Query(
-            "SELECT COUNT(o) FROM OrdemServicoJpaEntity o WHERE o.dataAgendamento BETWEEN :inicio AND :fim")
-    Integer buscarQtdOrdensDoMes(
-            @Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+    @Query("SELECT COUNT(o) FROM OrdemServicoJpaEntity o WHERE o.dataAgendamento BETWEEN :inicio AND :fim")
+    Integer buscarQtdOrdensDoMes(LocalDateTime inicio, LocalDateTime fim);
 
-    @Query(
-            """
-        SELECT COUNT(o) FROM OrdemServicoJpaEntity o
-        WHERE o.dataAgendamento BETWEEN :inicio AND :fim AND o.status.id = 5
-    """)
-    Integer buscarQtdOrdensConcluidasNoMes(
-            @Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+    @Query("""
+                SELECT COUNT(o) FROM OrdemServicoJpaEntity o
+                WHERE o.dataAgendamento BETWEEN :inicio AND :fim AND o.status.id = 5
+            """)
+    Integer buscarQtdOrdensConcluidasNoMes(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 
     @Query(
             value =

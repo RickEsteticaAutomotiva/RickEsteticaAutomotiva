@@ -32,28 +32,29 @@ import org.springframework.data.domain.Pageable;
 @ExtendWith(MockitoExtension.class)
 class OrdemServicoServiceTest {
 
-    @Mock private OrdemServicoRepositoryPort ordemServicoRepositoryPort;
+    @Mock
+    private OrdemServicoRepositoryPort ordemServicoRepositoryPort;
 
-    @Mock private ItemServicoRepositoryPort itemServicoRepositoryPort;
+    @Mock
+    private ItemServicoRepositoryPort itemServicoRepositoryPort;
 
-    @Mock private ServicoRepositoryPort servicoRepositoryPort;
+    @Mock
+    private ServicoRepositoryPort servicoRepositoryPort;
 
-    @Mock private CarrinhoUseCase carrinhoUseCase;
+    @Mock
+    private CarrinhoUseCase carrinhoUseCase;
 
-    @Mock private EmailPort emailPort;
+    @Mock
+    private EmailPort emailPort;
 
-    @InjectMocks private OrdemServicoService ordemServicoService;
+    @InjectMocks
+    private OrdemServicoService ordemServicoService;
 
     private OrdemServico ordemMock() {
         Veiculo veiculo = Veiculo.builder().id(1L).build();
         Status status = Status.builder().id(1L).build();
-        return OrdemServico.builder()
-                .id(10L)
-                .dataAgendamento(LocalDateTime.now())
-                .precoMinimo(BigDecimal.valueOf(100))
-                .veiculo(veiculo)
-                .status(status)
-                .build();
+        return OrdemServico.builder().id(10L).dataAgendamento(LocalDateTime.now()).precoMinimo(BigDecimal.valueOf(100))
+                .veiculo(veiculo).status(status).build();
     }
 
     @Test
@@ -109,8 +110,7 @@ class OrdemServicoServiceTest {
     void buscarTodos_sucesso() {
         Page<OrdemServico> page = new PageImpl<>(List.of(ordemMock()));
 
-        when(ordemServicoRepositoryPort.buscarTodos(isNull(), any(Pageable.class)))
-                .thenReturn(page);
+        when(ordemServicoRepositoryPort.buscarTodos(isNull(), any(Pageable.class))).thenReturn(page);
 
         PageRequest req = new PageRequest();
         req.setPagina(0);

@@ -25,4 +25,5 @@ public class OrdemServicoResponse {
     private String observacoes;
     private LocalDateTime dtConclusao;
     private Long motivo;
+    private OrdemServicoClienteResumoResponse cliente;
 }

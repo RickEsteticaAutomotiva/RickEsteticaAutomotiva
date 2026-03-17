@@ -30,9 +30,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DashboardServiceTest {
 
-    @InjectMocks private DashboardService dashboardService;
+    @InjectMocks
+    private DashboardService dashboardService;
 
-    @Mock private OrdemServicoRepositoryPort ordemServicoRepositoryPort;
+    @Mock
+    private OrdemServicoRepositoryPort ordemServicoRepositoryPort;
 
     @Test
     @DisplayName("Deve calcular variação percentual positiva corretamente")

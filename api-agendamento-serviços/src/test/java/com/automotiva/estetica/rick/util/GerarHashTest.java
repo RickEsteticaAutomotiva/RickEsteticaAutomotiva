@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
- * Verifica que o BCryptPasswordEncoder funciona corretamente para as senhas usadas nos seeds de
- * integração. Os hashes são gerados dinamicamente pelo AbstractIntegrationTest, portanto não
- * precisam ser hardcoded no SQL.
+ * Verifica que o BCryptPasswordEncoder funciona corretamente para as senhas
+ * usadas nos seeds de integração. Os hashes são gerados dinamicamente pelo
+ * AbstractIntegrationTest, portanto não precisam ser hardcoded no SQL.
  */
 class GerarHashTest {
 

@@ -20,12 +20,15 @@ import org.springframework.stereotype.Repository;
 /**
  * Adaptador de saída que implementa {@link PessoaRepositoryPort}.
  *
- * <p>Responsável por traduzir chamadas do domínio em operações JPA, incluindo a resolução das
- * {@link RoleJpaEntity} a partir do {@link RoleEnum} do domínio. As roles são buscadas (ou criadas,
- * se ausentes) pelo {@link RoleJpaRepository} para garantir integridade referencial na tabela de
+ * <p>
+ * Responsável por traduzir chamadas do domínio em operações JPA, incluindo a
+ * resolução das {@link RoleJpaEntity} a partir do {@link RoleEnum} do domínio.
+ * As roles são buscadas (ou criadas, se ausentes) pelo
+ * {@link RoleJpaRepository} para garantir integridade referencial na tabela de
  * junção {@code pessoa_roles}.
  *
- * <p>Camada: adapter/out/persistence.
+ * <p>
+ * Camada: adapter/out/persistence.
  */
 @Repository
 @RequiredArgsConstructor
@@ -54,9 +57,7 @@ public class PessoaRepositoryAdapter implements PessoaRepositoryPort {
 
     @Override
     public Page<Pessoa> buscarTodos(String filtro, Pageable pageable) {
-        return jpaRepository
-                .findAll(PessoaSpecification.filtroUnico(filtro), pageable)
-                .map(mapper::toDomain);
+        return jpaRepository.findAll(PessoaSpecification.filtroUnico(filtro), pageable).map(mapper::toDomain);
     }
 
     @Override
@@ -76,18 +77,8 @@ public class PessoaRepositoryAdapter implements PessoaRepositoryPort {
 
     @Override
     public void deletarPorId(Long id) {
-        PessoaJpaEntity entity =
-                jpaRepository
-                        .findById(id)
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "a pessoa com id "
-                                                                + id
-                                                                + " não foi encontrada")
-                                                .detalhes("")
-                                                .build());
+        PessoaJpaEntity entity = jpaRepository.findById(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                .mensagem("a pessoa com id " + id + " não foi encontrada").detalhes("").build());
         entity.setDeletadoEm(LocalDateTime.now());
         jpaRepository.save(entity);
     }
@@ -95,27 +86,21 @@ public class PessoaRepositoryAdapter implements PessoaRepositoryPort {
     // ─── helpers ──────────────────────────────────────────────────────────────
 
     /**
-     * Converte {@code Set<RoleEnum>} em {@code Set<RoleJpaEntity>} buscando cada role pelo nome na
-     * tabela {@code role}. Se a role ainda não existir no banco (cenário de primeiro deploy ou
-     * banco zerado), ela é criada automaticamente via {@code save}.
+     * Converte {@code Set<RoleEnum>} em {@code Set<RoleJpaEntity>} buscando cada
+     * role pelo nome na tabela {@code role}. Se a role ainda não existir no banco
+     * (cenário de primeiro deploy ou banco zerado), ela é criada automaticamente
+     * via {@code save}.
      *
-     * <p>Garante que nunca sejam inseridas entidades duplicadas na tabela {@code role}.
+     * <p>
+     * Garante que nunca sejam inseridas entidades duplicadas na tabela
+     * {@code role}.
      */
     private Set<RoleJpaEntity> resolverRoles(Set<RoleEnum> roles) {
-        Set<RoleEnum> efetivas =
-                (roles != null && !roles.isEmpty()) ? roles : EnumSet.of(RoleEnum.ROLE_CLIENTE);
+        Set<RoleEnum> efetivas = (roles != null && !roles.isEmpty()) ? roles : EnumSet.of(RoleEnum.ROLE_CLIENTE);
 
         return efetivas.stream()
-                .map(
-                        roleEnum ->
-                                roleJpaRepository
-                                        .findByNome(roleEnum)
-                                        .orElseGet(
-                                                () ->
-                                                        roleJpaRepository.save(
-                                                                RoleJpaEntity.builder()
-                                                                        .nome(roleEnum)
-                                                                        .build())))
+                .map(roleEnum -> roleJpaRepository.findByNome(roleEnum)
+                        .orElseGet(() -> roleJpaRepository.save(RoleJpaEntity.builder().nome(roleEnum).build())))
                 .collect(Collectors.toSet());
     }
 }

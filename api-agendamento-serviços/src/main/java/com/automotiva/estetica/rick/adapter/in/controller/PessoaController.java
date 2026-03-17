@@ -37,8 +37,7 @@ public class PessoaController {
     @GetMapping
     @ClienteOnly
     @Operation(summary = "Lista todas as pessoas paginadas")
-    public ResponseEntity<Page<PessoaResponse>> buscarTodos(
-            @Valid @ModelAttribute PageRequest pageRequest) {
+    public ResponseEntity<Page<PessoaResponse>> buscarTodos(@Valid @ModelAttribute PageRequest pageRequest) {
         return ResponseEntity.ok(pessoaUseCase.buscarTodos(pageRequest));
     }
 
@@ -51,16 +50,15 @@ public class PessoaController {
 
     @PostMapping("/")
     @Operation(summary = "Cadastra uma nova pessoa")
-    public ResponseEntity<PessoaResponse> cadastrar(
-            @Valid @RequestBody PessoaCadastroRequest request) {
+    public ResponseEntity<PessoaResponse> cadastrar(@Valid @RequestBody PessoaCadastroRequest request) {
         return ResponseEntity.status(201).body(pessoaUseCase.cadastrar(request));
     }
 
     @PutMapping("/{id}")
     @ClienteOnly
     @Operation(summary = "Atualiza dados de uma pessoa")
-    public ResponseEntity<PessoaResponse> atualizar(
-            @PathVariable Long id, @Valid @RequestBody PessoaAtualizacaoRequest request) {
+    public ResponseEntity<PessoaResponse> atualizar(@PathVariable Long id,
+            @Valid @RequestBody PessoaAtualizacaoRequest request) {
         return ResponseEntity.ok(pessoaUseCase.atualizar(id, request));
     }
 
@@ -81,8 +79,7 @@ public class PessoaController {
     @PatchMapping("/{id}/senha")
     @ClienteOnly
     @Operation(summary = "Atualiza a senha de uma pessoa")
-    public ResponseEntity<Void> atualizarSenha(
-            @PathVariable Long id, @Valid @RequestBody SenhaRequest request) {
+    public ResponseEntity<Void> atualizarSenha(@PathVariable Long id, @Valid @RequestBody SenhaRequest request) {
         pessoaUseCase.atualizarSenha(id, request);
         return ResponseEntity.noContent().build();
     }

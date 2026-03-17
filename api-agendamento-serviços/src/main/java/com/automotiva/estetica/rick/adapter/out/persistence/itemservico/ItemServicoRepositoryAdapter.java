@@ -32,9 +32,7 @@ public class ItemServicoRepositoryAdapter implements ItemServicoRepositoryPort {
 
     @Override
     public List<ItemServico> buscarPorOrdemServicoId(Long ordemServicoId) {
-        return jpaRepository.findByOrdemServico_Id(ordemServicoId).stream()
-                .map(mapper::toDomain)
-                .toList();
+        return jpaRepository.findByOrdemServico_Id(ordemServicoId).stream().map(mapper::toDomain).toList();
     }
 
     @Override

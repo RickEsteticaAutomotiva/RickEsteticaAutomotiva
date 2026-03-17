@@ -13,7 +13,8 @@ import org.springframework.stereotype.Repository;
 /**
  * Implementação da porta de saída — persiste ErroLog via JPA.
  *
- * <p>Camada: adapter/out/persistence.
+ * <p>
+ * Camada: adapter/out/persistence.
  */
 @Repository
 @RequiredArgsConstructor
@@ -38,19 +39,11 @@ public class ErroLogRepositoryAdapter implements ErroLogRepositoryPort {
     }
 
     @Override
-    public Page<ErroLog> buscarComFiltros(
-            String tipoExcecao,
-            Integer statusHttp,
-            String usuarioEmail,
-            LocalDateTime de,
-            LocalDateTime ate,
-            Pageable pageable) {
+    public Page<ErroLog> buscarComFiltros(String tipoExcecao, Integer statusHttp, String usuarioEmail, LocalDateTime de,
+            LocalDateTime ate, Pageable pageable) {
 
         return jpaRepository
-                .findAll(
-                        ErroLogSpecification.comFiltros(
-                                tipoExcecao, statusHttp, usuarioEmail, de, ate),
-                        pageable)
+                .findAll(ErroLogSpecification.comFiltros(tipoExcecao, statusHttp, usuarioEmail, de, ate), pageable)
                 .map(mapper::toDomain);
     }
 

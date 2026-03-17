@@ -43,8 +43,8 @@ public class CategoriaController {
     @PatchMapping("/{id}")
     @ClienteOnly
     @Operation(summary = "Atualiza uma categoria")
-    public ResponseEntity<CategoriaResponse> atualizar(
-            @PathVariable Long id, @Valid @RequestBody CategoriaRequest request) {
+    public ResponseEntity<CategoriaResponse> atualizar(@PathVariable Long id,
+            @Valid @RequestBody CategoriaRequest request) {
         return ResponseEntity.ok(categoriaUseCase.atualizar(id, request));
     }
 }

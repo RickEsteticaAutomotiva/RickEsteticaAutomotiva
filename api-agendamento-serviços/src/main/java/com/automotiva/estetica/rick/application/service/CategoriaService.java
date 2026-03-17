@@ -28,16 +28,8 @@ public class CategoriaService implements CategoriaUseCase {
 
     @Override
     public CategoriaResponse atualizar(Long id, CategoriaRequest request) {
-        Categoria categoria =
-                categoriaRepositoryPort
-                        .buscarPorId(id)
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "Categoria não encontrada com o ID: " + id)
-                                                .detalhes("")
-                                                .build());
+        Categoria categoria = categoriaRepositoryPort.buscarPorId(id).orElseThrow(() -> RecursoNaoEncontradoException
+                .builder().mensagem("Categoria não encontrada com o ID: " + id).detalhes("").build());
         categoria.atualizar(request.getNome());
         return toResponse(categoriaRepositoryPort.salvar(categoria));
     }

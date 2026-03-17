@@ -40,21 +40,16 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepositoryPort
 
     @Override
     public Page<OrdemServico> buscarTodos(String filtro, Pageable pageable) {
-        return jpaRepository
-                .findAll(OrdemServicoSpecification.filtroUnico(filtro), pageable)
-                .map(mapper::toDomain);
+        return jpaRepository.findAll(OrdemServicoSpecification.filtroUnico(filtro), pageable).map(mapper::toDomain);
     }
 
     @Override
     public List<OrdemServico> buscarPorVeiculoPessoaId(Long pessoaId) {
-        return jpaRepository.findByVeiculo_Pessoa_Id(pessoaId).stream()
-                .map(mapper::toDomain)
-                .toList();
+        return jpaRepository.findByVeiculo_Pessoa_Id(pessoaId).stream().map(mapper::toDomain).toList();
     }
 
     @Override
-    public boolean existePorVeiculoIdEDataAgendamento(
-            Long veiculoId, LocalDateTime dataAgendamento) {
+    public boolean existePorVeiculoIdEDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento) {
         return jpaRepository.existsByVeiculoIdAndDataAgendamento(veiculoId, dataAgendamento);
     }
 
@@ -81,11 +76,7 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepositoryPort
     @Override
     public List<FaturamentoDiarioDto> buscarFaturamentoPorDia(LocalDateTime dataInicial) {
         return jpaRepository.buscarFaturamentoPorDia(dataInicial).stream()
-                .map(
-                        row ->
-                                new FaturamentoDiarioDto(
-                                        ((java.sql.Date) row[0]).toLocalDate(),
-                                        (BigDecimal) row[1]))
+                .map(row -> new FaturamentoDiarioDto(((java.sql.Date) row[0]).toLocalDate(), (BigDecimal) row[1]))
                 .toList();
     }
 

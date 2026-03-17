@@ -23,11 +23,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class VeiculoServiceTest {
 
-    @Mock private VeiculoRepositoryPort veiculoRepositoryPort;
+    @Mock
+    private VeiculoRepositoryPort veiculoRepositoryPort;
 
-    @Mock private PessoaRepositoryPort pessoaRepositoryPort;
+    @Mock
+    private PessoaRepositoryPort pessoaRepositoryPort;
 
-    @InjectMocks private VeiculoService veiculoService;
+    @InjectMocks
+    private VeiculoService veiculoService;
 
     private VeiculoRequest requestMock() {
         VeiculoRequest req = new VeiculoRequest();
@@ -43,16 +46,8 @@ class VeiculoServiceTest {
 
     private Veiculo veiculoMock(Long id) {
         Pessoa pessoa = Pessoa.builder().id(1L).build();
-        return Veiculo.builder()
-                .id(id)
-                .placa("ABC-1234")
-                .modelo("Civic")
-                .marca("Honda")
-                .porte("Médio")
-                .cor("Preto")
-                .ano("2022")
-                .pessoa(pessoa)
-                .build();
+        return Veiculo.builder().id(id).placa("ABC-1234").modelo("Civic").marca("Honda").porte("Médio").cor("Preto")
+                .ano("2022").pessoa(pessoa).build();
     }
 
     @Test

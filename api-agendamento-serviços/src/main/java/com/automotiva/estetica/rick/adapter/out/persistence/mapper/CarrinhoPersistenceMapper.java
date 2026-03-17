@@ -4,9 +4,7 @@ import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.CarrinhoJp
 import com.automotiva.estetica.rick.domain.entity.Carrinho;
 import org.mapstruct.Mapper;
 
-@Mapper(
-        componentModel = "spring",
-        uses = {PessoaPersistenceMapper.class, ServicoPersistenceMapper.class})
+@Mapper(componentModel = "spring", uses = {PessoaPersistenceMapper.class, ServicoPersistenceMapper.class})
 public interface CarrinhoPersistenceMapper {
 
     Carrinho toDomain(CarrinhoJpaEntity entity);

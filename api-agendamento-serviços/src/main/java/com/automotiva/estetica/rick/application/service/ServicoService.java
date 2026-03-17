@@ -23,60 +23,31 @@ public class ServicoService implements ServicoUseCase {
     @Override
     public Page<ServicoResponse> buscarTodos(PageRequest pageRequest) {
         Pageable pageable = PageableFactory.from(pageRequest);
-        return servicoRepositoryPort
-                .buscarTodos(pageRequest.getFiltro(), pageable)
-                .map(this::toResponse);
+        return servicoRepositoryPort.buscarTodos(pageRequest.getFiltro(), pageable).map(this::toResponse);
     }
 
     @Override
     public ServicoResponse buscarPorId(Long id) {
-        return servicoRepositoryPort
-                .buscarPorId(id)
-                .map(this::toResponse)
-                .orElseThrow(
-                        () ->
-                                RecursoNaoEncontradoException.builder()
-                                        .mensagem("o serviço com id " + id + " não foi encontrado")
-                                        .detalhes("")
-                                        .build());
+        return servicoRepositoryPort.buscarPorId(id).map(this::toResponse)
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("o serviço com id " + id + " não foi encontrado").detalhes("").build());
     }
 
     @Override
     public ServicoResponse criar(ServicoRequest request) {
-        Servico servico =
-                Servico.builder()
-                        .nome(request.getNome())
-                        .descricao(request.getDescricao())
-                        .preco(request.getPreco())
-                        .imagem(request.getImagem())
-                        .duracaoHoras(request.getDuracaoHoras())
-                        .categoria(Categoria.builder().id(request.getCategoriaId()).build())
-                        .build();
+        Servico servico = Servico.builder().nome(request.getNome()).descricao(request.getDescricao())
+                .preco(request.getPreco()).imagem(request.getImagem()).duracaoHoras(request.getDuracaoHoras())
+                .categoria(Categoria.builder().id(request.getCategoriaId()).build()).build();
         return toResponse(servicoRepositoryPort.salvar(servico));
     }
 
     @Override
     public ServicoResponse atualizar(Long id, ServicoRequest request) {
-        Servico servico =
-                servicoRepositoryPort
-                        .buscarPorId(id)
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "o serviço com id "
-                                                                + id
-                                                                + " não foi encontrado")
-                                                .detalhes("")
-                                                .build());
+        Servico servico = servicoRepositoryPort.buscarPorId(id).orElseThrow(() -> RecursoNaoEncontradoException
+                .builder().mensagem("o serviço com id " + id + " não foi encontrado").detalhes("").build());
 
-        servico.atualizar(
-                request.getNome(),
-                request.getDescricao(),
-                request.getPreco(),
-                request.getImagem(),
-                request.getCategoriaId(),
-                request.getDuracaoHoras());
+        servico.atualizar(request.getNome(), request.getDescricao(), request.getPreco(), request.getImagem(),
+                request.getCategoriaId(), request.getDuracaoHoras());
 
         return toResponse(servicoRepositoryPort.salvar(servico));
     }
@@ -84,24 +55,16 @@ public class ServicoService implements ServicoUseCase {
     @Override
     public void deletar(Long id) {
         if (!servicoRepositoryPort.existePorId(id)) {
-            throw RecursoNaoEncontradoException.builder()
-                    .mensagem("o serviço com id " + id + " não foi encontrado")
-                    .detalhes("")
-                    .build();
+            throw RecursoNaoEncontradoException.builder().mensagem("o serviço com id " + id + " não foi encontrado")
+                    .detalhes("").build();
         }
         servicoRepositoryPort.deletarPorId(id);
     }
 
     private ServicoResponse toResponse(Servico s) {
-        return ServicoResponse.builder()
-                .id(s.getId())
-                .nome(s.getNome())
-                .descricao(s.getDescricao())
-                .preco(s.getPreco())
-                .imagem(s.getImagem())
-                .duracaoHoras(s.getDuracaoHoras())
+        return ServicoResponse.builder().id(s.getId()).nome(s.getNome()).descricao(s.getDescricao()).preco(s.getPreco())
+                .imagem(s.getImagem()).duracaoHoras(s.getDuracaoHoras())
                 .categoriaId(s.getCategoria() != null ? s.getCategoria().getId() : null)
-                .categoriaNome(s.getCategoria() != null ? s.getCategoria().getNome() : null)
-                .build();
+                .categoriaNome(s.getCategoria() != null ? s.getCategoria().getNome() : null).build();
     }
 }
