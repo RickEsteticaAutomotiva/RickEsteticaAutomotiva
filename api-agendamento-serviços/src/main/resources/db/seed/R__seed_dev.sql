@@ -49,12 +49,12 @@ INSERT INTO pessoa_roles (pessoa_id, role_id) VALUES (5, 3);
 INSERT INTO categoria (id, nome) VALUES (1,'Lavagem'),(2,'Polimento'),(3,'Detalhamento');
 
 -- SERVIÇOS
-INSERT INTO servico (id, nome, descricao, preco, duracao_horas, fk_categoria) VALUES
-(1, 'Lavagem Simples',       'Lavagem externa básica do veículo',              25.00, '01:00:00', 1),
-(2, 'Lavagem Completa',      'Lavagem externa e interna completa',             45.00, '02:00:00', 1),
-(3, 'Enceramento',           'Aplicação de cera protetora na pintura',         80.00, '02:00:00', 2),
-(4, 'Lavagem + Cera',        'Lavagem completa com enceramento',              120.00, '03:00:00', 2),
-(5, 'Detalhamento Completo', 'Serviço completo de detalhamento automotivo',   200.00, '04:00:00', 3);
+INSERT INTO servico (id, nome, descricao, preco, duracao_minutos, fk_categoria) VALUES
+(1, 'Lavagem Simples',       'Lavagem externa básica do veículo',              25.00, 40, 1),
+(2, 'Lavagem Completa',      'Lavagem externa e interna completa',             45.00, 60, 1),
+(3, 'Enceramento',           'Aplicação de cera protetora na pintura',         80.00, 70, 2),
+(4, 'Lavagem + Cera',        'Lavagem completa com enceramento',              120.00, 120, 2),
+(5, 'Detalhamento Completo', 'Serviço completo de detalhamento automotivo',   200.00, 60, 3);
 
 -- VEÍCULOS
 INSERT INTO veiculo (id, placa, modelo, marca, porte, cor, ano, fk_usuario) VALUES

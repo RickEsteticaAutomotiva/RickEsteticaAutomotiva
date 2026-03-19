@@ -1,8 +1,11 @@
 package com.automotiva.estetica.rick.application.port.out;
 
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.OrdemServicoDuracaoProjection;
 import com.automotiva.estetica.rick.application.dto.response.FaturamentoDiarioDto;
+import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDuracaoDto;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +23,8 @@ public interface OrdemServicoRepositoryPort {
     Page<OrdemServico> buscarTodos(String filtro, Pageable pageable);
 
     List<OrdemServico> buscarPorVeiculoPessoaId(Long pessoaId);
+
+    List<OrdemServicoDuracaoProjection> buscarDuracaoTotalPorOS(LocalDate data);
 
     boolean existePorVeiculoIdEDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
 

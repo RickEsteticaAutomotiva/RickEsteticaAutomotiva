@@ -36,8 +36,9 @@ public class ServicoService implements ServicoUseCase {
     @Override
     public ServicoResponse criar(ServicoRequest request) {
         Servico servico = Servico.builder().nome(request.getNome()).descricao(request.getDescricao())
-                .preco(request.getPreco()).imagem(request.getImagem()).duracaoHoras(request.getDuracaoHoras())
+                .preco(request.getPreco()).imagem(request.getImagem()).duracaoMinutos((int) request.getDuracaoHoras().toMinutes())
                 .categoria(Categoria.builder().id(request.getCategoriaId()).build()).build();
+
         return toResponse(servicoRepositoryPort.salvar(servico));
     }
 
@@ -47,7 +48,7 @@ public class ServicoService implements ServicoUseCase {
                 .builder().mensagem("o serviço com id " + id + " não foi encontrado").detalhes("").build());
 
         servico.atualizar(request.getNome(), request.getDescricao(), request.getPreco(), request.getImagem(),
-                request.getCategoriaId(), request.getDuracaoHoras());
+                request.getCategoriaId(), (int) request.getDuracaoHoras().toMinutes());
 
         return toResponse(servicoRepositoryPort.salvar(servico));
     }
@@ -63,8 +64,23 @@ public class ServicoService implements ServicoUseCase {
 
     private ServicoResponse toResponse(Servico s) {
         return ServicoResponse.builder().id(s.getId()).nome(s.getNome()).descricao(s.getDescricao()).preco(s.getPreco())
-                .imagem(s.getImagem()).duracaoHoras(s.getDuracaoHoras())
+                .imagem(s.getImagem()).duracaoHoras(formatarDuracao(s.getDuracaoMinutos()))
                 .categoriaId(s.getCategoria() != null ? s.getCategoria().getId() : null)
                 .categoriaNome(s.getCategoria() != null ? s.getCategoria().getNome() : null).build();
+    }
+
+    private String formatarDuracao(Integer minutos) {
+        long horas = minutos / 60;
+        long restoMin = minutos % 60;
+
+        if (horas > 0 && restoMin > 0) {
+            return horas + "h" + restoMin;
+        }
+
+        if (horas > 0) {
+            return horas + "h";
+        }
+
+        return restoMin + "min";
     }
 }

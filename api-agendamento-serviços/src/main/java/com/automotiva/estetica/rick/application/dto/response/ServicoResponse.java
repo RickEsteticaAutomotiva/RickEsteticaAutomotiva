@@ -1,6 +1,7 @@
 package com.automotiva.estetica.rick.application.dto.response;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ public class ServicoResponse {
     private String descricao;
     private BigDecimal preco;
     private String imagem;
-    private LocalTime duracaoHoras;
+    private String duracaoHoras;
     private Long categoriaId;
     private String categoriaNome;
 }

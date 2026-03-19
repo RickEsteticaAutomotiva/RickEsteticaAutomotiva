@@ -3,6 +3,7 @@ package com.automotiva.estetica.rick.application.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +29,7 @@ public class ServicoRequest {
     private String imagem;
 
     @NotNull(message = "A duração é obrigatória")
-    private LocalTime duracaoHoras;
+    private Duration duracaoHoras;
 
     @NotNull(message = "A categoria é obrigatória")
     private Long categoriaId;

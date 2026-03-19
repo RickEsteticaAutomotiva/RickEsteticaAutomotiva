@@ -1,21 +1,26 @@
 package com.automotiva.estetica.rick.application.service;
 
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.OrdemServicoDuracaoProjection;
 import com.automotiva.estetica.rick.application.PageableFactory;
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
+import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
+import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDuracaoDto;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
 import com.automotiva.estetica.rick.application.port.in.CarrinhoUseCase;
 import com.automotiva.estetica.rick.application.port.in.OrdemServicoUseCase;
 import com.automotiva.estetica.rick.application.port.out.*;
-import com.automotiva.estetica.rick.domain.entity.Email;
-import com.automotiva.estetica.rick.domain.entity.OrdemServico;
-import com.automotiva.estetica.rick.domain.entity.Servico;
-import com.automotiva.estetica.rick.domain.entity.Status;
-import com.automotiva.estetica.rick.domain.entity.Veiculo;
+import com.automotiva.estetica.rick.domain.entity.*;
 import com.automotiva.estetica.rick.domain.exception.IntegracaoException;
 import com.automotiva.estetica.rick.domain.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -123,6 +128,56 @@ public class OrdemServicoService implements OrdemServicoUseCase {
         return response;
     }
 
+    @Override
+    public List<HorarioDisponivelResponse> buscarHorariosDisponiveis(LocalDate data, List<Long> servicosIds) {
+        final LocalTime INICIO_TRABALHO = LocalTime.of(9, 0);
+        final LocalTime FIM_TRABALHO = LocalTime.of(17, 0);
+        final int MARGEM_ENTRE_SERVICOS = 10; // minutos de descanso entre OS
+        List<HorarioDisponivelResponse> horariosDisponiveis = new ArrayList<>();
+
+        // 1️⃣ Buscar serviços selecionados pelo cliente
+        List<Servico> servicos = servicoRepositoryPort.buscarPorIds(servicosIds);
+        if (servicos.isEmpty()) {
+            throw RecursoNaoEncontradoException.builder().mensagem("Serviço não encontrado").detalhes("").build();
+        }
+
+        // 2️⃣ Somar duração total da OS nova (que queremos agendar)
+        int duracaoServicos = servicos.stream().mapToInt(Servico::getDuracaoMinutos).sum();
+
+        // 3️⃣ Buscar todas as OS do dia com status confirmado, já com duração total
+        // calculada
+        List<OrdemServicoDuracaoProjection> ordensDoDia = ordemServicoRepositoryPort.buscarDuracaoTotalPorOS(data);
+
+        // 4️⃣ Ponteiro começa no início do expediente
+        LocalTime ponteiro = INICIO_TRABALHO;
+
+        for (OrdemServicoDuracaoProjection osDTO : ordensDoDia) {
+            int duracaoOS = Optional.ofNullable(osDTO.getDuracaoTotal())
+                    .map(Long::intValue) // Long -> int
+                    .orElse(0);
+            LocalTime inicioOS = osDTO.getDataAgendamento().toLocalTime();
+            LocalTime fimOS = inicioOS.plusMinutes(duracaoOS) // duração já calculada no banco
+                    .plusMinutes(MARGEM_ENTRE_SERVICOS);
+
+            // 5️⃣ Verifica se cabe a nova OS antes da OS atual
+            if (!ponteiro.plusMinutes(duracaoServicos).isAfter(inicioOS)) {
+                horariosDisponiveis.add(new HorarioDisponivelResponse(ponteiro, ponteiro.plusMinutes(duracaoServicos)));
+            }
+
+            // 6️⃣ Avança ponteiro para o fim da OS + margem
+            if (ponteiro.isBefore(fimOS)) {
+                ponteiro = fimOS;
+            }
+        }
+
+        // 7️⃣ Intervalo livre após a última OS até fim do expediente
+        if (!ponteiro.plusMinutes(duracaoServicos).isAfter(FIM_TRABALHO)) {
+            horariosDisponiveis.add(new HorarioDisponivelResponse(ponteiro, ponteiro.plusMinutes(duracaoServicos)));
+        }
+
+        return horariosDisponiveis;
+    }
+
     // ─── helpers ──────────────────────────────────────────────────────────────
 
     private void criarItensServico(List<Long> servicoIds, OrdemServico ordemServico) {
@@ -145,10 +200,8 @@ public class OrdemServicoService implements OrdemServicoUseCase {
             email.setAssunto("Atualização de Status da Ordem de Serviço #" + ordemServico.getId());
             email.setCorpo(String.format(
                     "A ordem de serviço #%d teve seu status atualizado para: %s%nCliente: %s%nVeículo: %s%nData: %s",
-                    ordemServico.getId(),
-                    ordemServico.getStatus().getDescricao(),
-                    ordemServico.getVeiculo().getPessoa().getNome(),
-                    ordemServico.getVeiculo().getModelo(),
+                    ordemServico.getId(), ordemServico.getStatus().getDescricao(),
+                    ordemServico.getVeiculo().getPessoa().getNome(), ordemServico.getVeiculo().getModelo(),
                     ordemServico.getDataAgendamento()));
             email.setDestinatario(ordemServico.getVeiculo().getPessoa().getEmail());
             emailPort.enviarEmailComAnexos(email, null);
@@ -159,10 +212,8 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
     private OrdemServicoResponse toResponse(OrdemServico o) {
         return OrdemServicoResponse.builder().id(o.getId()).dataAgendamento(o.getDataAgendamento())
-                .precoMinimo(o.getPrecoMinimo())
-                .veiculo(o.getVeiculo() != null ? o.getVeiculo().getId() : null)
-                .status(o.getStatus() != null ? o.getStatus().getId() : null)
-                .observacoes(o.getObservacoes())
+                .precoMinimo(o.getPrecoMinimo()).veiculo(o.getVeiculo() != null ? o.getVeiculo().getId() : null)
+                .status(o.getStatus() != null ? o.getStatus().getId() : null).observacoes(o.getObservacoes())
                 .dtConclusao(o.getDtConclusao())
                 .motivo(o.getMotivoCancelamento() != null ? o.getMotivoCancelamento().getId() : null).build();
     }

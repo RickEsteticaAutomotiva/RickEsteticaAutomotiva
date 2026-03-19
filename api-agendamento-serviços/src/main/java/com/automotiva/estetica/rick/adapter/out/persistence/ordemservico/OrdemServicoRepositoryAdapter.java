@@ -1,10 +1,13 @@
 package com.automotiva.estetica.rick.adapter.out.persistence.ordemservico;
 
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.OrdemServicoDuracaoProjection;
 import com.automotiva.estetica.rick.adapter.out.persistence.mapper.OrdemServicoPersistenceMapper;
 import com.automotiva.estetica.rick.application.dto.response.FaturamentoDiarioDto;
+import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDuracaoDto;
 import com.automotiva.estetica.rick.application.port.out.OrdemServicoRepositoryPort;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +46,11 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepositoryPort
     @Override
     public List<OrdemServico> buscarPorVeiculoPessoaId(Long pessoaId) {
         return jpaRepository.findByVeiculo_Pessoa_Id(pessoaId).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public List<OrdemServicoDuracaoProjection> buscarDuracaoTotalPorOS(LocalDate data) {
+        return jpaRepository.buscarDuracaoTotalPorOS(data);
     }
 
     @Override

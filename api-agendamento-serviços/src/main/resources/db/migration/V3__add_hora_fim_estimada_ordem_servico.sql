@@ -1,0 +1,1 @@
+ALTER TABLE ordem_servico ADD COLUMN hora_fim_estimada TIME NOT NULL;

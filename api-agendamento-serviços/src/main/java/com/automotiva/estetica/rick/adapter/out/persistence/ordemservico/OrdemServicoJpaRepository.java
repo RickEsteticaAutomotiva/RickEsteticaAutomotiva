@@ -1,10 +1,15 @@
 package com.automotiva.estetica.rick.adapter.out.persistence.ordemservico;
 
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.OrdemServicoDuracaoProjection;
 import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.OrdemServicoJpaEntity;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDuracaoDto;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -15,8 +20,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 interface OrdemServicoJpaRepository
         extends
-            JpaRepository<OrdemServicoJpaEntity, Long>,
-            JpaSpecificationExecutor<OrdemServicoJpaEntity> {
+        JpaRepository<OrdemServicoJpaEntity, Long>,
+        JpaSpecificationExecutor<OrdemServicoJpaEntity> {
 
     boolean existsByVeiculoIdAndDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
 
@@ -24,6 +29,19 @@ interface OrdemServicoJpaRepository
     Optional<OrdemServicoJpaEntity> findOrdemServicoById(Long id);
 
     List<OrdemServicoJpaEntity> findByVeiculo_Pessoa_Id(Long id);
+
+    @Query("""
+                SELECT 
+                    o.id AS id,
+                    o.dataAgendamento AS dataAgendamento,
+                    COALESCE(SUM(i.servico.duracaoMinutos), 0) AS duracaoTotal
+                FROM ItemServicoJpaEntity i
+                JOIN i.ordemServico o
+                WHERE FUNCTION('DATE', o.dataAgendamento) = :data
+                GROUP BY o.id, o.dataAgendamento
+                ORDER BY o.dataAgendamento ASC
+            """)
+    List<OrdemServicoDuracaoProjection> buscarDuracaoTotalPorOS(@Param("data") LocalDate data);
 
     @Query("""
                 SELECT COALESCE(SUM(o.precoMinimo), 0) FROM OrdemServicoJpaEntity o

@@ -1,0 +1,1 @@
+ALTER TABLE ordem_servico DROP COLUMN hora_fim_estimada;
