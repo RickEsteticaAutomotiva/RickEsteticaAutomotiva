@@ -7,12 +7,14 @@ import com.automotiva.estetica.rick.application.dto.request.AtualizarValorServic
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPageRequest;
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
+import com.automotiva.estetica.rick.application.dto.request.ServicoAplicadoRequest;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoClienteResumoResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoServicoResumoResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoVeiculoResumoResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
+import com.automotiva.estetica.rick.application.dto.response.StatusResumoResponse;
 import com.automotiva.estetica.rick.application.port.in.CarrinhoUseCase;
 import com.automotiva.estetica.rick.application.port.in.OrdemServicoUseCase;
 import com.automotiva.estetica.rick.application.port.out.EmailPort;
@@ -33,6 +35,7 @@ import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoExcepti
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -60,7 +63,7 @@ public class OrdemServicoService implements OrdemServicoUseCase {
                 .map(
                         ordem -> {
                             OrdemServicoResponse response = toResponse(ordem);
-                            response.setServicos(buscarIdsServicoPorOrdem(ordem.getId()));
+                            response.setServicos(buscarServicosDetalhadosPorOrdem(ordem.getId()));
                             return response;
                         });
     }
@@ -71,6 +74,13 @@ public class OrdemServicoService implements OrdemServicoUseCase {
         if (ordemServicoRepositoryPort.existePorVeiculoIdEDataAgendamento(request.getVeiculo(),
                 request.getDataAgendamento())) {
             throw RecursoJaExisteException.builder().mensagem("um agendamento já existe nessa hora e data").detalhes("")
+                    .build();
+        }
+
+        if (request.getServicos() == null || request.getServicos().isEmpty()) {
+            throw CampoInvalidoException.builder()
+                    .mensagem("é necessário informar ao menos um serviço para criar a ordem")
+                    .detalhes("")
                     .build();
         }
 
@@ -100,7 +110,7 @@ public class OrdemServicoService implements OrdemServicoUseCase {
         }
 
         OrdemServicoResponse response = toResponse(ordemServico);
-        response.setServicos(request.getServicos());
+        response.setServicos(buscarServicosDetalhadosPorOrdem(ordemServico.getId()));
         return response;
     }
 
@@ -111,7 +121,7 @@ public class OrdemServicoService implements OrdemServicoUseCase {
                         .mensagem("a ordem de serviço com id " + id + " não foi encontrada").detalhes("").build());
 
         OrdemServicoResponse response = toResponse(ordemServico);
-        response.setServicos(buscarIdsServicoPorOrdem(id));
+        response.setServicos(buscarServicosDetalhadosPorOrdem(id));
         return response;
     }
 
@@ -121,7 +131,7 @@ public class OrdemServicoService implements OrdemServicoUseCase {
                 .map(
                         ordem -> {
                             OrdemServicoResponse response = toResponse(ordem);
-                            response.setServicos(buscarIdsServicoPorOrdem(ordem.getId()));
+                            response.setServicos(buscarServicosDetalhadosPorOrdem(ordem.getId()));
                             return response;
                         })
                 .toList();
@@ -146,7 +156,7 @@ public class OrdemServicoService implements OrdemServicoUseCase {
         ordemServicoRepositoryPort.salvar(ordemServico);
 
         OrdemServicoResponse response = toResponse(ordemServico);
-        response.setServicos(buscarIdsServicoPorOrdem(id));
+        response.setServicos(buscarServicosDetalhadosPorOrdem(id));
         return response;
     }
 
@@ -159,12 +169,6 @@ public class OrdemServicoService implements OrdemServicoUseCase {
                             .mensagem("serviço " + servicoId + " não encontrado").detalhes("").build());
             itemServicoRepositoryPort.salvar(ordemServico.criarItem(servico));
         }
-    }
-
-    private List<Long> buscarIdsServicoPorOrdem(Long ordemId) {
-        return itemServicoRepositoryPort.buscarPorOrdemServicoId(ordemId).stream()
-                .map(item -> item.getServico().getId())
-                .toList();
     }
 
     private void enviarEmailAtualizacao(OrdemServico ordemServico) {
@@ -198,8 +202,8 @@ public class OrdemServicoService implements OrdemServicoUseCase {
     private OrdemServicoResponse toResponse(OrdemServico o) {
         return OrdemServicoResponse.builder().id(o.getId()).dataAgendamento(o.getDataAgendamento())
                 .precoMinimo(o.getPrecoMinimo())
-                .veiculo(o.getVeiculo() != null ? o.getVeiculo().getId() : null)
-                .status(o.getStatus() != null ? o.getStatus().getId() : null)
+                .veiculo(toVeiculoResumo(o))
+                .status(toStatusResumo(o))
                 .observacoes(o.getObservacoes())
                 .dtConclusao(o.getDtConclusao())
                 .motivo(
@@ -222,89 +226,153 @@ public class OrdemServicoService implements OrdemServicoUseCase {
                     .build();
         }
 
-        PageRequest pageRequest =
-                PageRequest.builder()
-                        .pagina(request.getPagina())
-                        .tamanho(request.getTamanho())
-                        .ordenarPor(request.getOrdenarPor())
-                        .build();
-
-        Pageable pageable = PageableFactory.from(pageRequest);
+        Pageable pageable = PageableFactory.from(request);
         LocalDateTime dataInicio =
                 request.getDataInicio() != null ? request.getDataInicio().atStartOfDay() : null;
         LocalDateTime dataFim =
                 request.getDataFim() != null ? request.getDataFim().atTime(23, 59, 59) : null;
 
         return ordemServicoRepositoryPort
-                .buscarTodosParaGestao(pageRequest.getFiltro(), request.getStatus(), dataInicio, dataFim, pageable)
+                .buscarTodosParaGestao(null, request.getStatus(), dataInicio, dataFim, pageable)
                 .map(this::toResumoGestao);
     }
 
     @Override
     @Transactional(readOnly = true)
     public OrdemServicoDetalheResponse buscarDetalheParaGestao(Long ordemServicoId) {
-        OrdemServico ordemServico =
-                ordemServicoRepositoryPort
-                        .buscarPorIdComDetalhes(ordemServicoId)
-                        .orElseThrow(
-                                () ->
-                                        RecursoNaoEncontradoException.builder()
-                                                .mensagem(
-                                                        "a ordem de serviço com id "
-                                                                + ordemServicoId
-                                                                + " não foi encontrada")
-                                                .detalhes("")
-                                                .build());
+        return toDetalheGestao(buscarOrdemPorIdComDetalhes(ordemServicoId));
+    }
+
+    @Override
+    @Transactional
+    public OrdemServicoDetalheResponse atualizarStatusParaGestao(
+            Long ordemServicoId, AtualizarStatusOrdemRequest request) {
+        if (request == null || request.getStatus() == null) {
+            throw CampoInvalidoException.builder()
+                    .mensagem("status é obrigatório")
+                    .detalhes("")
+                    .build();
+        }
+
+        OrdemServico ordemServico = buscarOrdemPorIdComDetalhes(ordemServicoId);
+        ordemServico.atualizar(null, null, null, request.getStatus(), null);
+        ordemServicoRepositoryPort.salvar(ordemServico);
+
+        if (ordemServico.deveNotificarPorEmail()) {
+            enviarEmailAtualizacao(ordemServico);
+        }
+
         return toDetalheGestao(ordemServico);
     }
 
     @Override
-    public OrdemServicoDetalheResponse atualizarStatusParaGestao(
-            Long ordemServicoId, AtualizarStatusOrdemRequest request) {
-        throw CampoInvalidoException.builder()
-                .mensagem("endpoint de gestão não habilitado neste controller")
-                .detalhes("")
-                .build();
-    }
-
-    @Override
+    @Transactional
     public OrdemServicoDetalheResponse adicionarServicosParaGestao(
             Long ordemServicoId, AdicionarServicosOrdemRequest request) {
-        throw CampoInvalidoException.builder()
-                .mensagem("endpoint de gestão não habilitado neste controller")
-                .detalhes("")
-                .build();
+        if (request == null || request.getServicos() == null || request.getServicos().isEmpty()) {
+            throw CampoInvalidoException.builder()
+                    .mensagem("é necessário informar ao menos um serviço")
+                    .detalhes("")
+                    .build();
+        }
+
+        OrdemServico ordemServico = buscarOrdemPorIdComDetalhes(ordemServicoId);
+
+        for (ServicoAplicadoRequest servicoAplicado : request.getServicos()) {
+            Long servicoId = servicoAplicado.getIdServico();
+
+            if (itemServicoRepositoryPort.existePorOrdemServicoIdEServicoId(ordemServicoId, servicoId)) {
+                throw RecursoJaExisteException.builder()
+                        .mensagem("o serviço " + servicoId + " já está vinculado a essa ordem")
+                        .detalhes("")
+                        .build();
+            }
+
+            Servico servico = servicoRepositoryPort.buscarPorId(servicoId)
+                    .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                            .mensagem("serviço " + servicoId + " não encontrado")
+                            .detalhes("")
+                            .build());
+
+            ItemServico itemServico = ordemServico.criarItem(servico);
+            if (servicoAplicado.getValorAplicado() != null) {
+                itemServico.setPreco(servicoAplicado.getValorAplicado());
+            }
+            itemServicoRepositoryPort.salvar(itemServico);
+        }
+
+        return toDetalheGestao(ordemServico);
     }
 
     @Override
+    @Transactional
     public OrdemServicoDetalheResponse atualizarValorServicoParaGestao(
             Long ordemServicoId, Long servicoId, AtualizarValorServicoOrdemRequest request) {
-        throw CampoInvalidoException.builder()
-                .mensagem("endpoint de gestão não habilitado neste controller")
-                .detalhes("")
-                .build();
+        if (request == null || request.getValorAplicado() == null) {
+            throw CampoInvalidoException.builder()
+                    .mensagem("valorAplicado é obrigatório")
+                    .detalhes("")
+                    .build();
+        }
+
+        if (request.getValorAplicado().compareTo(BigDecimal.ZERO) < 0) {
+            throw CampoInvalidoException.builder()
+                    .mensagem("valorAplicado deve ser maior ou igual a zero")
+                    .detalhes("")
+                    .build();
+        }
+
+        OrdemServico ordemServico = buscarOrdemPorIdComDetalhes(ordemServicoId);
+        ItemServico itemServico = itemServicoRepositoryPort
+                .buscarPorOrdemServicoIdEServicoId(ordemServicoId, servicoId)
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("o serviço " + servicoId + " não foi encontrado na ordem " + ordemServicoId)
+                        .detalhes("")
+                        .build());
+
+        itemServico.setPreco(request.getValorAplicado());
+        itemServicoRepositoryPort.salvar(itemServico);
+
+        return toDetalheGestao(ordemServico);
     }
 
     @Override
+    @Transactional
     public OrdemServicoDetalheResponse removerServicoParaGestao(Long ordemServicoId, Long servicoId) {
-        throw CampoInvalidoException.builder()
-                .mensagem("endpoint de gestão não habilitado neste controller")
-                .detalhes("")
-                .build();
+        OrdemServico ordemServico = buscarOrdemPorIdComDetalhes(ordemServicoId);
+        ItemServico itemServico = itemServicoRepositoryPort
+                .buscarPorOrdemServicoIdEServicoId(ordemServicoId, servicoId)
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("o serviço " + servicoId + " não foi encontrado na ordem " + ordemServicoId)
+                        .detalhes("")
+                        .build());
+
+        itemServicoRepositoryPort.removerPorId(itemServico.getId());
+        return toDetalheGestao(ordemServico);
     }
+
+    private OrdemServico buscarOrdemPorIdComDetalhes(Long ordemServicoId) {
+        return ordemServicoRepositoryPort
+                .buscarPorIdComDetalhes(ordemServicoId)
+                .orElseThrow(
+                        () ->
+                                RecursoNaoEncontradoException.builder()
+                                        .mensagem("a ordem de serviço com id " + ordemServicoId + " não foi encontrada")
+                                        .detalhes("")
+                                        .build());
+    }
+
+    // ...existing code...
 
     private OrdemServicoResumoResponse toResumoGestao(OrdemServico ordemServico) {
         List<ItemServico> itens = itemServicoRepositoryPort.buscarPorOrdemServicoId(ordemServico.getId());
-        BigDecimal total =
-                itens.stream()
-                        .map(ItemServico::getPreco)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = calcularValorTotal(itens);
 
         return OrdemServicoResumoResponse.builder()
                 .id(ordemServico.getId())
                 .dataAgendamento(ordemServico.getDataAgendamento())
                 .dataConclusao(ordemServico.getDtConclusao())
-                .status(ordemServico.getStatus() != null ? ordemServico.getStatus().getId() : null)
+                .status(toStatusResumo(ordemServico))
                 .observacoes(ordemServico.getObservacoes())
                 .valorTotal(total)
                 .cliente(toClienteResumo(ordemServico))
@@ -315,22 +383,26 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
     private OrdemServicoDetalheResponse toDetalheGestao(OrdemServico ordemServico) {
         List<ItemServico> itens = itemServicoRepositoryPort.buscarPorOrdemServicoId(ordemServico.getId());
-        BigDecimal total =
-                itens.stream()
-                        .map(ItemServico::getPreco)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = calcularValorTotal(itens);
 
         return OrdemServicoDetalheResponse.builder()
                 .id(ordemServico.getId())
                 .dataAgendamento(ordemServico.getDataAgendamento())
                 .dataConclusao(ordemServico.getDtConclusao())
-                .status(ordemServico.getStatus() != null ? ordemServico.getStatus().getId() : null)
+                .status(toStatusResumo(ordemServico))
                 .observacoes(ordemServico.getObservacoes())
                 .valorTotal(total)
                 .cliente(toClienteResumo(ordemServico))
                 .veiculo(toVeiculoResumo(ordemServico))
                 .servicos(toServicosResumo(itens))
                 .build();
+    }
+
+    private BigDecimal calcularValorTotal(List<ItemServico> itens) {
+        return itens.stream()
+                .map(ItemServico::getPreco)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private OrdemServicoClienteResumoResponse toClienteResumo(OrdemServico ordemServico) {
@@ -355,6 +427,16 @@ public class OrdemServicoService implements OrdemServicoUseCase {
                 .build();
     }
 
+    private StatusResumoResponse toStatusResumo(OrdemServico ordemServico) {
+        if (ordemServico.getStatus() == null) {
+            return null;
+        }
+        return StatusResumoResponse.builder()
+                .id(ordemServico.getStatus().getId())
+                .descricao(ordemServico.getStatus().getDescricao())
+                .build();
+    }
+
     private List<OrdemServicoServicoResumoResponse> toServicosResumo(List<ItemServico> itens) {
         return itens.stream()
                 .map(
@@ -366,5 +448,10 @@ public class OrdemServicoService implements OrdemServicoUseCase {
                                         .preco(item.getServico() != null ? item.getServico().getPreco() : null)
                                         .build())
                 .toList();
+    }
+
+    private List<OrdemServicoServicoResumoResponse> buscarServicosDetalhadosPorOrdem(Long ordemId) {
+        List<ItemServico> itens = itemServicoRepositoryPort.buscarPorOrdemServicoId(ordemId);
+        return toServicosResumo(itens);
     }
 }

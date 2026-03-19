@@ -4,16 +4,24 @@ import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.automotiva.estetica.rick.application.dto.request.AtualizarStatusOrdemRequest;
+import com.automotiva.estetica.rick.application.dto.request.AtualizarValorServicoOrdemRequest;
+import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
+import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
 import com.automotiva.estetica.rick.application.port.in.CarrinhoUseCase;
 import com.automotiva.estetica.rick.application.port.out.EmailPort;
 import com.automotiva.estetica.rick.application.port.out.ItemServicoRepositoryPort;
+import com.automotiva.estetica.rick.application.port.out.OrdemServicoEventPublisherPort;
 import com.automotiva.estetica.rick.application.port.out.OrdemServicoRepositoryPort;
 import com.automotiva.estetica.rick.application.port.out.ServicoRepositoryPort;
+import com.automotiva.estetica.rick.domain.entity.ItemServico;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
+import com.automotiva.estetica.rick.domain.entity.Servico;
 import com.automotiva.estetica.rick.domain.entity.Status;
 import com.automotiva.estetica.rick.domain.entity.Veiculo;
+import com.automotiva.estetica.rick.domain.exception.CampoInvalidoException;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,6 +38,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unused")
 class OrdemServicoServiceTest {
 
     @Mock
@@ -45,6 +54,9 @@ class OrdemServicoServiceTest {
     private CarrinhoUseCase carrinhoUseCase;
 
     @Mock
+    private OrdemServicoEventPublisherPort ordemServicoPublisher;
+
+    @Mock
     private EmailPort emailPort;
 
     @InjectMocks
@@ -55,6 +67,27 @@ class OrdemServicoServiceTest {
         Status status = Status.builder().id(1L).build();
         return OrdemServico.builder().id(10L).dataAgendamento(LocalDateTime.now()).precoMinimo(BigDecimal.valueOf(100))
                 .veiculo(veiculo).status(status).build();
+    }
+
+    private List<ItemServico> itensMock(OrdemServico ordem) {
+        Servico lavagem = Servico.builder().id(1L).nome("Lavagem").preco(BigDecimal.valueOf(50)).build();
+        Servico polimento = Servico.builder().id(2L).nome("Polimento").preco(BigDecimal.valueOf(120)).build();
+
+        ItemServico item1 = ItemServico.builder()
+                .id(100L)
+                .ordemServico(ordem)
+                .servico(lavagem)
+                .preco(BigDecimal.valueOf(55))
+                .build();
+
+        ItemServico item2 = ItemServico.builder()
+                .id(101L)
+                .ordemServico(ordem)
+                .servico(polimento)
+                .preco(BigDecimal.valueOf(125))
+                .build();
+
+        return List.of(item1, item2);
     }
 
     @Test
@@ -120,4 +153,68 @@ class OrdemServicoServiceTest {
 
         assertEquals(1, resultado.getTotalElements());
     }
+
+    @Test
+    @DisplayName("Deve lançar CampoInvalidoException ao criar ordem sem serviços")
+    void criar_semServicos_deveLancarExcecao() {
+        OrdemServicoRequest request = OrdemServicoRequest.builder()
+                .veiculo(1L)
+                .dataAgendamento(LocalDateTime.now().plusDays(1))
+                .build();
+
+        assertThrows(CampoInvalidoException.class, () -> ordemServicoService.criar(request));
+    }
+
+    @Test
+    @DisplayName("Deve atualizar status da ordem no fluxo de gestão")
+    void atualizarStatusParaGestao_sucesso() {
+        OrdemServico ordem = ordemMock();
+        AtualizarStatusOrdemRequest request = AtualizarStatusOrdemRequest.builder().status(1L).build();
+
+        when(ordemServicoRepositoryPort.buscarPorIdComDetalhes(10L)).thenReturn(Optional.of(ordem));
+        when(ordemServicoRepositoryPort.salvar(any(OrdemServico.class))).thenReturn(ordem);
+        when(itemServicoRepositoryPort.buscarPorOrdemServicoId(10L)).thenReturn(emptyList());
+
+        OrdemServicoDetalheResponse response = ordemServicoService.atualizarStatusParaGestao(10L, request);
+
+        assertNotNull(response);
+        assertEquals(10L, response.getId());
+        assertNotNull(response.getStatus());
+        assertEquals(1L, response.getStatus().getId());
+        verify(ordemServicoRepositoryPort).salvar(any(OrdemServico.class));
+    }
+
+    @Test
+    @DisplayName("Deve lançar CampoInvalidoException ao atualizar valor com número negativo")
+    void atualizarValorServicoParaGestao_valorNegativo_deveLancarExcecao() {
+        AtualizarValorServicoOrdemRequest request = AtualizarValorServicoOrdemRequest.builder()
+                .valorAplicado(BigDecimal.valueOf(-1))
+                .build();
+
+        assertThrows(
+                CampoInvalidoException.class,
+                () -> ordemServicoService.atualizarValorServicoParaGestao(10L, 1L, request));
+    }
+
+    @Test
+    @DisplayName("Deve retornar ordem com serviços detalhados")
+    void buscarPorId_deveRetornarServicosDetalhados() {
+        OrdemServico ordem = ordemMock();
+
+        when(ordemServicoRepositoryPort.buscarPorId(10L)).thenReturn(Optional.of(ordem));
+        when(itemServicoRepositoryPort.buscarPorOrdemServicoId(10L)).thenReturn(itensMock(ordem));
+
+        OrdemServicoResponse response = ordemServicoService.buscarPorId(10L);
+
+        assertNotNull(response);
+        assertNotNull(response.getServicos());
+        assertEquals(2, response.getServicos().size());
+
+        var primeiroServico = response.getServicos().getFirst();
+        assertEquals(1L, primeiroServico.getId());
+        assertEquals("Lavagem", primeiroServico.getNome());
+        assertEquals(BigDecimal.valueOf(55), primeiroServico.getValorAplicado());
+        assertEquals(BigDecimal.valueOf(50), primeiroServico.getPreco());
+    }
 }
+

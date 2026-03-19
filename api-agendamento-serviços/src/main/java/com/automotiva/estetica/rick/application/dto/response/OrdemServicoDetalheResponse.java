@@ -19,7 +19,7 @@ public class OrdemServicoDetalheResponse {
     private Long id;
     private LocalDateTime dataAgendamento;
     private LocalDateTime dataConclusao;
-    private Long status;
+    private StatusResumoResponse status;
     private String observacoes;
     private BigDecimal valorTotal;
     private OrdemServicoClienteResumoResponse cliente;

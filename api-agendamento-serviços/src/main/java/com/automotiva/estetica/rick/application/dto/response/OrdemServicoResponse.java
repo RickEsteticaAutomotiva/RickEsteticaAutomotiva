@@ -18,10 +18,10 @@ public class OrdemServicoResponse {
 
     private Long id;
     private LocalDateTime dataAgendamento;
-    private List<Long> servicos;
+    private List<OrdemServicoServicoResumoResponse> servicos;
     private BigDecimal precoMinimo;
-    private Long veiculo;
-    private Long status;
+    private OrdemServicoVeiculoResumoResponse veiculo;
+    private StatusResumoResponse status;
     private String observacoes;
     private LocalDateTime dtConclusao;
     private Long motivo;

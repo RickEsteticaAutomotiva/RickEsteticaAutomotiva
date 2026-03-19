@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -20,8 +23,11 @@ interface OrdemServicoJpaRepository
 
     boolean existsByVeiculoIdAndDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
 
-    @EntityGraph(attributePaths = {"veiculo", "veiculo.pessoa", "status"})
+    @EntityGraph(attributePaths = {"veiculo", "veiculo.pessoa", "status", "motivoCancelamento"})
     Optional<OrdemServicoJpaEntity> findOrdemServicoById(Long id);
+
+    @EntityGraph(attributePaths = {"veiculo", "veiculo.pessoa", "status", "motivoCancelamento"})
+    Page<OrdemServicoJpaEntity> findAll(Specification<OrdemServicoJpaEntity> spec, Pageable pageable);
 
     List<OrdemServicoJpaEntity> findByVeiculo_Pessoa_Id(Long id);
 
