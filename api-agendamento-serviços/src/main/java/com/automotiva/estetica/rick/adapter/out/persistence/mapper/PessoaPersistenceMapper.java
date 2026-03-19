@@ -38,8 +38,13 @@ public interface PessoaPersistenceMapper {
      * busca as entidades reais pelo {@code
      * RoleJpaRepository} antes de salvar. Isso evita a criação de registros
      * duplicados na tabela {@code role}.
+     *
+     * <p>
+     * O campo {@code deletadoEm} é ignorado porque soft delete é responsabilidade
+     * da infraestrutura de persistência, não do domínio.
      */
     @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "deletadoEm", ignore = true)
     PessoaJpaEntity toJpaEntity(Pessoa domain);
 
     // ─── Helpers de conversão ────────────────────────────────────────────────

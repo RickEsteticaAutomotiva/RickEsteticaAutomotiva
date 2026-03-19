@@ -42,6 +42,8 @@ public final class SensitiveDataRedactor {
 		SENSITIVE_KEYS.add("pin");
 		SENSITIVE_KEYS.add("otp");
 		SENSITIVE_KEYS.add("jwt");
+		SENSITIVE_KEYS.add("confirmar_senha");
+		SENSITIVE_KEYS.add("refreshtoken");
 	}
 
 	private SensitiveDataRedactor() {
@@ -63,22 +65,45 @@ public final class SensitiveDataRedactor {
 		// JSON: "chave": "valor" → "chave": "***REDACTED***"
 		for (String key : SENSITIVE_KEYS) {
 			result = redactJsonField(result, key);
-			// Tambem tenta variações com underscore
+			// Também tenta variações com underscore/hífen
 			result = redactJsonField(result, key.replace("_", "-"));
+			// Também tenta camelCase (remove underscores)
+			result = redactJsonField(result, toCamelCase(key));
 		}
 
 		// Form data: chave=valor → chave=***REDACTED***
 		for (String key : SENSITIVE_KEYS) {
 			result = redactFormField(result, key);
 			result = redactFormField(result, key.replace("_", "-"));
+			result = redactFormField(result, toCamelCase(key));
 		}
 
 		// Query string: ?chave=valor → ?chave=***REDACTED***
 		for (String key : SENSITIVE_KEYS) {
 			result = redactQueryParam(result, key);
+			result = redactQueryParam(result, key.replace("_", "-"));
+			result = redactQueryParam(result, toCamelCase(key));
 		}
 
 		return result;
+	}
+
+	/**
+	 * Converte snake_case para camelCase.
+	 *
+	 * <p>Ex: refresh_token → refreshToken
+	 */
+	private static String toCamelCase(String input) {
+		if (!input.contains("_")) {
+			return input;
+		}
+
+		String[] parts = input.split("_");
+		StringBuilder camelCase = new StringBuilder(parts[0]);
+		for (int i = 1; i < parts.length; i++) {
+			camelCase.append(parts[i].substring(0, 1).toUpperCase()).append(parts[i].substring(1));
+		}
+		return camelCase.toString();
 	}
 
 	/**

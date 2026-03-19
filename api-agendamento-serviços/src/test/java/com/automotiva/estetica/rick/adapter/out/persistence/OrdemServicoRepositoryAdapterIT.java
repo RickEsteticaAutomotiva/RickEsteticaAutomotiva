@@ -81,11 +81,52 @@ class OrdemServicoRepositoryAdapterIT {
         statusAnalise = em.persistFlushFind(StatusJpaEntity.builder().descricao("ANÁLISE").build());
         statusConcluido =
                 em.persistFlushFind(StatusJpaEntity.builder().descricao("CONCLUÍDO").build());
+        statusCancelado =
+                em.persistFlushFind(StatusJpaEntity.builder().descricao("CANCELADO").build());
+
+        CategoriaJpaEntity categoria =
+                em.persistFlushFind(CategoriaJpaEntity.builder().nome("Estética").build());
+
+        servicoVitrificacao =
+                em.persistFlushFind(
+                        ServicoJpaEntity.builder()
+                                .nome("Vitrificação")
+                                .descricao("Proteção contra UV")
+                                .preco(BigDecimal.valueOf(250))
+                                .categoria(categoria)
+                                .build());
+
+        servicoPolimento =
+                em.persistFlushFind(
+                        ServicoJpaEntity.builder()
+                                .nome("Polimento")
+                                .descricao("Polimento profissional")
+                                .preco(BigDecimal.valueOf(150))
+                                .categoria(categoria)
+                                .build());
+
+        motivoCliente =
+                em.persistFlushFind(MotivoCancelamentoJpaEntity.builder().descricao("Cliente desistiu").build());
+
+        motivoPeca =
+                em.persistFlushFind(MotivoCancelamentoJpaEntity.builder().descricao("Falta peca").build());
     }
 
     private OrdemServicoJpaEntity persistirOrdem(LocalDateTime data, StatusJpaEntity status, BigDecimal preco) {
         return em.persistFlushFind(OrdemServicoJpaEntity.builder().dataAgendamento(data).precoMinimo(preco)
                 .veiculo(veiculo).status(status).observacoes("Teste").build());
+    }
+
+    private OrdemServicoJpaEntity persistirOrdem(LocalDateTime data, StatusJpaEntity status, BigDecimal preco,
+            MotivoCancelamentoJpaEntity motivo) {
+        return em.persistFlushFind(OrdemServicoJpaEntity.builder().dataAgendamento(data).precoMinimo(preco)
+                .veiculo(veiculo).status(status).observacoes("Teste").motivoCancelamento(motivo).build());
+    }
+
+    private ItemServicoJpaEntity persistirItem(OrdemServicoJpaEntity ordem, ServicoJpaEntity servico,
+            BigDecimal preco) {
+        return em.persistFlushFind(ItemServicoJpaEntity.builder().ordemServico(ordem).servico(servico)
+                .preco(preco).build());
     }
 
     // ─── buscarPorId ────────────────────────────────────────────────────────
