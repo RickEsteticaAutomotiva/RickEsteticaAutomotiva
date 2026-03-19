@@ -1,7 +1,11 @@
 package com.automotiva.estetica.rick.adapter.in.controller;
 
+import com.automotiva.estetica.rick.application.dto.response.CancelamentoResponse;
 import com.automotiva.estetica.rick.application.dto.response.FaturamentoPeriodoResponse;
 import com.automotiva.estetica.rick.application.dto.response.FaturamentoResponse;
+import com.automotiva.estetica.rick.application.dto.response.FaturamentoServicoResponse;
+import com.automotiva.estetica.rick.application.dto.response.FluxoCaixaResponse;
+import com.automotiva.estetica.rick.application.dto.response.HomeResumoResponse;
 import com.automotiva.estetica.rick.application.dto.response.QtdOrdensConcluidasMensalResponse;
 import com.automotiva.estetica.rick.application.dto.response.QtdOrdensMensalResponse;
 import com.automotiva.estetica.rick.application.dto.response.TicketMedioMensalResponse;
@@ -53,5 +57,29 @@ public class DashboardController {
     @Operation(summary = "Retorna faturamento diário dos últimos 30 dias")
     public ResponseEntity<List<FaturamentoPeriodoResponse>> buscarFaturamentoPeriodo() {
         return ResponseEntity.ok(dashboardUseCase.buscarFaturamentoPeriodo());
+    }
+
+    @GetMapping("/faturamento-servicos")
+    @Operation(summary = "Retorna o faturamento por serviço do mês atual")
+    public ResponseEntity<List<FaturamentoServicoResponse>> buscarFaturamentoServicos() {
+        return ResponseEntity.ok(dashboardUseCase.buscarFaturamentoServicos());
+    }
+
+    @GetMapping("/fluxo-caixa")
+    @Operation(summary = "Retorna o fluxo de caixa consolidado do mês atual")
+    public ResponseEntity<FluxoCaixaResponse> buscarFluxoCaixa() {
+        return ResponseEntity.ok(dashboardUseCase.buscarFluxoCaixa());
+    }
+
+    @GetMapping("/cancelamentos")
+    @Operation(summary = "Retorna cancelamentos agrupados por motivo no mês atual")
+    public ResponseEntity<List<CancelamentoResponse>> buscarCancelamentos() {
+        return ResponseEntity.ok(dashboardUseCase.buscarCancelamentos());
+    }
+
+    @GetMapping("/home-resumo")
+    @Operation(summary = "Retorna o resumo da home do gerente")
+    public ResponseEntity<HomeResumoResponse> buscarHomeResumo() {
+        return ResponseEntity.ok(dashboardUseCase.buscarHomeResumo());
     }
 }

@@ -1,7 +1,5 @@
 package com.automotiva.estetica.rick.application.dto.response;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +11,14 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FaturamentoPeriodoResponse {
+public class ProximoAgendamentoResponse {
 
-    private LocalDate data;
-    private BigDecimal faturamentoDiario;
+    private Long ordemServicoId;
+    private String servico;
+    private String hora;
+    private String data;
+    private String clienteNome;
+    private String veiculoDescricao;
+    private Long status;
 }
+

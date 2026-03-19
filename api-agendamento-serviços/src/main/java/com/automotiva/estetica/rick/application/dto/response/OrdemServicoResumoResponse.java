@@ -14,16 +14,16 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrdemServicoResponse {
+public class OrdemServicoResumoResponse {
 
     private Long id;
     private LocalDateTime dataAgendamento;
-    private List<OrdemServicoServicoResumoResponse> servicos;
-    private BigDecimal precoMinimo;
-    private OrdemServicoVeiculoResumoResponse veiculo;
+    private LocalDateTime dataConclusao;
     private StatusResumoResponse status;
     private String observacoes;
-    private LocalDateTime dtConclusao;
-    private Long motivo;
+    private BigDecimal valorTotal;
     private OrdemServicoClienteResumoResponse cliente;
+    private OrdemServicoVeiculoResumoResponse veiculo;
+    private List<OrdemServicoServicoResumoResponse> servicos;
 }
+

@@ -15,13 +15,14 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 /**
  * Filtro que envolve o HttpServletRequest com ContentCachingRequestWrapper.
  *
- * <p>
- * Isso permite que o GlobalExceptionHandler leia o body da requisição APÓS ele
- * já ter sido consumido pelo Spring MVC — necessário para logar o payload que
- * causou o erro.
+ * <p>Responsabilidades:
+ * <ul>
+ * <li>Gera e armazena um `requestId` no MDC para rastreabilidade em logs.
+ * <li>Envolve request com caching para que GlobalExceptionHandler leia o body
+ * após consumo pelo Spring MVC.
+ * </ul>
  *
- * <p>
- * @Order(1) garante execução antes de todos os filtros de segurança.
+ * <p>@Order(1) garante execução antes de todos os filtros de segurança.
  */
 @Component
 @Order(1)
@@ -31,6 +32,9 @@ public class RequestCachingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        // Gera e armazena requestId único no MDC
+        RequestIdHolder.generateAndStoreRequestId();
+
         ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
 
@@ -38,6 +42,8 @@ public class RequestCachingFilter extends OncePerRequestFilter {
             filterChain.doFilter(wrappedRequest, wrappedResponse);
         } finally {
             wrappedResponse.copyBodyToResponse();
+            // Limpa MDC ao final da requisição
+            RequestIdHolder.clear();
         }
     }
 }

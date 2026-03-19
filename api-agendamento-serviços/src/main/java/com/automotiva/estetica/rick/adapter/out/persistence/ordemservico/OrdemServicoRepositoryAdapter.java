@@ -1,7 +1,10 @@
 package com.automotiva.estetica.rick.adapter.out.persistence.ordemservico;
 
 import com.automotiva.estetica.rick.adapter.out.persistence.mapper.OrdemServicoPersistenceMapper;
+import com.automotiva.estetica.rick.application.dto.response.CancelamentoMotivoDto;
 import com.automotiva.estetica.rick.application.dto.response.FaturamentoDiarioDto;
+import com.automotiva.estetica.rick.application.dto.response.FaturamentoServicoDto;
+import com.automotiva.estetica.rick.application.dto.response.ProximoAgendamentoDto;
 import com.automotiva.estetica.rick.application.port.out.OrdemServicoRepositoryPort;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import java.math.BigDecimal;
@@ -75,5 +78,97 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepositoryPort
         return jpaRepository.buscarFaturamentoPorDia(dataInicial).stream()
                 .map(row -> new FaturamentoDiarioDto(((java.sql.Date) row[0]).toLocalDate(), (BigDecimal) row[1]))
                 .toList();
+    }
+
+    @Override
+    public List<FaturamentoServicoDto> buscarFaturamentoServicos(LocalDateTime inicio, LocalDateTime fim) {
+        return jpaRepository.buscarFaturamentoServicos(inicio, fim).stream()
+                .map(
+                        row ->
+                                new FaturamentoServicoDto(
+                                        ((Number) row[0]).longValue(),
+                                        (String) row[1],
+                                        ((Number) row[2]).longValue(),
+                                        (String) row[3],
+                                        ((Number) row[4]).longValue(),
+                                        (BigDecimal) row[5]))
+                .toList();
+    }
+
+    @Override
+    public BigDecimal somarReceitaRecebidaDoPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        return jpaRepository.somarReceitaRecebidaDoPeriodo(inicio, fim);
+    }
+
+    @Override
+    public BigDecimal somarCustoRealizadoDoPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        return jpaRepository.somarCustoRealizadoDoPeriodo(inicio, fim);
+    }
+
+    @Override
+    public List<CancelamentoMotivoDto> buscarCancelamentosPorMotivoDoPeriodo(
+            LocalDateTime inicio, LocalDateTime fim) {
+        return jpaRepository.buscarCancelamentosPorMotivoDoPeriodo(inicio, fim).stream()
+                .map(
+                        row ->
+                                new CancelamentoMotivoDto(
+                                        (String) row[0],
+                                        ((Number) row[1]).longValue()))
+                .toList();
+    }
+
+    @Override
+    public long contarAgendamentosNoPeriodoExcetoStatus(
+            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado) {
+        return jpaRepository.contarAgendamentosNoPeriodoExcetoStatus(inicio, fim, statusIdIgnorado);
+    }
+
+    @Override
+    public BigDecimal somarFaturamentoEstimadoNoPeriodoExcetoStatus(
+            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado) {
+        return jpaRepository.somarFaturamentoEstimadoNoPeriodoExcetoStatus(
+                inicio, fim, statusIdIgnorado);
+    }
+
+    @Override
+    public Optional<ProximoAgendamentoDto> buscarProximoAgendamentoNoPeriodoExcetoStatus(
+            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado) {
+        return jpaRepository
+                .findFirstByDataAgendamentoBetweenAndStatus_IdNotOrderByDataAgendamentoAscIdAsc(
+                        inicio, fim, statusIdIgnorado)
+                .map(
+                        ordem -> {
+                            String servicoPrincipal =
+                                    jpaRepository.buscarNomesServicosDaOrdem(ordem.getId()).stream()
+                                            .findFirst()
+                                            .orElse("");
+
+                            return new ProximoAgendamentoDto(
+                                    ordem.getId(),
+                                    servicoPrincipal,
+                                    ordem.getDataAgendamento(),
+                                    ordem.getVeiculo() != null && ordem.getVeiculo().getPessoa() != null
+                                            ? ordem.getVeiculo().getPessoa().getNome()
+                                            : "",
+                                    ordem.getVeiculo() != null ? ordem.getVeiculo().getMarca() : null,
+                                    ordem.getVeiculo() != null ? ordem.getVeiculo().getModelo() : null,
+                                    ordem.getVeiculo() != null ? ordem.getVeiculo().getPlaca() : null,
+                                    ordem.getStatus() != null ? ordem.getStatus().getId() : null);
+                        });
+    }
+
+    @Override
+    public Page<OrdemServico> buscarTodosParaGestao(
+            String filtro,
+            Long status,
+            LocalDateTime dataInicio,
+            LocalDateTime dataFim,
+            Pageable pageable) {
+        return jpaRepository
+                .findAll(
+                        OrdemServicoSpecification.filtroGestao(
+                                filtro, status, dataInicio, dataFim),
+                        pageable)
+                .map(mapper::toDomain);
     }
 }
