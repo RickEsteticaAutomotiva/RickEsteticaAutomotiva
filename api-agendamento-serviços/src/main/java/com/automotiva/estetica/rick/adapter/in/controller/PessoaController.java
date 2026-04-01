@@ -9,6 +9,7 @@ import com.automotiva.estetica.rick.application.dto.response.PessoaResponse;
 import com.automotiva.estetica.rick.application.dto.response.TokenResponse;
 import com.automotiva.estetica.rick.application.port.in.PessoaUseCase;
 import com.automotiva.estetica.rick.infrastructure.security.ClienteOnly;
+import com.automotiva.estetica.rick.infrastructure.security.OwnershipValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PessoaController {
 
     private final PessoaUseCase pessoaUseCase;
+    private final OwnershipValidator ownershipValidator;
 
     @GetMapping
     @ClienteOnly
@@ -45,6 +47,7 @@ public class PessoaController {
     @ClienteOnly
     @Operation(summary = "Busca pessoa por ID")
     public ResponseEntity<PessoaResponse> buscarPorId(@PathVariable Long id) {
+        ownershipValidator.validarPropriedade(id);
         return ResponseEntity.ok(pessoaUseCase.buscarPorId(id));
     }
 
@@ -59,6 +62,7 @@ public class PessoaController {
     @Operation(summary = "Atualiza dados de uma pessoa")
     public ResponseEntity<PessoaResponse> atualizar(@PathVariable Long id,
             @Valid @RequestBody PessoaAtualizacaoRequest request) {
+        ownershipValidator.validarPropriedade(id);
         return ResponseEntity.ok(pessoaUseCase.atualizar(id, request));
     }
 
@@ -66,6 +70,7 @@ public class PessoaController {
     @ClienteOnly
     @Operation(summary = "Remove uma pessoa")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        ownershipValidator.validarPropriedade(id);
         pessoaUseCase.deletar(id);
         return ResponseEntity.noContent().build();
     }
@@ -80,6 +85,7 @@ public class PessoaController {
     @ClienteOnly
     @Operation(summary = "Atualiza a senha de uma pessoa")
     public ResponseEntity<Void> atualizarSenha(@PathVariable Long id, @Valid @RequestBody SenhaRequest request) {
+        ownershipValidator.validarPropriedade(id);
         pessoaUseCase.atualizarSenha(id, request);
         return ResponseEntity.noContent().build();
     }
