@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
  * Testes unitários para SensitiveDataRedactor.
  *
  * <p>Valida que chaves sensíveis são adequadamente redadas em payloads JSON,
- * form-data e query strings.
+ * form-data, query strings e stack traces.
  */
 @DisplayName("SensitiveDataRedactor — Redação de dados sensíveis")
 class SensitiveDataRedactorTest {
@@ -46,6 +46,39 @@ class SensitiveDataRedactorTest {
         assertFalse(redacted.contains("12345678901"), "CPF não deve estar visível");
         assertTrue(redacted.contains("***REDACTED***"), "Deve conter marcador de redação");
         assertTrue(redacted.contains("Maria"), "Nome deve ser preservado");
+    }
+
+    @Test
+    @DisplayName("Deve redacionar telefone em JSON")
+    void testRedactTelefoneInJson() {
+        String payload = "{\"telefone\":\"11987654321\", \"nome\":\"João\"}";
+        String redacted = SensitiveDataRedactor.redactPayload(payload);
+
+        assertFalse(redacted.contains("11987654321"), "Telefone não deve estar visível");
+        assertTrue(redacted.contains("***REDACTED***"), "Deve conter marcador de redação");
+        assertTrue(redacted.contains("João"), "Nome deve ser preservado");
+    }
+
+    @Test
+    @DisplayName("Deve redacionar data_nascimento em JSON")
+    void testRedactDataNascimentoInJson() {
+        String payload = "{\"data_nascimento\":\"1990-01-15\", \"nome\":\"Maria\"}";
+        String redacted = SensitiveDataRedactor.redactPayload(payload);
+
+        assertFalse(redacted.contains("1990-01-15"), "Data de nascimento não deve estar visível");
+        assertTrue(redacted.contains("***REDACTED***"), "Deve conter marcador de redação");
+        assertTrue(redacted.contains("Maria"), "Nome deve ser preservado");
+    }
+
+    @Test
+    @DisplayName("Deve redacionar dados bancários em JSON")
+    void testRedactBancariosInJson() {
+        String payload = "{\"banco\":\"001\", \"conta\":\"123456\", \"nome\":\"João\"}";
+        String redacted = SensitiveDataRedactor.redactPayload(payload);
+
+        assertFalse(redacted.contains("001"), "Banco não deve estar visível");
+        assertFalse(redacted.contains("123456"), "Conta não deve estar visível");
+        assertTrue(redacted.contains("João"), "Nome deve ser preservado");
     }
 
     @Test
@@ -131,9 +164,103 @@ class SensitiveDataRedactorTest {
 
         assertTrue(redacted.contains("João Silva"), "Nome deve ser preservado");
         assertTrue(redacted.contains("joao@test.com"), "Email deve ser preservado");
-        assertTrue(redacted.contains("1990-01-01"), "Data deve ser preservada");
         assertFalse(redacted.contains("secret123"), "Senha deve ser redated");
         assertFalse(redacted.contains("12345678901"), "CPF deve ser redated");
     }
-}
 
+    // =========================================================================
+    // TESTES DE STACK TRACE
+    // =========================================================================
+
+    @Test
+    @DisplayName("Deve redacionar IPv4 em stack trace")
+    void testRedactIpv4InStackTrace() {
+        String stackTrace = "at com.example.Controller(192.168.1.100:8080) "
+                + "NullPointerException: User from 10.0.0.5 not found";
+        String redacted = SensitiveDataRedactor.redactStackTrace(stackTrace);
+
+        assertFalse(redacted.contains("192.168.1.100"), "IPv4 não deve estar visível");
+        assertFalse(redacted.contains("10.0.0.5"), "IPv4 não deve estar visível");
+        assertTrue(redacted.contains("***REDACTED_IP***"), "Deve conter marcador de IP redated");
+    }
+
+    @Test
+    @DisplayName("Deve redacionar emails em stack trace")
+    void testRedactEmailInStackTrace() {
+        String stackTrace = "at com.example.EmailService.send(user@example.com) "
+                + "InvalidEmailException: admin@company.com is invalid";
+        String redacted = SensitiveDataRedactor.redactStackTrace(stackTrace);
+
+        assertFalse(redacted.contains("user@example.com"), "Email não deve estar visível");
+        assertFalse(redacted.contains("admin@company.com"), "Email não deve estar visível");
+        assertTrue(redacted.contains("@***REDACTED***"), "Deve conter marcador de email redated");
+    }
+
+    @Test
+    @DisplayName("Deve redacionar JWT em stack trace")
+    void testRedactJwtInStackTrace() {
+        String jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U";
+        String stackTrace = "Authorization failed with token " + jwt + " at com.example.JwtFilter.doFilter";
+        String redacted = SensitiveDataRedactor.redactStackTrace(stackTrace);
+
+        assertFalse(redacted.contains(jwt), "JWT não deve estar visível");
+        assertTrue(redacted.contains("***JWT_REDACTED***"), "Deve conter marcador de JWT redated");
+    }
+
+    @Test
+    @DisplayName("Deve redacionar caminho de arquivo Unix em stack trace")
+    void testRedactUnixPathInStackTrace() {
+        String stackTrace = "at com.example.FileProcessor.read(/home/rodriguez/api/config.json) "
+                + "FileNotFoundException at /home/admin/logs/error.log";
+        String redacted = SensitiveDataRedactor.redactStackTrace(stackTrace);
+
+        assertFalse(redacted.contains("/home/rodriguez"), "Caminho Unix não deve estar visível");
+        assertFalse(redacted.contains("/home/admin"), "Caminho Unix não deve estar visível");
+        assertTrue(redacted.contains("/home/***REDACTED***"), "Deve conter caminho redated");
+    }
+
+    @Test
+    @DisplayName("Deve redacionar caminho de arquivo Windows em stack trace")
+    void testRedactWindowsPathInStackTrace() {
+        // String com escapes duplos para representar C:\Users\...
+        String stackTrace = "at com.example.FileProcessor.read(C:\\Users\\rodriguez\\config.json) "
+                + "FileNotFoundException at C:\\Users\\admin\\logs\\error.log";
+        String redacted = SensitiveDataRedactor.redactStackTrace(stackTrace);
+
+        assertFalse(redacted.contains("rodriguez"), "Caminho Windows não deve estar visível");
+        assertFalse(redacted.contains("admin"), "Caminho Windows não deve estar visível");
+        assertTrue(redacted.contains("C:\\Users\\***REDACTED***"), "Deve conter caminho redated");
+    }
+
+    @Test
+    @DisplayName("Deve redacionar dados sensíveis em stack trace")
+    void testRedactSensitiveDataInStackTrace() {
+        // Use JSON-like format para que o regex capture
+        String stackTrace = "ValidationError: {\"senha\":\"secret123\"} não é válida "
+                + "at com.example.PessoaValidator.validate({\"cpf\":\"12345678901\"})";
+        String redacted = SensitiveDataRedactor.redactStackTrace(stackTrace);
+
+        assertFalse(redacted.contains("secret123"), "Senha não deve estar visível");
+        assertFalse(redacted.contains("12345678901"), "CPF não deve estar visível");
+    }
+
+    @Test
+    @DisplayName("Deve preservar stack trace vazio ou nulo")
+    void testPreserveNullOrEmptyStackTrace() {
+        assertTrue(SensitiveDataRedactor.redactStackTrace(null) == null);
+        assertTrue(SensitiveDataRedactor.redactStackTrace("").isEmpty());
+    }
+
+    @Test
+    @DisplayName("Deve preservar informações de compilação e classe em stack trace")
+    void testPreserveClassInfoInStackTrace() {
+        String stackTrace = "java.lang.NullPointerException\n"
+                + "\tat com.automotiva.estetica.rick.application.service.PessoaService.criar(PessoaService.java:45)\n"
+                + "\tat java.base/java.lang.Thread.run(Thread.java:834)";
+        String redacted = SensitiveDataRedactor.redactStackTrace(stackTrace);
+
+        assertTrue(redacted.contains("java.lang.NullPointerException"));
+        assertTrue(redacted.contains("com.automotiva.estetica.rick.application.service.PessoaService"));
+        assertTrue(redacted.contains("PessoaService.java:45"));
+    }
+}

@@ -220,12 +220,16 @@ public class GlobalExceptionHandler {
         try {
             // Stack trace apenas para erros 5xx (servidor); 4xx são esperados
             String stackTrace = (statusHttp >= 500) ? extrairStackTrace(ex) : null;
+            // Redactar dados sensíveis do stack trace (IPs, emails, tokens, etc.)
+            if (stackTrace != null) {
+                stackTrace = SensitiveDataRedactor.redactStackTrace(stackTrace);
+            }
 
             ErroLog erroLog = ErroLog.builder()
                     .timestamp(LocalDateTime.now())
                     .tipoExcecao(ex.getClass().getName())
                     .mensagem(ex.getMessage())
-                    .stackTrace(stackTrace)  // null para 4xx
+                    .stackTrace(stackTrace)  // null para 4xx, redated para 5xx
                     .endpoint(request.getRequestURI())
                     .metodoHttp(request.getMethod())
                     .payloadRequisicao(extrairPayload(request))  // mascarado via SensitiveDataRedactor

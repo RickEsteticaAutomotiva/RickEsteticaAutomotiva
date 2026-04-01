@@ -5,6 +5,7 @@ import com.automotiva.estetica.rick.application.port.in.ErroLogUseCase;
 import com.automotiva.estetica.rick.application.port.out.ErroLogRepositoryPort;
 import com.automotiva.estetica.rick.domain.entity.ErroLog;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
+import com.automotiva.estetica.rick.infrastructure.security.ErroLogResponseRedactor;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,6 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>
  * registrar() é @Async para nunca bloquear o response HTTP ao cliente.
  * purgaLogAntigos() roda toda madrugada e remove registros com mais de 90 dias.
+ *
+ * <p>
+ * Conformidade OWASP A09: Todas as respostas são redadas via ErroLogResponseRedactor
+ * para remover dados sensíveis (IPs, emails, payloads) antes de retornar ao cliente.
  */
 @Service
 @RequiredArgsConstructor
@@ -82,12 +87,25 @@ public class ErroLogService implements ErroLogUseCase {
     // Mapeamento interno domain → DTO
     // -------------------------------------------------------------------------
 
+    /**
+     * Mapeia ErroLog para ErroLogResponse com redaction de dados sensíveis.
+     *
+     * <p>
+     * O método aplica ErroLogResponseRedactor para mascarar IPs, emails e dados
+     * sensíveis do payload/stack trace, conformidade OWASP A09.
+     */
     private ErroLogResponse toResponse(ErroLog e) {
-        return ErroLogResponse.builder().id(e.getId()).timestamp(e.getTimestamp()).tipoExcecao(e.getTipoExcecao())
-                .mensagem(e.getMensagem()).stackTrace(e.getStackTrace()).endpoint(e.getEndpoint())
-                .metodoHttp(e.getMetodoHttp()).payloadRequisicao(e.getPayloadRequisicao())
-                .queryParams(e.getQueryParams()).headersRequisicao(e.getHeadersRequisicao())
-                .usuarioEmail(e.getUsuarioEmail()).statusHttp(e.getStatusHttp()).ambiente(e.getAmbiente())
-                .ipCliente(e.getIpCliente()).userAgent(e.getUserAgent()).build();
+        ErroLogResponse response = ErroLogResponse.builder().id(e.getId()).timestamp(e.getTimestamp())
+                .tipoExcecao(e.getTipoExcecao()).mensagem(e.getMensagem()).stackTrace(e.getStackTrace())
+                .endpoint(e.getEndpoint()).metodoHttp(e.getMetodoHttp())
+                .payloadRequisicao(e.getPayloadRequisicao()).queryParams(e.getQueryParams())
+                .headersRequisicao(e.getHeadersRequisicao()).usuarioEmail(e.getUsuarioEmail())
+                .statusHttp(e.getStatusHttp()).ambiente(e.getAmbiente()).ipCliente(e.getIpCliente())
+                .userAgent(e.getUserAgent()).build();
+
+        // Aplicar redaction de dados sensíveis antes de retornar ao cliente
+        return ErroLogResponseRedactor.redactResponse(response);
     }
 }
+
+
