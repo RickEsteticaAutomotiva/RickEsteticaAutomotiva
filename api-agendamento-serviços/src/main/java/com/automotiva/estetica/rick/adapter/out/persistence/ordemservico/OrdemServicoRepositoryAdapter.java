@@ -3,7 +3,6 @@ package com.automotiva.estetica.rick.adapter.out.persistence.ordemservico;
 import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.OrdemServicoDuracaoProjection;
 import com.automotiva.estetica.rick.adapter.out.persistence.mapper.OrdemServicoPersistenceMapper;
 import com.automotiva.estetica.rick.application.dto.response.FaturamentoDiarioDto;
-import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDuracaoDto;
 import com.automotiva.estetica.rick.application.port.out.OrdemServicoRepositoryPort;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import java.math.BigDecimal;

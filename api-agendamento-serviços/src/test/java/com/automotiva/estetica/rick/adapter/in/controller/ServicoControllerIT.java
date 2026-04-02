@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.automotiva.estetica.rick.application.dto.request.ServicoRequest;
 import java.math.BigDecimal;
-import java.time.LocalTime;
+import java.time.Duration;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -42,7 +42,7 @@ class ServicoControllerIT extends AbstractIntegrationTest {
     @DisplayName("POST /servicos → 201 ao criar serviço autenticado")
     void criar_sucesso() throws Exception {
         ServicoRequest req = ServicoRequest.builder().nome("Lavagem Premium IT").descricao("Lavagem ultra premium")
-                .preco(BigDecimal.valueOf(99.90)).duracaoHoras(LocalTime.of(2, 0)).categoriaId(1L).build();
+                .preco(BigDecimal.valueOf(99.90)).duracaoHoras(Duration.ofHours(2)).categoriaId(1L).build();
 
         mockMvc.perform(post(BASE_PATH + "/servicos").header("Authorization", bearer(tokenAdmin))
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(req)))
@@ -54,7 +54,7 @@ class ServicoControllerIT extends AbstractIntegrationTest {
     @DisplayName("POST /servicos → 401 sem autenticação")
     void criar_semToken() throws Exception {
         ServicoRequest req = ServicoRequest.builder().nome("Sem Auth").preco(BigDecimal.valueOf(10))
-                .duracaoHoras(LocalTime.of(1, 0)).categoriaId(1L).build();
+                .duracaoHoras(Duration.ofHours(1)).categoriaId(1L).build();
 
         mockMvc.perform(post(BASE_PATH + "/servicos").contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req))).andExpect(status().isUnauthorized());
@@ -74,7 +74,7 @@ class ServicoControllerIT extends AbstractIntegrationTest {
     @DisplayName("PATCH /servicos/{id} → 200 ao atualizar serviço")
     void atualizar_sucesso() throws Exception {
         ServicoRequest req = ServicoRequest.builder().nome("Lavagem Simples Atualizada")
-                .preco(BigDecimal.valueOf(30.00)).duracaoHoras(LocalTime.of(1, 0)).categoriaId(1L).build();
+                .preco(BigDecimal.valueOf(30.00)).duracaoHoras(Duration.ofHours(2)).categoriaId(1L).build();
 
         mockMvc.perform(patch(BASE_PATH + "/servicos/1").header("Authorization", bearer(tokenAdmin))
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(req)))

@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDuracaoDto;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -20,8 +19,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 interface OrdemServicoJpaRepository
         extends
-        JpaRepository<OrdemServicoJpaEntity, Long>,
-        JpaSpecificationExecutor<OrdemServicoJpaEntity> {
+            JpaRepository<OrdemServicoJpaEntity, Long>,
+            JpaSpecificationExecutor<OrdemServicoJpaEntity> {
 
     boolean existsByVeiculoIdAndDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
 
@@ -31,7 +30,7 @@ interface OrdemServicoJpaRepository
     List<OrdemServicoJpaEntity> findByVeiculo_Pessoa_Id(Long id);
 
     @Query("""
-                SELECT 
+                SELECT
                     o.id AS id,
                     o.dataAgendamento AS dataAgendamento,
                     COALESCE(SUM(i.servico.duracaoMinutos), 0) AS duracaoTotal

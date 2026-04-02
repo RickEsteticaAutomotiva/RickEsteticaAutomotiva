@@ -5,11 +5,11 @@ import com.automotiva.estetica.rick.application.PageableFactory;
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
 import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
-import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDuracaoDto;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
 import com.automotiva.estetica.rick.application.port.in.CarrinhoUseCase;
 import com.automotiva.estetica.rick.application.port.in.OrdemServicoUseCase;
 import com.automotiva.estetica.rick.application.port.out.*;
+import com.automotiva.estetica.rick.domain.constants.ordemServicoConstants.ordemServicoConstants;
 import com.automotiva.estetica.rick.domain.entity.*;
 import com.automotiva.estetica.rick.domain.exception.IntegracaoException;
 import com.automotiva.estetica.rick.domain.exception.RecursoJaExisteException;
@@ -130,51 +130,40 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
     @Override
     public List<HorarioDisponivelResponse> buscarHorariosDisponiveis(LocalDate data, List<Long> servicosIds) {
-        final LocalTime INICIO_TRABALHO = LocalTime.of(9, 0);
-        final LocalTime FIM_TRABALHO = LocalTime.of(17, 0);
-        final int MARGEM_ENTRE_SERVICOS = 10; // minutos de descanso entre OS
         List<HorarioDisponivelResponse> horariosDisponiveis = new ArrayList<>();
-
-        // 1️⃣ Buscar serviços selecionados pelo cliente
         List<Servico> servicos = servicoRepositoryPort.buscarPorIds(servicosIds);
+        LocalTime horarioAtual = ordemServicoConstants.INICIO_TRABALHO;
+
         if (servicos.isEmpty()) {
             throw RecursoNaoEncontradoException.builder().mensagem("Serviço não encontrado").detalhes("").build();
         }
 
-        // 2️⃣ Somar duração total da OS nova (que queremos agendar)
-        int duracaoServicos = servicos.stream().mapToInt(Servico::getDuracaoMinutos).sum();
+        int duracaoNovaOrdem = servicos.stream().mapToInt(Servico::getDuracaoMinutos).sum();
 
-        // 3️⃣ Buscar todas as OS do dia com status confirmado, já com duração total
-        // calculada
-        List<OrdemServicoDuracaoProjection> ordensDoDia = ordemServicoRepositoryPort.buscarDuracaoTotalPorOS(data);
+        log.info("buscando ordens marcadas no dia {}", data);
+        List<OrdemServicoDuracaoProjection> ordensAgendadas = ordemServicoRepositoryPort.buscarDuracaoTotalPorOS(data);
 
-        // 4️⃣ Ponteiro começa no início do expediente
-        LocalTime ponteiro = INICIO_TRABALHO;
-
-        for (OrdemServicoDuracaoProjection osDTO : ordensDoDia) {
-            int duracaoOS = Optional.ofNullable(osDTO.getDuracaoTotal())
-                    .map(Long::intValue) // Long -> int
+        log.info("iniciando processo de definicao de horarios disponiveis");
+        for (OrdemServicoDuracaoProjection ordemAgendada : ordensAgendadas) {
+            int duracaoOSExistente = Optional.ofNullable(ordemAgendada.getDuracaoTotal())
+                    .map(Long::intValue)
                     .orElse(0);
-            LocalTime inicioOS = osDTO.getDataAgendamento().toLocalTime();
-            LocalTime fimOS = inicioOS.plusMinutes(duracaoOS) // duração já calculada no banco
-                    .plusMinutes(MARGEM_ENTRE_SERVICOS);
+            LocalTime inicioOSExistente = ordemAgendada.getDataAgendamento().toLocalTime();
+            LocalTime fimOSExistente = inicioOSExistente.plusMinutes(duracaoOSExistente)
+                    .plusMinutes(ordemServicoConstants.MARGEM_ENTRE_SERVICOS);
 
-            // 5️⃣ Verifica se cabe a nova OS antes da OS atual
-            if (!ponteiro.plusMinutes(duracaoServicos).isAfter(inicioOS)) {
-                horariosDisponiveis.add(new HorarioDisponivelResponse(ponteiro, ponteiro.plusMinutes(duracaoServicos)));
-            }
+            horarioAtual = definirHorariosDisponiveis(horarioAtual, duracaoNovaOrdem, inicioOSExistente,
+                    horariosDisponiveis);
 
-            // 6️⃣ Avança ponteiro para o fim da OS + margem
-            if (ponteiro.isBefore(fimOS)) {
-                ponteiro = fimOS;
+            if (horarioAtual.isBefore(fimOSExistente)) {
+                horarioAtual = fimOSExistente;
             }
         }
 
-        // 7️⃣ Intervalo livre após a última OS até fim do expediente
-        if (!ponteiro.plusMinutes(duracaoServicos).isAfter(FIM_TRABALHO)) {
-            horariosDisponiveis.add(new HorarioDisponivelResponse(ponteiro, ponteiro.plusMinutes(duracaoServicos)));
-        }
+        definirHorariosDisponiveis(horarioAtual, duracaoNovaOrdem, ordemServicoConstants.FIM_TRABALHO,
+                horariosDisponiveis);
 
+        log.info("horarios disponiveis definidos com sucesso, horarios: {}", horariosDisponiveis);
         return horariosDisponiveis;
     }
 
@@ -208,6 +197,16 @@ public class OrdemServicoService implements OrdemServicoUseCase {
         } catch (Exception e) {
             log.warn("Falha ao enviar e-mail de atualização para ordem {}: {}", ordemServico.getId(), e.getMessage());
         }
+    }
+
+    private LocalTime definirHorariosDisponiveis(LocalTime horarioAtual, int duracaoNovaOrdem, LocalTime limiteHorario,
+            List<HorarioDisponivelResponse> horariosDisponiveis) {
+        while (!horarioAtual.plusMinutes(duracaoNovaOrdem).isAfter(limiteHorario)) {
+            LocalTime finalNovaOs = horarioAtual.plusMinutes(duracaoNovaOrdem);
+            horariosDisponiveis.add(new HorarioDisponivelResponse(horarioAtual, finalNovaOs));
+            horarioAtual = finalNovaOs.plusMinutes(ordemServicoConstants.MARGEM_ENTRE_SERVICOS);
+        }
+        return horarioAtual;
     }
 
     private OrdemServicoResponse toResponse(OrdemServico o) {

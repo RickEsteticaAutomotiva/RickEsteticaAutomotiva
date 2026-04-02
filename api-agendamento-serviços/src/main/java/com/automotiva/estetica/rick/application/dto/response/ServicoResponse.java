@@ -1,8 +1,6 @@
 package com.automotiva.estetica.rick.application.dto.response;
 
 import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

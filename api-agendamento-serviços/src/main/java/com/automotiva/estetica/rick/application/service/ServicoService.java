@@ -36,7 +36,8 @@ public class ServicoService implements ServicoUseCase {
     @Override
     public ServicoResponse criar(ServicoRequest request) {
         Servico servico = Servico.builder().nome(request.getNome()).descricao(request.getDescricao())
-                .preco(request.getPreco()).imagem(request.getImagem()).duracaoMinutos((int) request.getDuracaoHoras().toMinutes())
+                .preco(request.getPreco()).imagem(request.getImagem())
+                .duracaoMinutos((int) request.getDuracaoHoras().toMinutes())
                 .categoria(Categoria.builder().id(request.getCategoriaId()).build()).build();
 
         return toResponse(servicoRepositoryPort.salvar(servico));

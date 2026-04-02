@@ -11,7 +11,6 @@ import com.automotiva.estetica.rick.domain.entity.Servico;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,14 +53,14 @@ class ServicoRepositoryAdapterIT {
 
     private ServicoJpaEntity persistirServico(String nome, BigDecimal preco) {
         return em.persistFlushFind(ServicoJpaEntity.builder().nome(nome).descricao("Descrição " + nome).preco(preco)
-                .duracaoHoras(LocalTime.of(1, 0)).categoria(categoria).build());
+                .duracaoMinutos(60).categoria(categoria).build());
     }
 
     @Test
     @DisplayName("salvar → persiste novo serviço e retorna domínio com ID")
     void salvar_sucesso() {
         Servico servico = Servico.builder().nome("Polimento IT").descricao("Polimento de teste")
-                .preco(BigDecimal.valueOf(99.90)).duracaoHoras(LocalTime.of(2, 0))
+                .preco(BigDecimal.valueOf(99.90)).duracaoMinutos(120)
                 .categoria(com.automotiva.estetica.rick.domain.entity.Categoria.builder().id(categoria.getId()).build())
                 .build();
 

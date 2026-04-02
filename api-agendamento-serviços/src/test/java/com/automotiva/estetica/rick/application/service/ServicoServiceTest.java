@@ -13,7 +13,7 @@ import com.automotiva.estetica.rick.domain.entity.Categoria;
 import com.automotiva.estetica.rick.domain.entity.Servico;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
 import java.math.BigDecimal;
-import java.time.LocalTime;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -37,8 +37,8 @@ class ServicoServiceTest {
 
     private Servico servicoMock(Long id) {
         return Servico.builder().id(id).nome("Polimento").descricao("Polimento completo").preco(BigDecimal.valueOf(300))
-                .imagem("pol.jpg").duracaoHoras(LocalTime.of(2, 0))
-                .categoria(Categoria.builder().id(2L).nome("Polimento").build()).build();
+                .imagem("pol.jpg").duracaoMinutos(120).categoria(Categoria.builder().id(2L).nome("Polimento").build())
+                .build();
     }
 
     private ServicoRequest requestMock() {
@@ -47,7 +47,7 @@ class ServicoServiceTest {
         req.setDescricao("Polimento completo");
         req.setPreco(BigDecimal.valueOf(300));
         req.setImagem("pol.jpg");
-        req.setDuracaoHoras(LocalTime.of(2, 0));
+        req.setDuracaoHoras(Duration.ofHours(2));
         req.setCategoriaId(2L);
         return req;
     }

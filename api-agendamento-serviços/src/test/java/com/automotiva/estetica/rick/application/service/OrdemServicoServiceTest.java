@@ -4,7 +4,9 @@ import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.OrdemServicoDuracaoProjection;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
+import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
 import com.automotiva.estetica.rick.application.port.in.CarrinhoUseCase;
 import com.automotiva.estetica.rick.application.port.out.EmailPort;
@@ -12,11 +14,15 @@ import com.automotiva.estetica.rick.application.port.out.ItemServicoRepositoryPo
 import com.automotiva.estetica.rick.application.port.out.OrdemServicoRepositoryPort;
 import com.automotiva.estetica.rick.application.port.out.ServicoRepositoryPort;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
+import com.automotiva.estetica.rick.domain.entity.Servico;
 import com.automotiva.estetica.rick.domain.entity.Status;
 import com.automotiva.estetica.rick.domain.entity.Veiculo;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -119,5 +125,66 @@ class OrdemServicoServiceTest {
         Page<OrdemServicoResponse> resultado = ordemServicoService.buscarTodos(req);
 
         assertEquals(1, resultado.getTotalElements());
+    }
+
+    @Test
+    @DisplayName("Deve retornar horários disponíveis quando não há ordens no dia")
+    void buscarHorariosDisponiveis_quandoNaoHaOrdens_deveRetornarHorariosDisponiveis() {
+        LocalDate data = LocalDate.of(2026, 3, 17);
+        List<Long> servicosIds = List.of(1L);
+
+        Servico servico = new Servico();
+        servico.setDuracaoMinutos(60);
+
+        when(servicoRepositoryPort.buscarPorIds(servicosIds)).thenReturn(List.of(servico));
+
+        when(ordemServicoRepositoryPort.buscarDuracaoTotalPorOS(data)).thenReturn(Collections.emptyList());
+
+        List<HorarioDisponivelResponse> resultado = ordemServicoService.buscarHorariosDisponiveis(data, servicosIds);
+
+        assertNotNull(resultado);
+        assertFalse(resultado.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Deve retornar horários disponíveis quando há ordens no dia")
+    void buscarHorariosDisponiveis_quandoHaOrdensNoDia_deveRetornarHorariosDisponiveis() {
+        LocalDate data = LocalDate.of(2026, 3, 17);
+        List<Long> servicosIds = List.of(1L);
+
+        Servico servico = new Servico();
+        servico.setDuracaoMinutos(60);
+
+        when(servicoRepositoryPort.buscarPorIds(servicosIds)).thenReturn(List.of(servico));
+
+        OrdemServicoDuracaoProjection os1 = criarOS(10, 0, 60);
+        OrdemServicoDuracaoProjection os2 = criarOS(13, 0, 60);
+
+        when(ordemServicoRepositoryPort.buscarDuracaoTotalPorOS(data)).thenReturn(List.of(os1, os2));
+
+        List<HorarioDisponivelResponse> resultado = ordemServicoService.buscarHorariosDisponiveis(data, servicosIds);
+
+        assertNotNull(resultado);
+        assertFalse(resultado.isEmpty());
+        assertEquals(4, resultado.size());
+
+        assertEquals(LocalTime.of(9, 0), resultado.get(0).inicio());
+        assertEquals(LocalTime.of(10, 0), resultado.get(0).fim());
+
+        assertEquals(LocalTime.of(11, 10), resultado.get(1).inicio());
+        assertEquals(LocalTime.of(12, 10), resultado.get(1).fim());
+
+        assertEquals(LocalTime.of(14, 10), resultado.get(2).inicio());
+        assertEquals(LocalTime.of(15, 10), resultado.get(2).fim());
+
+        assertEquals(LocalTime.of(15, 20), resultado.get(3).inicio());
+        assertEquals(LocalTime.of(16, 20), resultado.get(3).fim());
+    }
+
+    private OrdemServicoDuracaoProjection criarOS(int hora, int minuto, long duracao) {
+        OrdemServicoDuracaoProjection os = mock(OrdemServicoDuracaoProjection.class);
+        when(os.getDataAgendamento()).thenReturn(LocalDateTime.of(2026, 3, 17, hora, minuto));
+        when(os.getDuracaoTotal()).thenReturn(duracao);
+        return os;
     }
 }
