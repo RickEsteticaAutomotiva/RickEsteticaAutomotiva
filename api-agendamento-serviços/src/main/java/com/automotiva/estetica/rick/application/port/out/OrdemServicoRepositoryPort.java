@@ -1,7 +1,10 @@
 package com.automotiva.estetica.rick.application.port.out;
 
 import com.automotiva.estetica.rick.adapter.out.persistence.jpaentity.OrdemServicoDuracaoProjection;
+import com.automotiva.estetica.rick.application.dto.response.CancelamentoMotivoDto;
 import com.automotiva.estetica.rick.application.dto.response.FaturamentoDiarioDto;
+import com.automotiva.estetica.rick.application.dto.response.FaturamentoServicoDto;
+import com.automotiva.estetica.rick.application.dto.response.ProximoAgendamentoDto;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -36,4 +39,29 @@ public interface OrdemServicoRepositoryPort {
     BigDecimal calcularTicketMedioDoMes(LocalDateTime inicio, LocalDateTime fim);
 
     List<FaturamentoDiarioDto> buscarFaturamentoPorDia(LocalDateTime dataInicial);
+
+    List<FaturamentoServicoDto> buscarFaturamentoServicos(LocalDateTime inicio, LocalDateTime fim);
+
+    BigDecimal somarReceitaRecebidaDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
+
+    BigDecimal somarCustoRealizadoDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
+
+    List<CancelamentoMotivoDto> buscarCancelamentosPorMotivoDoPeriodo(
+            LocalDateTime inicio, LocalDateTime fim);
+
+    long contarAgendamentosNoPeriodoExcetoStatus(
+            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado);
+
+    BigDecimal somarFaturamentoEstimadoNoPeriodoExcetoStatus(
+            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado);
+
+    Optional<ProximoAgendamentoDto> buscarProximoAgendamentoNoPeriodoExcetoStatus(
+            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado);
+
+    Page<OrdemServico> buscarTodosParaGestao(
+            String filtro,
+            Long status,
+            LocalDateTime dataInicio,
+            LocalDateTime dataFim,
+            Pageable pageable);
 }

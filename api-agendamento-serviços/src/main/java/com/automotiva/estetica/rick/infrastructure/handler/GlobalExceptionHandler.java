@@ -3,6 +3,8 @@ package com.automotiva.estetica.rick.infrastructure.handler;
 import com.automotiva.estetica.rick.application.port.in.ErroLogUseCase;
 import com.automotiva.estetica.rick.domain.entity.ErroLog;
 import com.automotiva.estetica.rick.domain.exception.DomainException;
+import com.automotiva.estetica.rick.infrastructure.filter.RequestIdHolder;
+import com.automotiva.estetica.rick.infrastructure.security.SensitiveDataRedactor;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -216,12 +218,25 @@ public class GlobalExceptionHandler {
 
     private void registrarLog(Exception ex, int statusHttp, HttpServletRequest request) {
         try {
-            ErroLog erroLog = ErroLog.builder().timestamp(LocalDateTime.now()).tipoExcecao(ex.getClass().getName())
-                    .mensagem(ex.getMessage()).stackTrace(extrairStackTrace(ex)).endpoint(request.getRequestURI())
-                    .metodoHttp(request.getMethod()).payloadRequisicao(extrairPayload(request))
-                    .queryParams(request.getQueryString()).headersRequisicao(extrairHeaders(request))
-                    .usuarioEmail(obterUsuarioAutenticado()).statusHttp(statusHttp).ambiente(obterAmbiente())
-                    .ipCliente(obterIpCliente(request)).userAgent(request.getHeader("User-Agent")).build();
+            // Stack trace apenas para erros 5xx (servidor); 4xx são esperados
+            String stackTrace = (statusHttp >= 500) ? extrairStackTrace(ex) : null;
+
+            ErroLog erroLog = ErroLog.builder()
+                    .timestamp(LocalDateTime.now())
+                    .tipoExcecao(ex.getClass().getName())
+                    .mensagem(ex.getMessage())
+                    .stackTrace(stackTrace)  // null para 4xx
+                    .endpoint(request.getRequestURI())
+                    .metodoHttp(request.getMethod())
+                    .payloadRequisicao(extrairPayload(request))  // mascarado via SensitiveDataRedactor
+                    .queryParams(SensitiveDataRedactor.redactPayload(request.getQueryString()))
+                    .headersRequisicao(extrairHeaders(request))  // ja filtra sensiveis
+                    .usuarioEmail(obterUsuarioAutenticado())
+                    .statusHttp(statusHttp)
+                    .ambiente(obterAmbiente())
+                    .ipCliente(obterIpCliente(request))
+                    .userAgent(request.getHeader("User-Agent"))
+                    .build();
 
             erroLogUseCase.registrar(erroLog);
         } catch (Exception logEx) {
@@ -241,7 +256,9 @@ public class GlobalExceptionHandler {
             byte[] buf = wrapper.getContentAsByteArray();
             if (buf.length > 0) {
                 int length = Math.min(buf.length, MAX_PAYLOAD_SIZE);
-                return new String(buf, 0, length, StandardCharsets.UTF_8);
+                String payload = new String(buf, 0, length, StandardCharsets.UTF_8);
+                // Mascara campos sensíveis (senha, token, cpf, etc.)
+                return SensitiveDataRedactor.redactPayload(payload);
             }
         }
         return null;
@@ -254,7 +271,9 @@ public class GlobalExceptionHandler {
             while (names.hasMoreElements()) {
                 String name = names.nextElement().toLowerCase();
                 if (!isSensivel(name)) {
-                    headers.put(name, request.getHeader(name));
+                    // Se não estiver na lista preta, ainda mascara se for reconhecida como sensível
+                    String value = request.getHeader(name);
+                    headers.put(name, SensitiveDataRedactor.redactHeader(name, value));
                 }
             }
         }

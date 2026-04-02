@@ -11,5 +11,6 @@ public interface ServicoPersistenceMapper {
     @Mapping(source = "duracaoMinutos", target = "duracaoMinutos")
     Servico toDomain(ServicoJpaEntity entity);
 
+    @Mapping(target = "deletadoEm", ignore = true)
     ServicoJpaEntity toJpaEntity(Servico domain);
 }
