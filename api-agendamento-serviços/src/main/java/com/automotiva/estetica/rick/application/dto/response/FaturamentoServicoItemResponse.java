@@ -17,4 +17,3 @@ public class FaturamentoServicoItemResponse {
     private BigDecimal faturamento;
     private Long quantidadeVendida;
 }
-

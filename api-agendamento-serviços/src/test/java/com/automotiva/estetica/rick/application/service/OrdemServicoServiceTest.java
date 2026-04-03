@@ -78,19 +78,11 @@ class OrdemServicoServiceTest {
         Servico lavagem = Servico.builder().id(1L).nome("Lavagem").preco(BigDecimal.valueOf(50)).build();
         Servico polimento = Servico.builder().id(2L).nome("Polimento").preco(BigDecimal.valueOf(120)).build();
 
-        ItemServico item1 = ItemServico.builder()
-                .id(100L)
-                .ordemServico(ordem)
-                .servico(lavagem)
-                .preco(BigDecimal.valueOf(55))
-                .build();
+        ItemServico item1 = ItemServico.builder().id(100L).ordemServico(ordem).servico(lavagem)
+                .preco(BigDecimal.valueOf(55)).build();
 
-        ItemServico item2 = ItemServico.builder()
-                .id(101L)
-                .ordemServico(ordem)
-                .servico(polimento)
-                .preco(BigDecimal.valueOf(125))
-                .build();
+        ItemServico item2 = ItemServico.builder().id(101L).ordemServico(ordem).servico(polimento)
+                .preco(BigDecimal.valueOf(125)).build();
 
         return List.of(item1, item2);
     }
@@ -223,10 +215,8 @@ class OrdemServicoServiceTest {
     @Test
     @DisplayName("Deve lançar CampoInvalidoException ao criar ordem sem serviços")
     void criar_semServicos_deveLancarExcecao() {
-        OrdemServicoRequest request = OrdemServicoRequest.builder()
-                .veiculo(1L)
-                .dataAgendamento(LocalDateTime.now().plusDays(1))
-                .build();
+        OrdemServicoRequest request = OrdemServicoRequest.builder().veiculo(1L)
+                .dataAgendamento(LocalDateTime.now().plusDays(1)).build();
 
         assertThrows(CampoInvalidoException.class, () -> ordemServicoService.criar(request));
     }
@@ -254,11 +244,9 @@ class OrdemServicoServiceTest {
     @DisplayName("Deve lançar CampoInvalidoException ao atualizar valor com número negativo")
     void atualizarValorServicoParaGestao_valorNegativo_deveLancarExcecao() {
         AtualizarValorServicoOrdemRequest request = AtualizarValorServicoOrdemRequest.builder()
-                .valorAplicado(BigDecimal.valueOf(-1))
-                .build();
+                .valorAplicado(BigDecimal.valueOf(-1)).build();
 
-        assertThrows(
-                CampoInvalidoException.class,
+        assertThrows(CampoInvalidoException.class,
                 () -> ordemServicoService.atualizarValorServicoParaGestao(10L, 1L, request));
     }
 

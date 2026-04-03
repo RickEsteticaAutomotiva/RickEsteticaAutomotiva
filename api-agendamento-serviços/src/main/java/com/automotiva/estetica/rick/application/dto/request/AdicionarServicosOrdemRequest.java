@@ -20,4 +20,3 @@ public class AdicionarServicosOrdemRequest {
     @Valid
     private List<ServicoAplicadoRequest> servicos;
 }
-

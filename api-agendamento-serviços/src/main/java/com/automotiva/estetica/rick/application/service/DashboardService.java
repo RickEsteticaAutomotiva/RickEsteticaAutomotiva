@@ -108,34 +108,18 @@ public class DashboardService implements DashboardUseCase {
     public List<FaturamentoPeriodoResponse> buscarFaturamentoPeriodo() {
         LocalDateTime dataInicial = LocalDate.now().minusDays(30).atStartOfDay();
         List<FaturamentoDiarioDto> rows = ordemServicoRepositoryPort.buscarFaturamentoPorDia(dataInicial);
-        return rows.stream()
-                .map(
-                        dto ->
-                                FaturamentoPeriodoResponse.builder()
-                                        .data(dto.dia())
-                                        .faturamentoDiario(defaultValor(dto.totalDia()))
-                                        .build())
-                .toList();
+        return rows.stream().map(dto -> FaturamentoPeriodoResponse.builder().data(dto.dia())
+                .faturamentoDiario(defaultValor(dto.totalDia())).build()).toList();
     }
 
     @Override
     public List<FaturamentoServicoResponse> buscarFaturamentoServicos() {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
-        return ordemServicoRepositoryPort.buscarFaturamentoServicos(mesAtual.inicio(), mesAtual.fim())
-                .stream()
-                .collect(
-                        Collectors.groupingBy(
-                                dto -> defaultCategoria(dto.categoria()),
-                                LinkedHashMap::new,
-                                Collectors.mapping(this::toServicoItemResponse, Collectors.toList())))
-                .entrySet()
-                .stream()
-                .map(
-                        entry ->
-                                FaturamentoServicoResponse.builder()
-                                        .categoria(entry.getKey())
-                                        .servicos(entry.getValue())
-                                        .build())
+        return ordemServicoRepositoryPort.buscarFaturamentoServicos(mesAtual.inicio(), mesAtual.fim()).stream()
+                .collect(Collectors.groupingBy(dto -> defaultCategoria(dto.categoria()), LinkedHashMap::new,
+                        Collectors.mapping(this::toServicoItemResponse, Collectors.toList())))
+                .entrySet().stream().map(entry -> FaturamentoServicoResponse.builder().categoria(entry.getKey())
+                        .servicos(entry.getValue()).build())
                 .toList();
     }
 
@@ -143,55 +127,33 @@ public class DashboardService implements DashboardUseCase {
     public FluxoCaixaResponse buscarFluxoCaixa() {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
 
-        BigDecimal lucro =
-                defaultValor(
-                        ordemServicoRepositoryPort.somarReceitaRecebidaDoPeriodo(
-                                mesAtual.inicio(), mesAtual.fim()));
-        BigDecimal custo =
-                defaultValor(
-                        ordemServicoRepositoryPort.somarCustoRealizadoDoPeriodo(
-                                mesAtual.inicio(), mesAtual.fim()));
+        BigDecimal lucro = defaultValor(
+                ordemServicoRepositoryPort.somarReceitaRecebidaDoPeriodo(mesAtual.inicio(), mesAtual.fim()));
+        BigDecimal custo = defaultValor(
+                ordemServicoRepositoryPort.somarCustoRealizadoDoPeriodo(mesAtual.inicio(), mesAtual.fim()));
 
         BigDecimal total = lucro.add(custo);
         BigDecimal percentualLucro = calcularPercentual(lucro, total);
-        BigDecimal percentualCusto =
-                total.compareTo(ZERO) == 0
-                        ? ZERO
-                        : CEM.subtract(percentualLucro).setScale(PERCENTUAL_SCALE, RoundingMode.HALF_UP);
+        BigDecimal percentualCusto = total.compareTo(ZERO) == 0
+                ? ZERO
+                : CEM.subtract(percentualLucro).setScale(PERCENTUAL_SCALE, RoundingMode.HALF_UP);
 
-        return FluxoCaixaResponse.builder()
-                .total(total)
-                .lucro(lucro)
-                .custo(custo)
-                .percentualLucro(percentualLucro)
-                .percentualCusto(percentualCusto)
-                .build();
+        return FluxoCaixaResponse.builder().total(total).lucro(lucro).custo(custo).percentualLucro(percentualLucro)
+                .percentualCusto(percentualCusto).build();
     }
 
     @Override
     public List<CancelamentoResponse> buscarCancelamentos() {
         PeriodoMensal mesAtual = getPeriodoMesAtual();
 
-        return ordemServicoRepositoryPort
-                .buscarCancelamentosPorMotivoDoPeriodo(mesAtual.inicio(), mesAtual.fim())
+        return ordemServicoRepositoryPort.buscarCancelamentosPorMotivoDoPeriodo(mesAtual.inicio(), mesAtual.fim())
                 .stream()
-                .collect(
-                        Collectors.toMap(
-                                dto -> normalizarTipoCancelamento(dto.tipo()),
-                                dto -> defaultQuantidade(dto.quantidade()),
-                                Long::sum))
-                .entrySet()
-                .stream()
-                .sorted(
-                        Comparator.<Map.Entry<String, Long>, Long>comparing(Map.Entry::getValue)
-                                .reversed()
-                                .thenComparing(Map.Entry::getKey))
-                .map(
-                        entry ->
-                                CancelamentoResponse.builder()
-                                        .tipo(entry.getKey())
-                                        .quantidade(entry.getValue())
-                                        .build())
+                .collect(Collectors.toMap(dto -> normalizarTipoCancelamento(dto.tipo()),
+                        dto -> defaultQuantidade(dto.quantidade()), Long::sum))
+                .entrySet().stream()
+                .sorted(Comparator.<Map.Entry<String, Long>, Long>comparing(Map.Entry::getValue).reversed()
+                        .thenComparing(Map.Entry::getKey))
+                .map(entry -> CancelamentoResponse.builder().tipo(entry.getKey()).quantidade(entry.getValue()).build())
                 .toList();
     }
 
@@ -202,53 +164,35 @@ public class DashboardService implements DashboardUseCase {
         LocalDateTime fimDia = hoje.atTime(23, 59, 59);
         LocalDateTime agora = LocalDateTime.now(ZONE_ID_SAO_PAULO);
 
-        long agendamentosHoje =
-                ordemServicoRepositoryPort.contarAgendamentosNoPeriodoExcetoStatus(
-                        inicioDia, fimDia, StatusOrdem.CANCELADO.getId());
+        long agendamentosHoje = ordemServicoRepositoryPort.contarAgendamentosNoPeriodoExcetoStatus(inicioDia, fimDia,
+                StatusOrdem.CANCELADO.getId());
 
-        BigDecimal faturamentoEstimadoHoje =
-                defaultValor(
-                                ordemServicoRepositoryPort
-                                        .somarFaturamentoEstimadoNoPeriodoExcetoStatus(
-                                                inicioDia,
-                                                fimDia,
-                                                StatusOrdem.CANCELADO.getId()))
-                        .setScale(MONETARIO_SCALE, RoundingMode.HALF_UP);
+        BigDecimal faturamentoEstimadoHoje = defaultValor(ordemServicoRepositoryPort
+                .somarFaturamentoEstimadoNoPeriodoExcetoStatus(inicioDia, fimDia, StatusOrdem.CANCELADO.getId()))
+                .setScale(MONETARIO_SCALE, RoundingMode.HALF_UP);
 
-        BigDecimal ticketMedioEstimadoHoje =
-                agendamentosHoje == 0
-                        ? ZERO.setScale(MONETARIO_SCALE, RoundingMode.HALF_UP)
-                        : faturamentoEstimadoHoje.divide(
-                                BigDecimal.valueOf(agendamentosHoje),
-                                MONETARIO_SCALE,
-                                RoundingMode.HALF_UP);
+        BigDecimal ticketMedioEstimadoHoje = agendamentosHoje == 0
+                ? ZERO.setScale(MONETARIO_SCALE, RoundingMode.HALF_UP)
+                : faturamentoEstimadoHoje.divide(BigDecimal.valueOf(agendamentosHoje), MONETARIO_SCALE,
+                        RoundingMode.HALF_UP);
 
-        ProximoAgendamentoResponse proximoAgendamento =
-                ordemServicoRepositoryPort
-                        .buscarProximoAgendamentoNoPeriodoExcetoStatus(
-                                agora, fimDia, StatusOrdem.CANCELADO.getId())
-                        .map(this::toProximoAgendamentoResponse)
-                        .orElse(null);
+        ProximoAgendamentoResponse proximoAgendamento = ordemServicoRepositoryPort
+                .buscarProximoAgendamentoNoPeriodoExcetoStatus(agora, fimDia, StatusOrdem.CANCELADO.getId())
+                .map(this::toProximoAgendamentoResponse).orElse(null);
 
-        return HomeResumoResponse.builder()
-                .agendamentosHoje(agendamentosHoje)
-                .faturamentoEstimadoHoje(faturamentoEstimadoHoje)
-                .ticketMedioEstimadoHoje(ticketMedioEstimadoHoje)
-                .proximoAgendamento(proximoAgendamento)
-                .build();
+        return HomeResumoResponse.builder().agendamentosHoje(agendamentosHoje)
+                .faturamentoEstimadoHoje(faturamentoEstimadoHoje).ticketMedioEstimadoHoje(ticketMedioEstimadoHoje)
+                .proximoAgendamento(proximoAgendamento).build();
     }
 
     private ProximoAgendamentoResponse toProximoAgendamentoResponse(ProximoAgendamentoDto dto) {
         LocalDateTime dataAgendamento = dto.dataAgendamento();
-        return ProximoAgendamentoResponse.builder()
-                .ordemServicoId(dto.ordemServicoId())
+        return ProximoAgendamentoResponse.builder().ordemServicoId(dto.ordemServicoId())
                 .servico(defaultTexto(dto.servico()))
                 .hora(dataAgendamento != null ? dataAgendamento.toLocalTime().format(FORMATO_HORA) : null)
                 .data(dataAgendamento != null ? dataAgendamento.toLocalDate().format(FORMATO_DATA) : null)
-                .clienteNome(defaultTexto(dto.clienteNome()))
-                .veiculoDescricao(construirVeiculoDescricao(dto))
-                .status(dto.status())
-                .build();
+                .clienteNome(defaultTexto(dto.clienteNome())).veiculoDescricao(construirVeiculoDescricao(dto))
+                .status(dto.status()).build();
     }
 
     private String construirVeiculoDescricao(ProximoAgendamentoDto dto) {
@@ -273,11 +217,9 @@ public class DashboardService implements DashboardUseCase {
     }
 
     private FaturamentoServicoItemResponse toServicoItemResponse(FaturamentoServicoDto dto) {
-        return FaturamentoServicoItemResponse.builder()
-                .servico(defaultServico(dto.servico()))
+        return FaturamentoServicoItemResponse.builder().servico(defaultServico(dto.servico()))
                 .quantidadeVendida(defaultQuantidade(dto.quantidadeVendida()))
-                .faturamento(defaultValor(dto.faturamento()))
-                .build();
+                .faturamento(defaultValor(dto.faturamento())).build();
     }
 
     private String defaultCategoria(String categoria) {
@@ -301,9 +243,8 @@ public class DashboardService implements DashboardUseCase {
             return TIPO_NAO_INFORMADO;
         }
 
-        String semAcento =
-                Normalizer.normalize(tipo.trim().toLowerCase(Locale.ROOT), Normalizer.Form.NFD)
-                        .replaceAll("\\p{M}+", "");
+        String semAcento = Normalizer.normalize(tipo.trim().toLowerCase(Locale.ROOT), Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "");
 
         String snakeCase = semAcento.replaceAll("[^a-z0-9]+", "_").replaceAll("^_+|_+$", "");
         return snakeCase.isBlank() ? TIPO_NAO_INFORMADO : snakeCase;

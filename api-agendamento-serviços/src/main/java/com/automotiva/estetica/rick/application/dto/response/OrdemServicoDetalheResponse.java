@@ -26,4 +26,3 @@ public class OrdemServicoDetalheResponse {
     private OrdemServicoVeiculoResumoResponse veiculo;
     private List<OrdemServicoServicoResumoResponse> servicos;
 }
-

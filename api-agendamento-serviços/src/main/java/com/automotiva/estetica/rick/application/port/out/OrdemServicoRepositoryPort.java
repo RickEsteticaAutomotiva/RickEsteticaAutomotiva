@@ -46,22 +46,16 @@ public interface OrdemServicoRepositoryPort {
 
     BigDecimal somarCustoRealizadoDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
 
-    List<CancelamentoMotivoDto> buscarCancelamentosPorMotivoDoPeriodo(
-            LocalDateTime inicio, LocalDateTime fim);
+    List<CancelamentoMotivoDto> buscarCancelamentosPorMotivoDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
 
-    long contarAgendamentosNoPeriodoExcetoStatus(
-            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado);
+    long contarAgendamentosNoPeriodoExcetoStatus(LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado);
 
-    BigDecimal somarFaturamentoEstimadoNoPeriodoExcetoStatus(
-            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado);
+    BigDecimal somarFaturamentoEstimadoNoPeriodoExcetoStatus(LocalDateTime inicio, LocalDateTime fim,
+            Long statusIdIgnorado);
 
-    Optional<ProximoAgendamentoDto> buscarProximoAgendamentoNoPeriodoExcetoStatus(
-            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado);
+    Optional<ProximoAgendamentoDto> buscarProximoAgendamentoNoPeriodoExcetoStatus(LocalDateTime inicio,
+            LocalDateTime fim, Long statusIdIgnorado);
 
-    Page<OrdemServico> buscarTodosParaGestao(
-            String filtro,
-            Long status,
-            LocalDateTime dataInicio,
-            LocalDateTime dataFim,
-            Pageable pageable);
+    Page<OrdemServico> buscarTodosParaGestao(String filtro, Long status, LocalDateTime dataInicio,
+            LocalDateTime dataFim, Pageable pageable);
 }

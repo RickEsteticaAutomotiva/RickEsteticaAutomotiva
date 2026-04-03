@@ -21,4 +21,3 @@ public class ProximoAgendamentoResponse {
     private String veiculoDescricao;
     private Long status;
 }
-

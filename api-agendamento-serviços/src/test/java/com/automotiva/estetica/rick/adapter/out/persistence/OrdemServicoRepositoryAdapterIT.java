@@ -13,7 +13,6 @@ import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,61 +54,29 @@ class OrdemServicoRepositoryAdapterIT {
 
     @BeforeEach
     void setUp() {
-        PessoaJpaEntity pessoa =
-                em.persistFlushFind(
-                        PessoaJpaEntity.builder()
-                                .nome("Pessoa OS")
-                                .cpf("12312312312")
-                                .email("pessoa.os@email.com")
-                                .telefone("11999990000")
-                                .dataNascimento(LocalDate.of(1990, 1, 1))
-                                .senha("$2a$10$hash")
-                                .build());
+        PessoaJpaEntity pessoa = em.persistFlushFind(
+                PessoaJpaEntity.builder().nome("Pessoa OS").cpf("12312312312").email("pessoa.os@email.com")
+                        .telefone("11999990000").dataNascimento(LocalDate.of(1990, 1, 1)).senha("$2a$10$hash").build());
 
-        veiculo =
-                em.persistFlushFind(
-                        VeiculoJpaEntity.builder()
-                                .placa("TST0001")
-                                .modelo("Celta")
-                                .marca("GM")
-                                .porte("Pequeno")
-                                .cor("Prata")
-                                .ano("2010")
-                                .pessoa(pessoa)
-                                .build());
+        veiculo = em.persistFlushFind(VeiculoJpaEntity.builder().placa("TST0001").modelo("Celta").marca("GM")
+                .porte("Pequeno").cor("Prata").ano("2010").pessoa(pessoa).build());
 
         statusAnalise = em.persistFlushFind(StatusJpaEntity.builder().descricao("ANÁLISE").build());
-        statusConcluido =
-                em.persistFlushFind(StatusJpaEntity.builder().descricao("CONCLUÍDO").build());
-        statusCancelado =
-                em.persistFlushFind(StatusJpaEntity.builder().descricao("CANCELADO").build());
+        statusConcluido = em.persistFlushFind(StatusJpaEntity.builder().descricao("CONCLUÍDO").build());
+        statusCancelado = em.persistFlushFind(StatusJpaEntity.builder().descricao("CANCELADO").build());
 
-        CategoriaJpaEntity categoria =
-                em.persistFlushFind(CategoriaJpaEntity.builder().nome("Estética").build());
+        CategoriaJpaEntity categoria = em.persistFlushFind(CategoriaJpaEntity.builder().nome("Estética").build());
 
-        servicoVitrificacao =
-                em.persistFlushFind(
-                        ServicoJpaEntity.builder()
-                                .nome("Vitrificação")
-                                .descricao("Proteção contra UV")
-                                .preco(BigDecimal.valueOf(250))
-                                .categoria(categoria)
-                                .build());
+        servicoVitrificacao = em.persistFlushFind(ServicoJpaEntity.builder().nome("Vitrificação")
+                .descricao("Proteção contra UV").preco(BigDecimal.valueOf(250)).categoria(categoria).build());
 
-        servicoPolimento =
-                em.persistFlushFind(
-                        ServicoJpaEntity.builder()
-                                .nome("Polimento")
-                                .descricao("Polimento profissional")
-                                .preco(BigDecimal.valueOf(150))
-                                .categoria(categoria)
-                                .build());
+        servicoPolimento = em.persistFlushFind(ServicoJpaEntity.builder().nome("Polimento")
+                .descricao("Polimento profissional").preco(BigDecimal.valueOf(150)).categoria(categoria).build());
 
-        motivoCliente =
-                em.persistFlushFind(MotivoCancelamentoJpaEntity.builder().descricao("Cliente desistiu").build());
+        motivoCliente = em
+                .persistFlushFind(MotivoCancelamentoJpaEntity.builder().descricao("Cliente desistiu").build());
 
-        motivoPeca =
-                em.persistFlushFind(MotivoCancelamentoJpaEntity.builder().descricao("Falta peca").build());
+        motivoPeca = em.persistFlushFind(MotivoCancelamentoJpaEntity.builder().descricao("Falta peca").build());
     }
 
     private OrdemServicoJpaEntity persistirOrdem(LocalDateTime data, StatusJpaEntity status, BigDecimal preco) {
@@ -125,8 +92,8 @@ class OrdemServicoRepositoryAdapterIT {
 
     private ItemServicoJpaEntity persistirItem(OrdemServicoJpaEntity ordem, ServicoJpaEntity servico,
             BigDecimal preco) {
-        return em.persistFlushFind(ItemServicoJpaEntity.builder().ordemServico(ordem).servico(servico)
-                .preco(preco).build());
+        return em.persistFlushFind(
+                ItemServicoJpaEntity.builder().ordemServico(ordem).servico(servico).preco(preco).build());
     }
 
     // ─── buscarPorId ────────────────────────────────────────────────────────
@@ -199,8 +166,7 @@ class OrdemServicoRepositoryAdapterIT {
     }
 
     @Test
-    @DisplayName(
-            "buscarQtdOrdensConcluidasNoMes → conta apenas status CONCLUÍDO (id=5)")
+    @DisplayName("buscarQtdOrdensConcluidasNoMes → conta apenas status CONCLUÍDO (id=5)")
     void buscarQtdConcluidasDoMes_sucesso() {
         LocalDateTime inicio = LocalDateTime.of(2026, 4, 1, 0, 0);
         LocalDateTime fim = LocalDateTime.of(2026, 4, 30, 23, 59);
@@ -223,15 +189,12 @@ class OrdemServicoRepositoryAdapterIT {
         LocalDateTime inicio = LocalDateTime.of(2026, 6, 1, 0, 0);
         LocalDateTime fim = LocalDateTime.of(2026, 6, 30, 23, 59);
 
-        OrdemServicoJpaEntity ordemConcluida =
-                persistirOrdem(
-                        LocalDateTime.of(2026, 6, 5, 10, 0), statusConcluido, BigDecimal.valueOf(500));
-        OrdemServicoJpaEntity outraOrdemConcluida =
-                persistirOrdem(
-                        LocalDateTime.of(2026, 6, 8, 10, 0), statusConcluido, BigDecimal.valueOf(300));
-        OrdemServicoJpaEntity ordemNaoConcluida =
-                persistirOrdem(
-                        LocalDateTime.of(2026, 6, 10, 10, 0), statusAnalise, BigDecimal.valueOf(999));
+        OrdemServicoJpaEntity ordemConcluida = persistirOrdem(LocalDateTime.of(2026, 6, 5, 10, 0), statusConcluido,
+                BigDecimal.valueOf(500));
+        OrdemServicoJpaEntity outraOrdemConcluida = persistirOrdem(LocalDateTime.of(2026, 6, 8, 10, 0), statusConcluido,
+                BigDecimal.valueOf(300));
+        OrdemServicoJpaEntity ordemNaoConcluida = persistirOrdem(LocalDateTime.of(2026, 6, 10, 10, 0), statusAnalise,
+                BigDecimal.valueOf(999));
 
         persistirItem(ordemConcluida, servicoVitrificacao, BigDecimal.valueOf(250));
         persistirItem(outraOrdemConcluida, servicoVitrificacao, BigDecimal.valueOf(250));
@@ -240,9 +203,7 @@ class OrdemServicoRepositoryAdapterIT {
 
         var resultado = repositoryAdapter.buscarFaturamentoServicos(inicio, fim);
 
-        assertThat(resultado)
-                .extracting(FaturamentoServicoDto::servico)
-                .containsExactly("Vitrificação", "Polimento");
+        assertThat(resultado).extracting(FaturamentoServicoDto::servico).containsExactly("Vitrificação", "Polimento");
         assertThat(resultado.getFirst().categoria()).isEqualTo("Estética");
         assertThat(resultado.getFirst().categoriaId()).isNotNull();
         assertThat(resultado.getFirst().quantidadeVendida()).isEqualTo(2L);
@@ -280,12 +241,10 @@ class OrdemServicoRepositoryAdapterIT {
         LocalDateTime inicio = LocalDateTime.of(2026, 7, 1, 0, 0);
         LocalDateTime fim = LocalDateTime.of(2026, 7, 31, 23, 59);
 
-        OrdemServicoJpaEntity ordemConcluida =
-                persistirOrdem(
-                        LocalDateTime.of(2026, 7, 5, 10, 0), statusConcluido, BigDecimal.valueOf(300));
-        OrdemServicoJpaEntity ordemCancelada =
-                persistirOrdem(
-                        LocalDateTime.of(2026, 7, 6, 10, 0), statusCancelado, BigDecimal.valueOf(999));
+        OrdemServicoJpaEntity ordemConcluida = persistirOrdem(LocalDateTime.of(2026, 7, 5, 10, 0), statusConcluido,
+                BigDecimal.valueOf(300));
+        OrdemServicoJpaEntity ordemCancelada = persistirOrdem(LocalDateTime.of(2026, 7, 6, 10, 0), statusCancelado,
+                BigDecimal.valueOf(999));
 
         persistirItem(ordemConcluida, servicoVitrificacao, BigDecimal.valueOf(180));
         persistirItem(ordemConcluida, servicoPolimento, BigDecimal.valueOf(120));
@@ -302,10 +261,8 @@ class OrdemServicoRepositoryAdapterIT {
         LocalDateTime inicio = LocalDateTime.of(2026, 8, 1, 0, 0);
         LocalDateTime fim = LocalDateTime.of(2026, 8, 31, 23, 59);
 
-        persistirOrdem(
-                LocalDateTime.of(2026, 8, 5, 10, 0), statusConcluido, BigDecimal.valueOf(200));
-        persistirOrdem(
-                LocalDateTime.of(2026, 8, 10, 10, 0), statusCancelado, BigDecimal.valueOf(999));
+        persistirOrdem(LocalDateTime.of(2026, 8, 5, 10, 0), statusConcluido, BigDecimal.valueOf(200));
+        persistirOrdem(LocalDateTime.of(2026, 8, 10, 10, 0), statusCancelado, BigDecimal.valueOf(999));
 
         BigDecimal total = repositoryAdapter.somarCustoRealizadoDoPeriodo(inicio, fim);
 
@@ -318,37 +275,25 @@ class OrdemServicoRepositoryAdapterIT {
         LocalDateTime inicio = LocalDateTime.of(2026, 9, 1, 0, 0);
         LocalDateTime fim = LocalDateTime.of(2026, 9, 30, 23, 59);
 
-        persistirOrdem(
-                LocalDateTime.of(2026, 9, 5, 10, 0), statusCancelado, BigDecimal.valueOf(100), motivoCliente);
-        persistirOrdem(
-                LocalDateTime.of(2026, 9, 6, 10, 0), statusCancelado, BigDecimal.valueOf(100), motivoCliente);
-        persistirOrdem(
-                LocalDateTime.of(2026, 9, 7, 10, 0), statusCancelado, BigDecimal.valueOf(100), motivoPeca);
-        persistirOrdem(
-                LocalDateTime.of(2026, 9, 8, 10, 0), statusCancelado, BigDecimal.valueOf(100), null);
-        persistirOrdem(
-                LocalDateTime.of(2026, 9, 9, 10, 0), statusAnalise, BigDecimal.valueOf(100), motivoCliente);
+        persistirOrdem(LocalDateTime.of(2026, 9, 5, 10, 0), statusCancelado, BigDecimal.valueOf(100), motivoCliente);
+        persistirOrdem(LocalDateTime.of(2026, 9, 6, 10, 0), statusCancelado, BigDecimal.valueOf(100), motivoCliente);
+        persistirOrdem(LocalDateTime.of(2026, 9, 7, 10, 0), statusCancelado, BigDecimal.valueOf(100), motivoPeca);
+        persistirOrdem(LocalDateTime.of(2026, 9, 8, 10, 0), statusCancelado, BigDecimal.valueOf(100), null);
+        persistirOrdem(LocalDateTime.of(2026, 9, 9, 10, 0), statusAnalise, BigDecimal.valueOf(100), motivoCliente);
 
-        List<CancelamentoMotivoDto> resultado =
-                repositoryAdapter.buscarCancelamentosPorMotivoDoPeriodo(inicio, fim);
+        List<CancelamentoMotivoDto> resultado = repositoryAdapter.buscarCancelamentosPorMotivoDoPeriodo(inicio, fim);
 
         assertThat(resultado).hasSize(3);
-        assertThat(resultado)
-                .anySatisfy(
-                        dto -> {
-                            assertThat(dto.tipo()).isEqualTo("Cliente desistiu");
-                            assertThat(dto.quantidade()).isEqualTo(2L);
-                        })
-                .anySatisfy(
-                        dto -> {
-                            assertThat(dto.tipo()).isEqualTo("Falta peca");
-                            assertThat(dto.quantidade()).isEqualTo(1L);
-                        })
-                .anySatisfy(
-                        dto -> {
-                            assertThat(dto.tipo()).isNull();
-                            assertThat(dto.quantidade()).isEqualTo(1L);
-                        });
+        assertThat(resultado).anySatisfy(dto -> {
+            assertThat(dto.tipo()).isEqualTo("Cliente desistiu");
+            assertThat(dto.quantidade()).isEqualTo(2L);
+        }).anySatisfy(dto -> {
+            assertThat(dto.tipo()).isEqualTo("Falta peca");
+            assertThat(dto.quantidade()).isEqualTo(1L);
+        }).anySatisfy(dto -> {
+            assertThat(dto.tipo()).isNull();
+            assertThat(dto.quantidade()).isEqualTo(1L);
+        });
     }
 
     @Test
@@ -357,11 +302,9 @@ class OrdemServicoRepositoryAdapterIT {
         LocalDateTime inicio = LocalDateTime.of(2026, 10, 1, 0, 0);
         LocalDateTime fim = LocalDateTime.of(2026, 10, 31, 23, 59);
 
-        persistirOrdem(
-                LocalDateTime.of(2026, 10, 5, 10, 0), statusAnalise, BigDecimal.valueOf(100), motivoCliente);
+        persistirOrdem(LocalDateTime.of(2026, 10, 5, 10, 0), statusAnalise, BigDecimal.valueOf(100), motivoCliente);
 
-        List<CancelamentoMotivoDto> resultado =
-                repositoryAdapter.buscarCancelamentosPorMotivoDoPeriodo(inicio, fim);
+        List<CancelamentoMotivoDto> resultado = repositoryAdapter.buscarCancelamentosPorMotivoDoPeriodo(inicio, fim);
 
         assertThat(resultado).isEmpty();
     }
@@ -372,17 +315,13 @@ class OrdemServicoRepositoryAdapterIT {
         LocalDateTime inicio = LocalDateTime.of(2026, 5, 1, 0, 0);
         LocalDateTime fim = LocalDateTime.of(2026, 5, 31, 23, 59);
 
-        OrdemServicoJpaEntity primeiraOrdem =
-                persistirOrdem(
-                        LocalDateTime.of(2026, 5, 5, 10, 0), statusConcluido, BigDecimal.valueOf(300));
-        OrdemServicoJpaEntity segundaOrdem =
-                persistirOrdem(
-                        LocalDateTime.of(2026, 5, 8, 10, 0), statusConcluido, BigDecimal.valueOf(300));
-        persistirOrdem(
-                LocalDateTime.of(2026, 5, 9, 10, 0), statusConcluido, BigDecimal.valueOf(0));
-        OrdemServicoJpaEntity ordemNaoConcluida =
-                persistirOrdem(
-                        LocalDateTime.of(2026, 5, 10, 10, 0), statusAnalise, BigDecimal.valueOf(999));
+        OrdemServicoJpaEntity primeiraOrdem = persistirOrdem(LocalDateTime.of(2026, 5, 5, 10, 0), statusConcluido,
+                BigDecimal.valueOf(300));
+        OrdemServicoJpaEntity segundaOrdem = persistirOrdem(LocalDateTime.of(2026, 5, 8, 10, 0), statusConcluido,
+                BigDecimal.valueOf(300));
+        persistirOrdem(LocalDateTime.of(2026, 5, 9, 10, 0), statusConcluido, BigDecimal.valueOf(0));
+        OrdemServicoJpaEntity ordemNaoConcluida = persistirOrdem(LocalDateTime.of(2026, 5, 10, 10, 0), statusAnalise,
+                BigDecimal.valueOf(999));
 
         persistirItem(primeiraOrdem, servicoVitrificacao, BigDecimal.valueOf(200));
         persistirItem(primeiraOrdem, servicoPolimento, BigDecimal.valueOf(100));

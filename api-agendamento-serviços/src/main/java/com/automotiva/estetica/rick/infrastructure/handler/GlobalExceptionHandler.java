@@ -3,7 +3,6 @@ package com.automotiva.estetica.rick.infrastructure.handler;
 import com.automotiva.estetica.rick.application.port.in.ErroLogUseCase;
 import com.automotiva.estetica.rick.domain.entity.ErroLog;
 import com.automotiva.estetica.rick.domain.exception.DomainException;
-import com.automotiva.estetica.rick.infrastructure.filter.RequestIdHolder;
 import com.automotiva.estetica.rick.infrastructure.security.SensitiveDataRedactor;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
@@ -221,22 +220,14 @@ public class GlobalExceptionHandler {
             // Stack trace apenas para erros 5xx (servidor); 4xx são esperados
             String stackTrace = (statusHttp >= 500) ? extrairStackTrace(ex) : null;
 
-            ErroLog erroLog = ErroLog.builder()
-                    .timestamp(LocalDateTime.now())
-                    .tipoExcecao(ex.getClass().getName())
-                    .mensagem(ex.getMessage())
-                    .stackTrace(stackTrace)  // null para 4xx
-                    .endpoint(request.getRequestURI())
-                    .metodoHttp(request.getMethod())
-                    .payloadRequisicao(extrairPayload(request))  // mascarado via SensitiveDataRedactor
+            ErroLog erroLog = ErroLog.builder().timestamp(LocalDateTime.now()).tipoExcecao(ex.getClass().getName())
+                    .mensagem(ex.getMessage()).stackTrace(stackTrace) // null para 4xx
+                    .endpoint(request.getRequestURI()).metodoHttp(request.getMethod())
+                    .payloadRequisicao(extrairPayload(request)) // mascarado via SensitiveDataRedactor
                     .queryParams(SensitiveDataRedactor.redactPayload(request.getQueryString()))
-                    .headersRequisicao(extrairHeaders(request))  // ja filtra sensiveis
-                    .usuarioEmail(obterUsuarioAutenticado())
-                    .statusHttp(statusHttp)
-                    .ambiente(obterAmbiente())
-                    .ipCliente(obterIpCliente(request))
-                    .userAgent(request.getHeader("User-Agent"))
-                    .build();
+                    .headersRequisicao(extrairHeaders(request)) // ja filtra sensiveis
+                    .usuarioEmail(obterUsuarioAutenticado()).statusHttp(statusHttp).ambiente(obterAmbiente())
+                    .ipCliente(obterIpCliente(request)).userAgent(request.getHeader("User-Agent")).build();
 
             erroLogUseCase.registrar(erroLog);
         } catch (Exception logEx) {

@@ -32,14 +32,12 @@ public interface OrdemServicoUseCase {
 
     OrdemServicoDetalheResponse buscarDetalheParaGestao(Long ordemServicoId);
 
-    OrdemServicoDetalheResponse atualizarStatusParaGestao(
-            Long ordemServicoId, AtualizarStatusOrdemRequest request);
+    OrdemServicoDetalheResponse atualizarStatusParaGestao(Long ordemServicoId, AtualizarStatusOrdemRequest request);
 
-    OrdemServicoDetalheResponse adicionarServicosParaGestao(
-            Long ordemServicoId, AdicionarServicosOrdemRequest request);
+    OrdemServicoDetalheResponse adicionarServicosParaGestao(Long ordemServicoId, AdicionarServicosOrdemRequest request);
 
-    OrdemServicoDetalheResponse atualizarValorServicoParaGestao(
-            Long ordemServicoId, Long servicoId, AtualizarValorServicoOrdemRequest request);
+    OrdemServicoDetalheResponse atualizarValorServicoParaGestao(Long ordemServicoId, Long servicoId,
+            AtualizarValorServicoOrdemRequest request);
 
     OrdemServicoDetalheResponse removerServicoParaGestao(Long ordemServicoId, Long servicoId);
 }

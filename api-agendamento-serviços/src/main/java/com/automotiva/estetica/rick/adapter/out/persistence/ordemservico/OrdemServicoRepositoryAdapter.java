@@ -90,15 +90,9 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepositoryPort
     @Override
     public List<FaturamentoServicoDto> buscarFaturamentoServicos(LocalDateTime inicio, LocalDateTime fim) {
         return jpaRepository.buscarFaturamentoServicos(inicio, fim).stream()
-                .map(
-                        row ->
-                                new FaturamentoServicoDto(
-                                        ((Number) row[0]).longValue(),
-                                        (String) row[1],
-                                        ((Number) row[2]).longValue(),
-                                        (String) row[3],
-                                        ((Number) row[4]).longValue(),
-                                        (BigDecimal) row[5]))
+                .map(row -> new FaturamentoServicoDto(((Number) row[0]).longValue(), (String) row[1],
+                        ((Number) row[2]).longValue(), (String) row[3], ((Number) row[4]).longValue(),
+                        (BigDecimal) row[5]))
                 .toList();
     }
 
@@ -113,69 +107,47 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepositoryPort
     }
 
     @Override
-    public List<CancelamentoMotivoDto> buscarCancelamentosPorMotivoDoPeriodo(
-            LocalDateTime inicio, LocalDateTime fim) {
+    public List<CancelamentoMotivoDto> buscarCancelamentosPorMotivoDoPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         return jpaRepository.buscarCancelamentosPorMotivoDoPeriodo(inicio, fim).stream()
-                .map(
-                        row ->
-                                new CancelamentoMotivoDto(
-                                        (String) row[0],
-                                        ((Number) row[1]).longValue()))
-                .toList();
+                .map(row -> new CancelamentoMotivoDto((String) row[0], ((Number) row[1]).longValue())).toList();
     }
 
     @Override
-    public long contarAgendamentosNoPeriodoExcetoStatus(
-            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado) {
+    public long contarAgendamentosNoPeriodoExcetoStatus(LocalDateTime inicio, LocalDateTime fim,
+            Long statusIdIgnorado) {
         return jpaRepository.contarAgendamentosNoPeriodoExcetoStatus(inicio, fim, statusIdIgnorado);
     }
 
     @Override
-    public BigDecimal somarFaturamentoEstimadoNoPeriodoExcetoStatus(
-            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado) {
-        return jpaRepository.somarFaturamentoEstimadoNoPeriodoExcetoStatus(
-                inicio, fim, statusIdIgnorado);
+    public BigDecimal somarFaturamentoEstimadoNoPeriodoExcetoStatus(LocalDateTime inicio, LocalDateTime fim,
+            Long statusIdIgnorado) {
+        return jpaRepository.somarFaturamentoEstimadoNoPeriodoExcetoStatus(inicio, fim, statusIdIgnorado);
     }
 
     @Override
-    public Optional<ProximoAgendamentoDto> buscarProximoAgendamentoNoPeriodoExcetoStatus(
-            LocalDateTime inicio, LocalDateTime fim, Long statusIdIgnorado) {
-        return jpaRepository
-                .findFirstByDataAgendamentoBetweenAndStatus_IdNotOrderByDataAgendamentoAscIdAsc(
-                        inicio, fim, statusIdIgnorado)
-                .map(
-                        ordem -> {
-                            String servicoPrincipal =
-                                    jpaRepository.buscarNomesServicosDaOrdem(ordem.getId()).stream()
-                                            .findFirst()
-                                            .orElse("");
+    public Optional<ProximoAgendamentoDto> buscarProximoAgendamentoNoPeriodoExcetoStatus(LocalDateTime inicio,
+            LocalDateTime fim, Long statusIdIgnorado) {
+        return jpaRepository.findFirstByDataAgendamentoBetweenAndStatus_IdNotOrderByDataAgendamentoAscIdAsc(inicio, fim,
+                statusIdIgnorado).map(ordem -> {
+                    String servicoPrincipal = jpaRepository.buscarNomesServicosDaOrdem(ordem.getId()).stream()
+                            .findFirst().orElse("");
 
-                            return new ProximoAgendamentoDto(
-                                    ordem.getId(),
-                                    servicoPrincipal,
-                                    ordem.getDataAgendamento(),
-                                    ordem.getVeiculo() != null && ordem.getVeiculo().getPessoa() != null
-                                            ? ordem.getVeiculo().getPessoa().getNome()
-                                            : "",
-                                    ordem.getVeiculo() != null ? ordem.getVeiculo().getMarca() : null,
-                                    ordem.getVeiculo() != null ? ordem.getVeiculo().getModelo() : null,
-                                    ordem.getVeiculo() != null ? ordem.getVeiculo().getPlaca() : null,
-                                    ordem.getStatus() != null ? ordem.getStatus().getId() : null);
-                        });
+                    return new ProximoAgendamentoDto(ordem.getId(), servicoPrincipal, ordem.getDataAgendamento(),
+                            ordem.getVeiculo() != null && ordem.getVeiculo().getPessoa() != null
+                                    ? ordem.getVeiculo().getPessoa().getNome()
+                                    : "",
+                            ordem.getVeiculo() != null ? ordem.getVeiculo().getMarca() : null,
+                            ordem.getVeiculo() != null ? ordem.getVeiculo().getModelo() : null,
+                            ordem.getVeiculo() != null ? ordem.getVeiculo().getPlaca() : null,
+                            ordem.getStatus() != null ? ordem.getStatus().getId() : null);
+                });
     }
 
     @Override
-    public Page<OrdemServico> buscarTodosParaGestao(
-            String filtro,
-            Long status,
-            LocalDateTime dataInicio,
-            LocalDateTime dataFim,
-            Pageable pageable) {
+    public Page<OrdemServico> buscarTodosParaGestao(String filtro, Long status, LocalDateTime dataInicio,
+            LocalDateTime dataFim, Pageable pageable) {
         return jpaRepository
-                .findAll(
-                        OrdemServicoSpecification.filtroGestao(
-                                filtro, status, dataInicio, dataFim),
-                        pageable)
+                .findAll(OrdemServicoSpecification.filtroGestao(filtro, status, dataInicio, dataFim), pageable)
                 .map(mapper::toDomain);
     }
 }

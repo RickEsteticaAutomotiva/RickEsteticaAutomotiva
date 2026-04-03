@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Testes unitários para SensitiveDataRedactor.
  *
- * <p>Valida que chaves sensíveis são adequadamente redadas em payloads JSON,
+ * <p>
+ * Valida que chaves sensíveis são adequadamente redadas em payloads JSON,
  * form-data e query strings.
  */
 @DisplayName("SensitiveDataRedactor — Redação de dados sensíveis")
@@ -119,12 +120,8 @@ class SensitiveDataRedactorTest {
     @Test
     @DisplayName("Deve preservar dados não-sensíveis mesmo com payload complexo")
     void testPreserveNonSensitiveInComplexPayload() {
-        String payload = "{"
-                + "\"nome\":\"João Silva\", "
-                + "\"email\":\"joao@test.com\", "
-                + "\"senha\":\"secret123\", "
-                + "\"data_nascimento\":\"1990-01-01\", "
-                + "\"cpf\":\"12345678901\""
+        String payload = "{" + "\"nome\":\"João Silva\", " + "\"email\":\"joao@test.com\", "
+                + "\"senha\":\"secret123\", " + "\"data_nascimento\":\"1990-01-01\", " + "\"cpf\":\"12345678901\""
                 + "}";
 
         String redacted = SensitiveDataRedactor.redactPayload(payload);
@@ -136,4 +133,3 @@ class SensitiveDataRedactorTest {
         assertFalse(redacted.contains("12345678901"), "CPF deve ser redated");
     }
 }
-

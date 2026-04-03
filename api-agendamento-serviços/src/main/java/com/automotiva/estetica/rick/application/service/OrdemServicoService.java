@@ -67,14 +67,11 @@ public class OrdemServicoService implements OrdemServicoUseCase {
     @Override
     public Page<OrdemServicoResponse> buscarTodos(PageRequest pageRequest) {
         Pageable pageable = PageableFactory.from(pageRequest);
-        return ordemServicoRepositoryPort
-                .buscarTodos(pageRequest.getFiltro(), pageable)
-                .map(
-                        ordem -> {
-                            OrdemServicoResponse response = toResponse(ordem);
-                            response.setServicos(buscarServicosDetalhadosPorOrdem(ordem.getId()));
-                            return response;
-                        });
+        return ordemServicoRepositoryPort.buscarTodos(pageRequest.getFiltro(), pageable).map(ordem -> {
+            OrdemServicoResponse response = toResponse(ordem);
+            response.setServicos(buscarServicosDetalhadosPorOrdem(ordem.getId()));
+            return response;
+        });
     }
 
     @Override
@@ -88,9 +85,7 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
         if (request.getServicos() == null || request.getServicos().isEmpty()) {
             throw CampoInvalidoException.builder()
-                    .mensagem("é necessário informar ao menos um serviço para criar a ordem")
-                    .detalhes("")
-                    .build();
+                    .mensagem("é necessário informar ao menos um serviço para criar a ordem").detalhes("").build();
         }
 
         OrdemServico ordemServico = OrdemServico.builder().dataAgendamento(request.getDataAgendamento())
@@ -136,14 +131,11 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
     @Override
     public List<OrdemServicoResponse> buscarPorUsuarioId(Long usuarioId) {
-        return ordemServicoRepositoryPort.buscarPorVeiculoPessoaId(usuarioId).stream()
-                .map(
-                        ordem -> {
-                            OrdemServicoResponse response = toResponse(ordem);
-                            response.setServicos(buscarServicosDetalhadosPorOrdem(ordem.getId()));
-                            return response;
-                        })
-                .toList();
+        return ordemServicoRepositoryPort.buscarPorVeiculoPessoaId(usuarioId).stream().map(ordem -> {
+            OrdemServicoResponse response = toResponse(ordem);
+            response.setServicos(buscarServicosDetalhadosPorOrdem(ordem.getId()));
+            return response;
+        }).toList();
     }
 
     @Override
@@ -186,9 +178,7 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
         log.info("iniciando processo de definicao de horarios disponiveis");
         for (OrdemServicoDuracaoProjection ordemAgendada : ordensAgendadas) {
-            int duracaoOSExistente = Optional.ofNullable(ordemAgendada.getDuracaoTotal())
-                    .map(Long::intValue)
-                    .orElse(0);
+            int duracaoOSExistente = Optional.ofNullable(ordemAgendada.getDuracaoTotal()).map(Long::intValue).orElse(0);
             LocalTime inicioOSExistente = ordemAgendada.getDataAgendamento().toLocalTime();
             LocalTime fimOSExistente = inicioOSExistente.plusMinutes(duracaoOSExistente)
                     .plusMinutes(ordemServicoConstants.MARGEM_ENTRE_SERVICOS);
@@ -249,44 +239,30 @@ public class OrdemServicoService implements OrdemServicoUseCase {
         if (ordemServico.getVeiculo() == null || ordemServico.getVeiculo().getPessoa() == null) {
             return null;
         }
-        return OrdemServicoClienteResumoResponse.builder()
-                .id(ordemServico.getVeiculo().getPessoa().getId())
-                .nome(ordemServico.getVeiculo().getPessoa().getNome())
-                .build();
+        return OrdemServicoClienteResumoResponse.builder().id(ordemServico.getVeiculo().getPessoa().getId())
+                .nome(ordemServico.getVeiculo().getPessoa().getNome()).build();
     }
 
     private OrdemServicoResponse toResponse(OrdemServico o) {
         return OrdemServicoResponse.builder().id(o.getId()).dataAgendamento(o.getDataAgendamento())
-                .precoMinimo(o.getPrecoMinimo())
-                .veiculo(toVeiculoResumo(o))
-                .status(toStatusResumo(o))
-                .observacoes(o.getObservacoes())
-                .dtConclusao(o.getDtConclusao())
-                .motivo(
-                        o.getMotivoCancelamento() != null
-                                ? o.getMotivoCancelamento().getId()
-                                : null)
-                .cliente(toClienteResumoPadrao(o))
-                .build();
+                .precoMinimo(o.getPrecoMinimo()).veiculo(toVeiculoResumo(o)).status(toStatusResumo(o))
+                .observacoes(o.getObservacoes()).dtConclusao(o.getDtConclusao())
+                .motivo(o.getMotivoCancelamento() != null ? o.getMotivoCancelamento().getId() : null)
+                .cliente(toClienteResumoPadrao(o)).build();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<OrdemServicoResumoResponse> buscarTodosParaGestao(OrdemServicoGestaoPageRequest request) {
-        if (request.getDataInicio() != null
-                && request.getDataFim() != null
+        if (request.getDataInicio() != null && request.getDataFim() != null
                 && request.getDataInicio().isAfter(request.getDataFim())) {
-            throw CampoInvalidoException.builder()
-                    .mensagem("dataInicio não pode ser maior que dataFim")
-                    .detalhes("")
+            throw CampoInvalidoException.builder().mensagem("dataInicio não pode ser maior que dataFim").detalhes("")
                     .build();
         }
 
         Pageable pageable = PageableFactory.from(request);
-        LocalDateTime dataInicio =
-                request.getDataInicio() != null ? request.getDataInicio().atStartOfDay() : null;
-        LocalDateTime dataFim =
-                request.getDataFim() != null ? request.getDataFim().atTime(23, 59, 59) : null;
+        LocalDateTime dataInicio = request.getDataInicio() != null ? request.getDataInicio().atStartOfDay() : null;
+        LocalDateTime dataFim = request.getDataFim() != null ? request.getDataFim().atTime(23, 59, 59) : null;
 
         return ordemServicoRepositoryPort
                 .buscarTodosParaGestao(null, request.getStatus(), dataInicio, dataFim, pageable)
@@ -301,13 +277,10 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
     @Override
     @Transactional
-    public OrdemServicoDetalheResponse atualizarStatusParaGestao(
-            Long ordemServicoId, AtualizarStatusOrdemRequest request) {
+    public OrdemServicoDetalheResponse atualizarStatusParaGestao(Long ordemServicoId,
+            AtualizarStatusOrdemRequest request) {
         if (request == null || request.getStatus() == null) {
-            throw CampoInvalidoException.builder()
-                    .mensagem("status é obrigatório")
-                    .detalhes("")
-                    .build();
+            throw CampoInvalidoException.builder().mensagem("status é obrigatório").detalhes("").build();
         }
 
         OrdemServico ordemServico = buscarOrdemPorIdComDetalhes(ordemServicoId);
@@ -323,12 +296,10 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
     @Override
     @Transactional
-    public OrdemServicoDetalheResponse adicionarServicosParaGestao(
-            Long ordemServicoId, AdicionarServicosOrdemRequest request) {
+    public OrdemServicoDetalheResponse adicionarServicosParaGestao(Long ordemServicoId,
+            AdicionarServicosOrdemRequest request) {
         if (request == null || request.getServicos() == null || request.getServicos().isEmpty()) {
-            throw CampoInvalidoException.builder()
-                    .mensagem("é necessário informar ao menos um serviço")
-                    .detalhes("")
+            throw CampoInvalidoException.builder().mensagem("é necessário informar ao menos um serviço").detalhes("")
                     .build();
         }
 
@@ -339,16 +310,12 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
             if (itemServicoRepositoryPort.existePorOrdemServicoIdEServicoId(ordemServicoId, servicoId)) {
                 throw RecursoJaExisteException.builder()
-                        .mensagem("o serviço " + servicoId + " já está vinculado a essa ordem")
-                        .detalhes("")
-                        .build();
+                        .mensagem("o serviço " + servicoId + " já está vinculado a essa ordem").detalhes("").build();
             }
 
             Servico servico = servicoRepositoryPort.buscarPorId(servicoId)
                     .orElseThrow(() -> RecursoNaoEncontradoException.builder()
-                            .mensagem("serviço " + servicoId + " não encontrado")
-                            .detalhes("")
-                            .build());
+                            .mensagem("serviço " + servicoId + " não encontrado").detalhes("").build());
 
             ItemServico itemServico = ordemServico.criarItem(servico);
             if (servicoAplicado.getValorAplicado() != null) {
@@ -362,29 +329,22 @@ public class OrdemServicoService implements OrdemServicoUseCase {
 
     @Override
     @Transactional
-    public OrdemServicoDetalheResponse atualizarValorServicoParaGestao(
-            Long ordemServicoId, Long servicoId, AtualizarValorServicoOrdemRequest request) {
+    public OrdemServicoDetalheResponse atualizarValorServicoParaGestao(Long ordemServicoId, Long servicoId,
+            AtualizarValorServicoOrdemRequest request) {
         if (request == null || request.getValorAplicado() == null) {
-            throw CampoInvalidoException.builder()
-                    .mensagem("valorAplicado é obrigatório")
-                    .detalhes("")
-                    .build();
+            throw CampoInvalidoException.builder().mensagem("valorAplicado é obrigatório").detalhes("").build();
         }
 
         if (request.getValorAplicado().compareTo(BigDecimal.ZERO) < 0) {
-            throw CampoInvalidoException.builder()
-                    .mensagem("valorAplicado deve ser maior ou igual a zero")
-                    .detalhes("")
+            throw CampoInvalidoException.builder().mensagem("valorAplicado deve ser maior ou igual a zero").detalhes("")
                     .build();
         }
 
         OrdemServico ordemServico = buscarOrdemPorIdComDetalhes(ordemServicoId);
-        ItemServico itemServico = itemServicoRepositoryPort
-                .buscarPorOrdemServicoIdEServicoId(ordemServicoId, servicoId)
+        ItemServico itemServico = itemServicoRepositoryPort.buscarPorOrdemServicoIdEServicoId(ordemServicoId, servicoId)
                 .orElseThrow(() -> RecursoNaoEncontradoException.builder()
                         .mensagem("o serviço " + servicoId + " não foi encontrado na ordem " + ordemServicoId)
-                        .detalhes("")
-                        .build());
+                        .detalhes("").build());
 
         itemServico.setPreco(request.getValorAplicado());
         itemServicoRepositoryPort.salvar(itemServico);
@@ -396,26 +356,20 @@ public class OrdemServicoService implements OrdemServicoUseCase {
     @Transactional
     public OrdemServicoDetalheResponse removerServicoParaGestao(Long ordemServicoId, Long servicoId) {
         OrdemServico ordemServico = buscarOrdemPorIdComDetalhes(ordemServicoId);
-        ItemServico itemServico = itemServicoRepositoryPort
-                .buscarPorOrdemServicoIdEServicoId(ordemServicoId, servicoId)
+        ItemServico itemServico = itemServicoRepositoryPort.buscarPorOrdemServicoIdEServicoId(ordemServicoId, servicoId)
                 .orElseThrow(() -> RecursoNaoEncontradoException.builder()
                         .mensagem("o serviço " + servicoId + " não foi encontrado na ordem " + ordemServicoId)
-                        .detalhes("")
-                        .build());
+                        .detalhes("").build());
 
         itemServicoRepositoryPort.removerPorId(itemServico.getId());
         return toDetalheGestao(ordemServico);
     }
 
     private OrdemServico buscarOrdemPorIdComDetalhes(Long ordemServicoId) {
-        return ordemServicoRepositoryPort
-                .buscarPorIdComDetalhes(ordemServicoId)
-                .orElseThrow(
-                        () ->
-                                RecursoNaoEncontradoException.builder()
-                                        .mensagem("a ordem de serviço com id " + ordemServicoId + " não foi encontrada")
-                                        .detalhes("")
-                                        .build());
+        return ordemServicoRepositoryPort.buscarPorIdComDetalhes(ordemServicoId)
+                .orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                        .mensagem("a ordem de serviço com id " + ordemServicoId + " não foi encontrada").detalhes("")
+                        .build());
     }
 
     // ...existing code...
@@ -424,86 +378,59 @@ public class OrdemServicoService implements OrdemServicoUseCase {
         List<ItemServico> itens = itemServicoRepositoryPort.buscarPorOrdemServicoId(ordemServico.getId());
         BigDecimal total = calcularValorTotal(itens);
 
-        return OrdemServicoResumoResponse.builder()
-                .id(ordemServico.getId())
-                .dataAgendamento(ordemServico.getDataAgendamento())
-                .dataConclusao(ordemServico.getDtConclusao())
-                .status(toStatusResumo(ordemServico))
-                .observacoes(ordemServico.getObservacoes())
-                .valorTotal(total)
-                .cliente(toClienteResumo(ordemServico))
-                .veiculo(toVeiculoResumo(ordemServico))
-                .servicos(toServicosResumo(itens))
-                .build();
+        return OrdemServicoResumoResponse.builder().id(ordemServico.getId())
+                .dataAgendamento(ordemServico.getDataAgendamento()).dataConclusao(ordemServico.getDtConclusao())
+                .status(toStatusResumo(ordemServico)).observacoes(ordemServico.getObservacoes()).valorTotal(total)
+                .cliente(toClienteResumo(ordemServico)).veiculo(toVeiculoResumo(ordemServico))
+                .servicos(toServicosResumo(itens)).build();
     }
 
     private OrdemServicoDetalheResponse toDetalheGestao(OrdemServico ordemServico) {
         List<ItemServico> itens = itemServicoRepositoryPort.buscarPorOrdemServicoId(ordemServico.getId());
         BigDecimal total = calcularValorTotal(itens);
 
-        return OrdemServicoDetalheResponse.builder()
-                .id(ordemServico.getId())
-                .dataAgendamento(ordemServico.getDataAgendamento())
-                .dataConclusao(ordemServico.getDtConclusao())
-                .status(toStatusResumo(ordemServico))
-                .observacoes(ordemServico.getObservacoes())
-                .valorTotal(total)
-                .cliente(toClienteResumo(ordemServico))
-                .veiculo(toVeiculoResumo(ordemServico))
-                .servicos(toServicosResumo(itens))
-                .build();
+        return OrdemServicoDetalheResponse.builder().id(ordemServico.getId())
+                .dataAgendamento(ordemServico.getDataAgendamento()).dataConclusao(ordemServico.getDtConclusao())
+                .status(toStatusResumo(ordemServico)).observacoes(ordemServico.getObservacoes()).valorTotal(total)
+                .cliente(toClienteResumo(ordemServico)).veiculo(toVeiculoResumo(ordemServico))
+                .servicos(toServicosResumo(itens)).build();
     }
 
     private BigDecimal calcularValorTotal(List<ItemServico> itens) {
-        return itens.stream()
-                .map(ItemServico::getPreco)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return itens.stream().map(ItemServico::getPreco).filter(Objects::nonNull).reduce(BigDecimal.ZERO,
+                BigDecimal::add);
     }
 
     private OrdemServicoClienteResumoResponse toClienteResumo(OrdemServico ordemServico) {
         if (ordemServico.getVeiculo() == null || ordemServico.getVeiculo().getPessoa() == null) {
             return null;
         }
-        return OrdemServicoClienteResumoResponse.builder()
-                .id(ordemServico.getVeiculo().getPessoa().getId())
-                .nome(ordemServico.getVeiculo().getPessoa().getNome())
-                .build();
+        return OrdemServicoClienteResumoResponse.builder().id(ordemServico.getVeiculo().getPessoa().getId())
+                .nome(ordemServico.getVeiculo().getPessoa().getNome()).build();
     }
 
     private OrdemServicoVeiculoResumoResponse toVeiculoResumo(OrdemServico ordemServico) {
         if (ordemServico.getVeiculo() == null) {
             return null;
         }
-        return OrdemServicoVeiculoResumoResponse.builder()
-                .id(ordemServico.getVeiculo().getId())
-                .marca(ordemServico.getVeiculo().getMarca())
-                .modelo(ordemServico.getVeiculo().getModelo())
-                .placa(ordemServico.getVeiculo().getPlaca())
-                .build();
+        return OrdemServicoVeiculoResumoResponse.builder().id(ordemServico.getVeiculo().getId())
+                .marca(ordemServico.getVeiculo().getMarca()).modelo(ordemServico.getVeiculo().getModelo())
+                .placa(ordemServico.getVeiculo().getPlaca()).build();
     }
 
     private StatusResumoResponse toStatusResumo(OrdemServico ordemServico) {
         if (ordemServico.getStatus() == null) {
             return null;
         }
-        return StatusResumoResponse.builder()
-                .id(ordemServico.getStatus().getId())
-                .descricao(ordemServico.getStatus().getDescricao())
-                .build();
+        return StatusResumoResponse.builder().id(ordemServico.getStatus().getId())
+                .descricao(ordemServico.getStatus().getDescricao()).build();
     }
 
     private List<OrdemServicoServicoResumoResponse> toServicosResumo(List<ItemServico> itens) {
-        return itens.stream()
-                .map(
-                        item ->
-                                OrdemServicoServicoResumoResponse.builder()
-                                        .id(item.getServico() != null ? item.getServico().getId() : null)
-                                        .nome(item.getServico() != null ? item.getServico().getNome() : null)
-                                        .valorAplicado(item.getPreco())
-                                        .preco(item.getServico() != null ? item.getServico().getPreco() : null)
-                                        .build())
-                .toList();
+        return itens.stream().map(item -> OrdemServicoServicoResumoResponse.builder()
+                .id(item.getServico() != null ? item.getServico().getId() : null)
+                .nome(item.getServico() != null ? item.getServico().getNome() : null).valorAplicado(item.getPreco())
+                .preco(item.getServico() != null ? item.getServico().getPreco() : null).build()).toList();
     }
 
     private List<OrdemServicoServicoResumoResponse> buscarServicosDetalhadosPorOrdem(Long ordemId) {

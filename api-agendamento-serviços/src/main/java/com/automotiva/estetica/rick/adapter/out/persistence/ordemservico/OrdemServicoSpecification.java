@@ -28,8 +28,8 @@ public final class OrdemServicoSpecification {
         };
     }
 
-    public static Specification<OrdemServicoJpaEntity> filtroGestao(
-            String filtro, Long status, LocalDateTime dataInicio, LocalDateTime dataFim) {
+    public static Specification<OrdemServicoJpaEntity> filtroGestao(String filtro, Long status,
+            LocalDateTime dataInicio, LocalDateTime dataFim) {
         return (root, query, cb) -> {
             var predicates = new ArrayList<jakarta.persistence.criteria.Predicate>();
 
@@ -48,13 +48,11 @@ public final class OrdemServicoSpecification {
                 var joinVeiculo = root.join("veiculo", JoinType.LEFT);
                 var joinStatus = root.join("status", JoinType.LEFT);
                 var joinMotivo = root.join("motivoCancelamento", JoinType.LEFT);
-                predicates.add(
-                        cb.or(
-                                cb.like(cb.lower(root.get("observacoes")), like),
-                                cb.like(cb.lower(joinVeiculo.get("placa")), like),
-                                cb.like(cb.lower(joinVeiculo.get("modelo")), like),
-                                cb.like(cb.lower(joinStatus.get("descricao")), like),
-                                cb.like(cb.lower(joinMotivo.get("descricao")), like)));
+                predicates.add(cb.or(cb.like(cb.lower(root.get("observacoes")), like),
+                        cb.like(cb.lower(joinVeiculo.get("placa")), like),
+                        cb.like(cb.lower(joinVeiculo.get("modelo")), like),
+                        cb.like(cb.lower(joinStatus.get("descricao")), like),
+                        cb.like(cb.lower(joinMotivo.get("descricao")), like)));
             }
 
             return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
