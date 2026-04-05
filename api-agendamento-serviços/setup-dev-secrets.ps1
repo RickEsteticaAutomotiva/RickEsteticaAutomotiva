@@ -20,7 +20,7 @@ $ProjectDir = $ScriptDir
 $EnvLocalFile = Join-Path $ProjectDir ".env.local"
 
 if ([string]::IsNullOrWhiteSpace($DbPassword)) {
-    $DbPassword = "dev-db-$([Guid]::NewGuid().ToString('N').Substring(0, 16))"
+    $DbPassword = "rick@dev2024"
 }
 if ([string]::IsNullOrWhiteSpace($JwtSecret)) {
     $jwtBytes = New-Object byte[] 48
@@ -28,10 +28,10 @@ if ([string]::IsNullOrWhiteSpace($JwtSecret)) {
     $JwtSecret = [Convert]::ToBase64String($jwtBytes)
 }
 if ([string]::IsNullOrWhiteSpace($MailPassword)) {
-    $MailPassword = "dev-mail-$([Guid]::NewGuid().ToString('N').Substring(0, 12))"
+    $MailPassword = "test"
 }
 if ([string]::IsNullOrWhiteSpace($RabbitmqPassword)) {
-    $RabbitmqPassword = "dev-rmq-$([Guid]::NewGuid().ToString('N').Substring(0, 12))"
+    $RabbitmqPassword = "123456"
 }
 
 Write-Host "OWASP A02: Setup de Secrets para Desenvolvimento Local" -ForegroundColor Cyan

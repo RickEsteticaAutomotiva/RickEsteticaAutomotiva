@@ -28,11 +28,11 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Valores default gerados por execução (evita secrets estáticos)
-DB_PASSWORD=${DB_PASSWORD:-"dev-db-$(date +%s)-$RANDOM"}
+# Defaults compatíveis com docker local (JWT continua único por execução)
+DB_PASSWORD=${DB_PASSWORD:-"rick@dev2024"}
 JWT_SECRET=${JWT_SECRET:-"$(printf 'dev-jwt-%s-%s' "$(date +%s)" "$RANDOM" | base64 | tr -d '\n')"}
-MAIL_PASSWORD=${MAIL_PASSWORD:-"dev-mail-$(date +%s)-$RANDOM"}
-RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-"dev-rmq-$(date +%s)-$RANDOM"}
+MAIL_PASSWORD=${MAIL_PASSWORD:-"test"}
+RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-"123456"}
 
 # Parsing de argumentos
 while [[ $# -gt 0 ]]; do
@@ -57,10 +57,10 @@ while [[ $# -gt 0 ]]; do
             echo "Uso: $0 [opções]"
             echo ""
             echo "Opções:"
-            echo "  --db-pass         Senha do banco de dados (default: gerada automaticamente)"
+            echo "  --db-pass         Senha do banco de dados (default: rick@dev2024)"
             echo "  --jwt-secret      JWT Secret em base64 (default: gerado automaticamente)"
-            echo "  --mail-pass       Senha de email (default: gerada automaticamente)"
-            echo "  --rabbit-pass     Senha RabbitMQ (default: gerada automaticamente)"
+            echo "  --mail-pass       Senha de email (default: test)"
+            echo "  --rabbit-pass     Senha RabbitMQ (default: 123456)"
             echo "  --help            Mostra esta mensagem"
             exit 0
             ;;
