@@ -1,15 +1,19 @@
 package com.automotiva.estetica.rick.infrastructure.security;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Testes unitários para SensitiveDataRedactor.
  *
- * <p>Valida que chaves sensíveis são adequadamente redadas em payloads JSON,
+ * <p>
+ * Valida que chaves sensíveis são adequadamente redadas em payloads JSON,
  * form-data, query strings e stack traces.
  */
 @DisplayName("SensitiveDataRedactor — Redação de dados sensíveis")
@@ -105,10 +109,31 @@ class SensitiveDataRedactorTest {
     }
 
     @Test
+    @DisplayName("Deve redacionar parametro sensível quando query inicia com ?")
+    void testRedactQueryStringComInterrogacaoInicial() {
+        String queryString = "?refresh_token=abc123&page=2";
+        String redacted = SensitiveDataRedactor.redactPayload(queryString);
+
+        assertFalse(redacted.contains("abc123"));
+        assertTrue(redacted.contains("refresh_token=***REDACTED***"));
+    }
+
+    @Test
     @DisplayName("Deve preservar payload vazio ou nulo")
     void testPreserveNullOrEmptyPayload() {
-        assertTrue(SensitiveDataRedactor.redactPayload(null) == null);
+        assertNull(SensitiveDataRedactor.redactPayload(null));
         assertTrue(SensitiveDataRedactor.redactPayload("").isEmpty());
+        assertEquals("   ", SensitiveDataRedactor.redactPayload("   "));
+    }
+
+    @Test
+    @DisplayName("Helper toCamelCase deve converter snake_case e manter texto simples")
+    void testToCamelCaseHelper() {
+        String camel = ReflectionTestUtils.invokeMethod(SensitiveDataRedactor.class, "toCamelCase", "refresh_token");
+        String unchanged = ReflectionTestUtils.invokeMethod(SensitiveDataRedactor.class, "toCamelCase", "token");
+
+        assertEquals("refreshToken", camel);
+        assertEquals("token", unchanged);
     }
 
     @Test
@@ -120,12 +145,27 @@ class SensitiveDataRedactorTest {
     }
 
     @Test
+    @DisplayName("Deve preservar header quando valor for nulo ou vazio")
+    void testRedactHeaderQuandoValorNuloOuBlank() {
+        assertNull(SensitiveDataRedactor.redactHeader("Authorization", null));
+        assertTrue(SensitiveDataRedactor.redactHeader("Authorization", "   ").isBlank());
+    }
+
+    @Test
+    @DisplayName("Deve redacionar header sensível com case-insensitive")
+    void testRedactHeaderCaseInsensitive() {
+        String redacted = SensitiveDataRedactor.redactHeader("ToKeN", "abc123");
+
+        assertTrue(redacted.contains("***REDACTED***"));
+    }
+
+    @Test
     @DisplayName("Deve preservar headers não-sensíveis")
     void testPreserveNonSensitiveHeader() {
         String value = "application/json";
         String redacted = SensitiveDataRedactor.redactHeader("Content-Type", value);
 
-        assertTrue(redacted.equals(value), "Headers não-sensíveis devem ser preservados");
+        assertEquals(value, redacted, "Headers não-sensíveis devem ser preservados");
     }
 
     @Test
@@ -152,12 +192,8 @@ class SensitiveDataRedactorTest {
     @Test
     @DisplayName("Deve preservar dados não-sensíveis mesmo com payload complexo")
     void testPreserveNonSensitiveInComplexPayload() {
-        String payload = "{"
-                + "\"nome\":\"João Silva\", "
-                + "\"email\":\"joao@test.com\", "
-                + "\"senha\":\"secret123\", "
-                + "\"data_nascimento\":\"1990-01-01\", "
-                + "\"cpf\":\"12345678901\""
+        String payload = "{" + "\"nome\":\"João Silva\", " + "\"email\":\"joao@test.com\", "
+                + "\"senha\":\"secret123\", " + "\"data_nascimento\":\"1990-01-01\", " + "\"cpf\":\"12345678901\""
                 + "}";
 
         String redacted = SensitiveDataRedactor.redactPayload(payload);
@@ -247,16 +283,18 @@ class SensitiveDataRedactorTest {
     @Test
     @DisplayName("Deve preservar stack trace vazio ou nulo")
     void testPreserveNullOrEmptyStackTrace() {
-        assertTrue(SensitiveDataRedactor.redactStackTrace(null) == null);
+        assertNull(SensitiveDataRedactor.redactStackTrace(null));
         assertTrue(SensitiveDataRedactor.redactStackTrace("").isEmpty());
     }
 
     @Test
     @DisplayName("Deve preservar informações de compilação e classe em stack trace")
     void testPreserveClassInfoInStackTrace() {
-        String stackTrace = "java.lang.NullPointerException\n"
-                + "\tat com.automotiva.estetica.rick.application.service.PessoaService.criar(PessoaService.java:45)\n"
-                + "\tat java.base/java.lang.Thread.run(Thread.java:834)";
+        String stackTrace = """
+                java.lang.NullPointerException
+                	at com.automotiva.estetica.rick.application.service.PessoaService.criar(PessoaService.java:45)
+                	at java.base/java.lang.Thread.run(Thread.java:834)
+                """;
         String redacted = SensitiveDataRedactor.redactStackTrace(stackTrace);
 
         assertTrue(redacted.contains("java.lang.NullPointerException"));

@@ -21,7 +21,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class AsyncConfig {
 
     /**
-     * Pool dedicado para o ErroLogService.
+     * Pool dedicado para o fluxo assíncrono do ErroLogApplicationService.
      *
      * <ul>
      * <li>corePoolSize=2 — threads mínimas sempre ativas

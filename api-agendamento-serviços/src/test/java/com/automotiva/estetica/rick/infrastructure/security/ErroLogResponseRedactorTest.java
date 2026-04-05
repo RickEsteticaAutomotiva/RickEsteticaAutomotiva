@@ -1,6 +1,7 @@
 package com.automotiva.estetica.rick.infrastructure.security;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,10 +41,10 @@ class ErroLogResponseRedactorTest {
     @DisplayName("Deve mascarar email do usuário deixando apenas domínio")
     void testMaskEmailInResponse() {
         ErroLogResponse response = ErroLogResponse.builder().id(1L).timestamp(LocalDateTime.now())
-                .tipoExcecao("java.lang.Exception").mensagem("Erro")
-                .payloadRequisicao("{\"dado\":\"valor\"}").endpoint("/api/test").metodoHttp("GET")
-                .queryParams(null).headersRequisicao(null).usuarioEmail("rodrigo@example.com").statusHttp(500)
-                .ambiente("prod").ipCliente("10.0.0.1").userAgent("Chrome").stackTrace(null).build();
+                .tipoExcecao("java.lang.Exception").mensagem("Erro").payloadRequisicao("{\"dado\":\"valor\"}")
+                .endpoint("/api/test").metodoHttp("GET").queryParams(null).headersRequisicao(null)
+                .usuarioEmail("rodrigo@example.com").statusHttp(500).ambiente("prod").ipCliente("10.0.0.1")
+                .userAgent("Chrome").stackTrace(null).build();
 
         ErroLogResponse redacted = ErroLogResponseRedactor.redactResponse(response);
 
@@ -139,14 +140,13 @@ class ErroLogResponseRedactorTest {
     @DisplayName("Deve redacionar resposta completa com múltiplos dados sensíveis")
     void testRedactComplexResponse() {
         ErroLogResponse response = ErroLogResponse.builder().id(1L).timestamp(LocalDateTime.now())
-                .tipoExcecao("com.example.ValidationException")
-                .mensagem("Falha na validação de cadastro")
+                .tipoExcecao("com.example.ValidationException").mensagem("Falha na validação de cadastro")
                 .payloadRequisicao("{\"nome\":\"João\",\"cpf\":\"12345678901\",\"senha\":\"secret123\"}")
                 .queryParams("token=eyJhbGciOiJIUzI1NiJ9.xyz&page=1")
-                .stackTrace("Exception at Process(192.168.1.50:8080) by admin@company.com")
-                .endpoint("/api/pessoas").metodoHttp("POST").headersRequisicao("Content-Type: application/json")
-                .usuarioEmail("gerente@rick.com.br").statusHttp(422).ambiente("prod")
-                .ipCliente("172.16.0.50").userAgent("RestClient/2.0").build();
+                .stackTrace("Exception at Process(192.168.1.50:8080) by admin@company.com").endpoint("/api/pessoas")
+                .metodoHttp("POST").headersRequisicao("Content-Type: application/json")
+                .usuarioEmail("gerente@rick.com.br").statusHttp(422).ambiente("prod").ipCliente("172.16.0.50")
+                .userAgent("RestClient/2.0").build();
 
         ErroLogResponse redacted = ErroLogResponseRedactor.redactResponse(response);
 
@@ -187,6 +187,38 @@ class ErroLogResponseRedactorTest {
         // Campos nulos devem permanecer como null ou sem erro
         assertTrue(redacted.getId().equals(1L), "ID deve ser preservado");
     }
+
+    @Test
+    @DisplayName("Deve preservar email muito curto ou invalido sem mascarar")
+    void testMaskEmailFormatoInvalido() {
+        ErroLogResponse response = ErroLogResponse.builder().id(10L).timestamp(LocalDateTime.now())
+                .tipoExcecao("x").mensagem("x").usuarioEmail("a@dominio.com").ipCliente("10.0.0.1").build();
+
+        ErroLogResponse redacted = ErroLogResponseRedactor.redactResponse(response);
+
+        assertEquals("a@dominio.com", redacted.getUsuarioEmail());
+    }
+
+    @Test
+    @DisplayName("Deve retornar marcador padrao quando IP tiver formato invalido")
+    void testMaskIpFormatoInvalido() {
+        ErroLogResponse response = ErroLogResponse.builder().id(11L).timestamp(LocalDateTime.now())
+                .tipoExcecao("x").mensagem("x").usuarioEmail("user@test.com").ipCliente("ip-invalido").build();
+
+        ErroLogResponse redacted = ErroLogResponseRedactor.redactResponse(response);
+
+        assertEquals("***REDACTED_IP***", redacted.getIpCliente());
+    }
+
+    @Test
+    @DisplayName("Deve preservar email nulo e ip em branco")
+    void testMaskEmailEIpNulosOuBlank() {
+        ErroLogResponse response = ErroLogResponse.builder().id(12L).timestamp(LocalDateTime.now())
+                .tipoExcecao("x").mensagem("x").usuarioEmail(null).ipCliente("   ").build();
+
+        ErroLogResponse redacted = ErroLogResponseRedactor.redactResponse(response);
+
+        assertEquals(null, redacted.getUsuarioEmail());
+        assertEquals("   ", redacted.getIpCliente());
+    }
 }
-
-

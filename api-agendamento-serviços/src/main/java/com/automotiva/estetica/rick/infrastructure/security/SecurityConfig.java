@@ -33,12 +33,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * Configuração centralizada de segurança do Spring Security.
  *
  * <p>
- * Responsável por:
- * - Autenticação via JWT
- * - CORS profile-aware (dev permite "*", prod usa env vars)
- * - H2 Console apenas em dev
- * - Headers de segurança (X-Frame-Options, X-Content-Type-Options, HSTS)
- * - Autorização stateless (SessionCreationPolicy.STATELESS)
+ * Responsável por: - Autenticação via JWT - CORS profile-aware (dev permite
+ * "*", prod usa env vars) - H2 Console apenas em dev - Headers de segurança
+ * (X-Frame-Options, X-Content-Type-Options, HSTS) - Autorização stateless
+ * (SessionCreationPolicy.STATELESS)
  */
 @Configuration
 @EnableWebSecurity
@@ -52,8 +50,9 @@ public class SecurityConfig {
     private final Environment environment;
 
     // URLs públicas que não requerem autenticação (exceto H2 que é profile-aware)
-    private static final String[] URLS_PUBLICAS_BASE = {"/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
-            "/webjars/**", "/pessoas/login", "/pessoas/", "/servicos", "/servicos/**", "/categorias", "/error"};
+    private static final String[] URLS_PUBLICAS_BASE = {"/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+            "/swagger-resources/**", "/webjars/**", "/pessoas/login", "/pessoas/", "/servicos", "/servicos/**",
+            "/categorias", "/error"};
 
     /**
      * Constrói array de URLs públicas incluindo H2 apenas se profile for dev.
@@ -126,8 +125,7 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        http.csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> response
@@ -146,9 +144,9 @@ public class SecurityConfig {
      * Configura headers de segurança de forma profile-aware.
      *
      * <p>
-     * - X-Frame-Options: DENY em prod/homolog, SAMEORIGIN em dev (para H2)
-     * - X-Content-Type-Options: nosniff em todos (padrão Spring)
-     * - Strict-Transport-Security: apenas em prod
+     * - X-Frame-Options: DENY em prod/homolog, SAMEORIGIN em dev (para H2) -
+     * X-Content-Type-Options: nosniff em todos (padrão Spring) -
+     * Strict-Transport-Security: apenas em prod
      */
     private void configureSecurityHeaders(
             org.springframework.security.config.annotation.web.configurers.HeadersConfigurer<?> headers) {
@@ -171,8 +169,8 @@ public class SecurityConfig {
      * CorsConfigurationSource que respeita o profile ativo.
      *
      * <p>
-     * - dev: permite "*" (todas as origens)
-     * - homolog/prod: usa variável de ambiente ALLOWED_CORS_ORIGINS
+     * - dev: permite "*" (todas as origens) - homolog/prod: usa variável de
+     * ambiente ALLOWED_CORS_ORIGINS
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

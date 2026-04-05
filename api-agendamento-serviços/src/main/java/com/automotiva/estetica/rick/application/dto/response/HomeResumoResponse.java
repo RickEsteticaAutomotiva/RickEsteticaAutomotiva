@@ -19,4 +19,3 @@ public class HomeResumoResponse {
     private BigDecimal ticketMedioEstimadoHoje;
     private ProximoAgendamentoResponse proximoAgendamento;
 }
-

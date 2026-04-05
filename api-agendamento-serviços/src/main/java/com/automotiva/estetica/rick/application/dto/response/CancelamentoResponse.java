@@ -17,4 +17,3 @@ public class CancelamentoResponse {
     private String tipo;
     private Long quantidade;
 }
-

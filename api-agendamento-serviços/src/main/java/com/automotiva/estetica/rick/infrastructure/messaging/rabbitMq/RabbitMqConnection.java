@@ -7,10 +7,12 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
+@Profile("!test & !integration-test")
 public class RabbitMqConnection {
 
     private final AmqpAdmin amqpAdmin;
@@ -19,8 +21,8 @@ public class RabbitMqConnection {
         this.amqpAdmin = amqpAdmin;
     }
 
-    private Queue queue(String nomeQueue) {
-        return new Queue(nomeQueue, true, false, false);
+    private Queue ordemServicoCriadaQueue() {
+        return new Queue(RabbitMqConsts.ORDEM_SERVICO_CRIADA_QUEUE, true, false, false);
     }
 
     private DirectExchange directExchange() {
@@ -35,14 +37,14 @@ public class RabbitMqConnection {
     private void addingQueues() {
         try {
             log.info("Inicializando filas do RabbitMQ...");
-            Queue ordemServicoCriadaQueue = this.queue(RabbitMqConsts.ORDEM_SERVICO_CRIADA_QUEUE);
+            Queue ordemServicoCriadaQueue = this.ordemServicoCriadaQueue();
             DirectExchange exchange = this.directExchange();
             Binding binding = this.binding(ordemServicoCriadaQueue, exchange);
 
             this.amqpAdmin.declareQueue(ordemServicoCriadaQueue);
             this.amqpAdmin.declareExchange(exchange);
             this.amqpAdmin.declareBinding(binding);
-            
+
             log.info("✅ Filas do RabbitMQ inicializadas com sucesso!");
         } catch (Exception e) {
             log.error("❌ Erro ao inicializar filas do RabbitMQ", e);
@@ -50,5 +52,3 @@ public class RabbitMqConnection {
         }
     }
 }
-
-

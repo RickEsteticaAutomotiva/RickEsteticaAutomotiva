@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Testes unitários para RequestIdHolder.
  *
- * <p>Valida que o requestId é gerado, armazenado e limpo corretamente no MDC.
+ * <p>
+ * Valida que o requestId é gerado, armazenado e limpo corretamente no MDC.
  */
 @DisplayName("RequestIdHolder — Correlação de requisições")
 class RequestIdHolderTest {
@@ -32,8 +32,7 @@ class RequestIdHolderTest {
 
         assertNotNull(requestId, "RequestId não deve ser nulo");
         assertNotNull(RequestIdHolder.getRequestId(), "RequestId deve estar armazenado no MDC");
-        assertEquals(requestId, RequestIdHolder.getRequestId(),
-                "RequestId armazenado deve corresponder ao gerado");
+        assertEquals(requestId, RequestIdHolder.getRequestId(), "RequestId armazenado deve corresponder ao gerado");
     }
 
     @Test
@@ -70,5 +69,3 @@ class RequestIdHolderTest {
         assertEquals(id2, id2Retrieved, "Segundo requestId recuperado deve corresponder ao gerado");
     }
 }
-
-

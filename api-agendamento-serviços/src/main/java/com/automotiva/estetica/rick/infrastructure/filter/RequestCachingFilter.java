@@ -15,14 +15,16 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 /**
  * Filtro que envolve o HttpServletRequest com ContentCachingRequestWrapper.
  *
- * <p>Responsabilidades:
+ * <p>
+ * Responsabilidades:
  * <ul>
  * <li>Gera e armazena um `requestId` no MDC para rastreabilidade em logs.
  * <li>Envolve request com caching para que GlobalExceptionHandler leia o body
  * após consumo pelo Spring MVC.
  * </ul>
  *
- * <p>@Order(1) garante execução antes de todos os filtros de segurança.
+ * <p>
+ * @Order(1) garante execução antes de todos os filtros de segurança.
  */
 @Component
 @Order(1)

@@ -20,4 +20,3 @@ public class FluxoCaixaResponse {
     private BigDecimal percentualLucro;
     private BigDecimal percentualCusto;
 }
-

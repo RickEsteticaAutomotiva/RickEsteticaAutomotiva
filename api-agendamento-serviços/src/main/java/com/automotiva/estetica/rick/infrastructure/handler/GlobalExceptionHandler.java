@@ -1,9 +1,8 @@
 package com.automotiva.estetica.rick.infrastructure.handler;
 
-import com.automotiva.estetica.rick.application.port.in.ErroLogUseCase;
+import com.automotiva.estetica.rick.application.service.ErroLogApplicationService;
 import com.automotiva.estetica.rick.domain.entity.ErroLog;
 import com.automotiva.estetica.rick.domain.exception.DomainException;
-import com.automotiva.estetica.rick.infrastructure.filter.RequestIdHolder;
 import com.automotiva.estetica.rick.infrastructure.security.SensitiveDataRedactor;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
@@ -49,9 +48,9 @@ public class GlobalExceptionHandler {
     private static final String[] HEADERS_SENSIVEIS = {"authorization", "cookie", "set-cookie"};
     private static final int MAX_PAYLOAD_SIZE = 10_000;
 
-    private final ErroLogUseCase erroLogUseCase;
+    private final ErroLogApplicationService erroLogUseCase;
 
-    public GlobalExceptionHandler(ErroLogUseCase erroLogUseCase) {
+    public GlobalExceptionHandler(ErroLogApplicationService erroLogUseCase) {
         this.erroLogUseCase = erroLogUseCase;
     }
 
@@ -225,22 +224,14 @@ public class GlobalExceptionHandler {
                 stackTrace = SensitiveDataRedactor.redactStackTrace(stackTrace);
             }
 
-            ErroLog erroLog = ErroLog.builder()
-                    .timestamp(LocalDateTime.now())
-                    .tipoExcecao(ex.getClass().getName())
-                    .mensagem(ex.getMessage())
-                    .stackTrace(stackTrace)  // null para 4xx, redated para 5xx
-                    .endpoint(request.getRequestURI())
-                    .metodoHttp(request.getMethod())
-                    .payloadRequisicao(extrairPayload(request))  // mascarado via SensitiveDataRedactor
+            ErroLog erroLog = ErroLog.builder().timestamp(LocalDateTime.now()).tipoExcecao(ex.getClass().getName())
+                    .mensagem(ex.getMessage()).stackTrace(stackTrace) // null para 4xx, redated para 5xx
+                    .endpoint(request.getRequestURI()).metodoHttp(request.getMethod())
+                    .payloadRequisicao(extrairPayload(request)) // mascarado via SensitiveDataRedactor
                     .queryParams(SensitiveDataRedactor.redactPayload(request.getQueryString()))
-                    .headersRequisicao(extrairHeaders(request))  // ja filtra sensiveis
-                    .usuarioEmail(obterUsuarioAutenticado())
-                    .statusHttp(statusHttp)
-                    .ambiente(obterAmbiente())
-                    .ipCliente(obterIpCliente(request))
-                    .userAgent(request.getHeader("User-Agent"))
-                    .build();
+                    .headersRequisicao(extrairHeaders(request)) // ja filtra sensiveis
+                    .usuarioEmail(obterUsuarioAutenticado()).statusHttp(statusHttp).ambiente(obterAmbiente())
+                    .ipCliente(obterIpCliente(request)).userAgent(request.getHeader("User-Agent")).build();
 
             erroLogUseCase.registrar(erroLog);
         } catch (Exception logEx) {

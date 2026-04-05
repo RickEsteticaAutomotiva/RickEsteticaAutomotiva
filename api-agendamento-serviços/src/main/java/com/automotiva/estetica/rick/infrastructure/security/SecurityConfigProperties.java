@@ -7,16 +7,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * Propriedades de segurança carregadas do arquivo application-{profile}.properties.
+ * Propriedades de segurança carregadas do arquivo
+ * application-{profile}.properties.
  *
- * <p>Permite configuração profile-aware de CORS origins e headers de segurança.
+ * <p>
+ * Permite configuração profile-aware de CORS origins e headers de segurança.
  *
- * <p>Exemplo em application-prod.properties:
- * ```
+ * <p>
+ * Exemplo em application-prod.properties: ```
  * security.cors.allowed-origins=https://app.example.com,https://admin.example.com
  * security.cors.allow-credentials=true
- * security.cors.exposed-headers=Authorization,X-Total-Count
- * ```
+ * security.cors.exposed-headers=Authorization,X-Total-Count ```
  */
 @Data
 @Component
@@ -27,9 +28,9 @@ public class SecurityConfigProperties {
      * Lista de origens CORS permitidas. Separadas por vírgula. Padrão em dev: "*"
      * Em produção, especificar domínios explicitamente.
      *
-     * <p>Exemplos:
-     * - dev: "*"
-     * - prod: "https://app.example.com,https://admin.example.com"
+     * <p>
+     * Exemplos: - dev: "*" - prod:
+     * "https://app.example.com,https://admin.example.com"
      */
     private List<String> allowedOrigins = new ArrayList<>();
 
@@ -44,7 +45,8 @@ public class SecurityConfigProperties {
     private List<String> allowedHeaders = List.of("*");
 
     /**
-     * Headers expostos na resposta. Exemplos: Authorization, X-Total-Count, Content-Type.
+     * Headers expostos na resposta. Exemplos: Authorization, X-Total-Count,
+     * Content-Type.
      */
     private List<String> exposedHeaders = List.of("Authorization", "X-Total-Count", "Content-Type");
 
@@ -59,4 +61,3 @@ public class SecurityConfigProperties {
      */
     private Long maxAge = 3600L;
 }
-
