@@ -28,11 +28,11 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Valores default (seguros para DEV)
-DB_PASSWORD=${DB_PASSWORD:-"rick@dev2024"}
-JWT_SECRET=${JWT_SECRET:-"RXhpc3RlIHVtYSB0ZW9yaWEgcXVlIGRpeiBxdWUsIHNlIHVtIGRpYSBhbGd16W0gZGVzY29icmlyIGV4YXRhbWVudGUgcGFyYSBxdWUgc2VydmUgby"}
-MAIL_PASSWORD=${MAIL_PASSWORD:-"test"}
-RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-"123456"}
+# Valores default gerados por execução (evita secrets estáticos)
+DB_PASSWORD=${DB_PASSWORD:-"dev-db-$(date +%s)-$RANDOM"}
+JWT_SECRET=${JWT_SECRET:-"$(printf 'dev-jwt-%s-%s' "$(date +%s)" "$RANDOM" | base64 | tr -d '\n')"}
+MAIL_PASSWORD=${MAIL_PASSWORD:-"dev-mail-$(date +%s)-$RANDOM"}
+RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-"dev-rmq-$(date +%s)-$RANDOM"}
 
 # Parsing de argumentos
 while [[ $# -gt 0 ]]; do
@@ -57,10 +57,10 @@ while [[ $# -gt 0 ]]; do
             echo "Uso: $0 [opções]"
             echo ""
             echo "Opções:"
-            echo "  --db-pass         Senha do banco de dados (default: rick@dev2024)"
-            echo "  --jwt-secret      JWT Secret em base64 (default: valor de dev)"
-            echo "  --mail-pass       Senha de email (default: test)"
-            echo "  --rabbit-pass     Senha RabbitMQ (default: 123456)"
+            echo "  --db-pass         Senha do banco de dados (default: gerada automaticamente)"
+            echo "  --jwt-secret      JWT Secret em base64 (default: gerado automaticamente)"
+            echo "  --mail-pass       Senha de email (default: gerada automaticamente)"
+            echo "  --rabbit-pass     Senha RabbitMQ (default: gerada automaticamente)"
             echo "  --help            Mostra esta mensagem"
             exit 0
             ;;
@@ -151,4 +151,3 @@ echo ""
 echo "4. Testar:"
 echo "   curl http://localhost:8080/api/swagger-ui.html"
 echo ""
-

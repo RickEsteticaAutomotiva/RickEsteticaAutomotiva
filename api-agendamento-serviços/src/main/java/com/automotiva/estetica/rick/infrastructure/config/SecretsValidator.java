@@ -10,30 +10,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
- * ===================================================== SecretsValidator —
- * Validação de Secrets Críticos at Startup
- * =====================================================
- *
- * PROPÓSITO: Garantir que todos os secrets críticos estejam definidos via
- * variáveis de ambiente, em conformidade com OWASP A02: Cryptographic Failures
- *
- * COMPORTAMENTO: - DEV: Apenas WARN se secret falta (permite continuar para
- * debug local) - HOMOLOG/PROD: ERROR + aborta startup se qualquer secret falta
- *
- * SECRETS VALIDADOS: 1. JWT_SECRET — Autenticação JWT 2. DB_PASSWORD — Banco de
- * dados 3. MAIL_PASSWORD — Serviço de email 4. RABBITMQ_PASSWORD — Fila de
- * mensagens
- *
- * @author GitHub Copilot
- * @since 2026-04-01
+ * Valida presença de secrets críticos no startup conforme OWASP A02.
+ * Em dev apenas registra WARN; em homolog/prod/staging interrompe a aplicação.
  */
 @Configuration
 public class SecretsValidator implements InitializingBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretsValidator.class);
 
-    @Value("${spring.profiles.active:dev}")
-    private String activeProfiles;
+    private static final List<String> INVALID_SECRET_VALUES = List.of(
+            "placeholder",
+            "{{null}}",
+            "#{null}",
+            "test",
+            "123456",
+            "rick@dev2024");
 
     @Value("${JWT_SECRET:#{null}}")
     private String jwtSecret;
@@ -78,7 +69,7 @@ public class SecretsValidator implements InitializingBean {
         }
 
         // Determinar nível de severidade
-        boolean isProduction = isProduction();
+        boolean isRestrictedEnvironment = isRestrictedEnvironment();
 
         if (!missingSecrets.isEmpty()) {
             String message = String.format("""
@@ -95,15 +86,13 @@ public class SecretsValidator implements InitializingBean {
                     export RABBITMQ_PASSWORD=<valor>
 
                     DEV LOCAL: Você pode usar .env.local (gitignored)
-                    PRODUÇÃO: Use AWS Secrets Manager, Kubernetes Secrets ou similar
-
-                    Referência: SECRETS_DEPLOYMENT.md
+                    PRODUÇÃO/HOMOLOG: Use AWS Secrets Manager, Kubernetes Secrets ou similar
                     """, missingSecrets);
 
-            if (isProduction) {
+            if (isRestrictedEnvironment) {
                 LOGGER.error(message);
                 throw new IllegalStateException(
-                        "❌ FALHA DE SEGURANÇA: Secrets críticos não definidos em PRODUÇÃO. Startup abortado.");
+                        "❌ FALHA DE SEGURANÇA: Secrets críticos não definidos em ambiente restrito. Startup abortado.");
             } else {
                 LOGGER.warn(message);
             }
@@ -116,17 +105,28 @@ public class SecretsValidator implements InitializingBean {
      * Verifica se um secret é válido (não nulo, não vazio, não placeholder).
      */
     private boolean isSecretMissing(String secretValue) {
-        return secretValue == null || secretValue.isBlank() || secretValue.equals("placeholder")
-                || secretValue.equals("{{null}}") || secretValue.equals("#{null}");
+        if (secretValue == null || secretValue.isBlank()) {
+            return true;
+        }
+        String normalizedValue = secretValue.trim();
+        for (String invalidValue : INVALID_SECRET_VALUES) {
+            if (invalidValue.equalsIgnoreCase(normalizedValue)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
-     * Determina se a aplicação está em ambiente de produção.
+     * Determina se a aplicação está em ambiente restrito (homolog/prod).
      */
-    private boolean isProduction() {
+    private boolean isRestrictedEnvironment() {
         String[] profiles = environment.getActiveProfiles();
         for (String profile : profiles) {
-            if ("prod".equalsIgnoreCase(profile) || "production".equalsIgnoreCase(profile)) {
+            if ("prod".equalsIgnoreCase(profile)
+                    || "production".equalsIgnoreCase(profile)
+                    || "homolog".equalsIgnoreCase(profile)
+                    || "staging".equalsIgnoreCase(profile)) {
                 return true;
             }
         }

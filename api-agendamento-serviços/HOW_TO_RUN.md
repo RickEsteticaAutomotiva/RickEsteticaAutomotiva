@@ -37,12 +37,13 @@ docker compose -f docker/docker-compose.yml up -d
 
 **Acessos:**
 - MySQL: localhost:3306 (rick / rick@dev2024)
-- phpMyAdmin: http://localhost:8090 (rick / rick@dev2024)
-- RabbitMQ: http://localhost:15672 (guest / guest)
+- RabbitMQ: http://localhost:15672 (admin / 123456)
 
 ---
 
 ## 3️⃣ Secrets (Configurar Variáveis)
+
+> O script agora gera secrets de dev únicos por execução (sem defaults estáticos).
 
 **Windows PowerShell:**
 ```powershell

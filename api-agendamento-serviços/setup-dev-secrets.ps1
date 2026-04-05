@@ -8,16 +8,31 @@
 # =====================================================
 
 param(
-    [string]$DbPassword = "rick@dev2024",
-    [string]$JwtSecret = "RXhpc3RlIHVtYSB0ZW9yaWEgcXVlIGRpeiBxdWUsIHNlIHVtIGRpYSBhbGd16W0gZGVzY29icmlyIGV4YXRhbWVudGUgcGFyYSBxdWUgc2VydmUgby",
-    [string]$MailPassword = "test",
-    [string]$RabbitmqPassword = "123456",
+    [string]$DbPassword = "",
+    [string]$JwtSecret = "",
+    [string]$MailPassword = "",
+    [string]$RabbitmqPassword = "",
     [switch]$Force
 )
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectDir = $ScriptDir
 $EnvLocalFile = Join-Path $ProjectDir ".env.local"
+
+if ([string]::IsNullOrWhiteSpace($DbPassword)) {
+    $DbPassword = "dev-db-$([Guid]::NewGuid().ToString('N').Substring(0, 16))"
+}
+if ([string]::IsNullOrWhiteSpace($JwtSecret)) {
+    $jwtBytes = New-Object byte[] 48
+    [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($jwtBytes)
+    $JwtSecret = [Convert]::ToBase64String($jwtBytes)
+}
+if ([string]::IsNullOrWhiteSpace($MailPassword)) {
+    $MailPassword = "dev-mail-$([Guid]::NewGuid().ToString('N').Substring(0, 12))"
+}
+if ([string]::IsNullOrWhiteSpace($RabbitmqPassword)) {
+    $RabbitmqPassword = "dev-rmq-$([Guid]::NewGuid().ToString('N').Substring(0, 12))"
+}
 
 Write-Host "OWASP A02: Setup de Secrets para Desenvolvimento Local" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
@@ -96,4 +111,3 @@ Write-Host ""
 Write-Host "4. Testar:"
 Write-Host "   curl http://localhost:8080/api/swagger-ui.html"
 Write-Host ""
-

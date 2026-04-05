@@ -2,9 +2,7 @@ package com.automotiva.estetica.rick.infrastructure.config;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -71,6 +69,15 @@ class SecretsValidatorTest {
     }
 
     @Test
+    @DisplayName("deve falhar em homolog quando usar secret fraco conhecido")
+    void afterPropertiesSet_deveFalharEmHomologQuandoSecretFraco() {
+        when(environment.getActiveProfiles()).thenReturn(new String[] {"homolog"});
+        ReflectionTestUtils.setField(secretsValidator, "rabbitmqPassword", "123456");
+
+        assertThrows(IllegalStateException.class, () -> secretsValidator.afterPropertiesSet());
+    }
+
+    @Test
     @DisplayName("deve tratar {{null}} como secret ausente em prod")
     void afterPropertiesSet_deveTratarDoubleBracesNullComoAusente() {
         when(environment.getActiveProfiles()).thenReturn(new String[] {"prod"});
@@ -85,30 +92,32 @@ class SecretsValidatorTest {
         Boolean missingNull = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", (String) null);
         Boolean missingBlank = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", " ");
         Boolean missingPlaceholder = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", "placeholder");
-        Boolean validSecret = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", "abc123");
+        Boolean missingWeakDefault = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", "test");
+        Boolean validSecret = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", "abc123@Forte");
 
         assertEquals(Boolean.TRUE, missingNull);
         assertEquals(Boolean.TRUE, missingBlank);
         assertEquals(Boolean.TRUE, missingPlaceholder);
+        assertEquals(Boolean.TRUE, missingWeakDefault);
         assertNotEquals(Boolean.TRUE, validSecret);
     }
 
     @Test
-    @DisplayName("helper isProduction deve aceitar production em qualquer caixa")
-    void isProduction_deveAceitarCaseInsensitive() {
+    @DisplayName("helper isRestrictedEnvironment deve aceitar production em qualquer caixa")
+    void isRestrictedEnvironment_deveAceitarCaseInsensitive() {
         when(environment.getActiveProfiles()).thenReturn(new String[] {"PrOdUcTiOn"});
 
-        Boolean result = ReflectionTestUtils.invokeMethod(secretsValidator, "isProduction");
+        Boolean result = ReflectionTestUtils.invokeMethod(secretsValidator, "isRestrictedEnvironment");
 
         assertEquals(Boolean.TRUE, result);
     }
 
     @Test
-    @DisplayName("helper isProduction deve retornar false quando profile nao for prod")
-    void isProduction_deveRetornarFalseParaDev() {
+    @DisplayName("helper isRestrictedEnvironment deve retornar false quando profile nao for restrito")
+    void isRestrictedEnvironment_deveRetornarFalseParaDev() {
         when(environment.getActiveProfiles()).thenReturn(new String[] {"dev"});
 
-        Boolean result = ReflectionTestUtils.invokeMethod(secretsValidator, "isProduction");
+        Boolean result = ReflectionTestUtils.invokeMethod(secretsValidator, "isRestrictedEnvironment");
 
         assertNotEquals(Boolean.TRUE, result);
     }
@@ -122,7 +131,3 @@ class SecretsValidatorTest {
         assertDoesNotThrow(() -> secretsValidator.afterPropertiesSet());
     }
 }
-
-
-
-

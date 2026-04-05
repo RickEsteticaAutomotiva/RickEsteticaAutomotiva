@@ -39,11 +39,11 @@ build/
 # OWASP A02: Cryptographic Failures — Secrets Management
 # NUNCA commit de secrets, credenciais ou configurações sensíveis
 # =====================================================
-/src/main/resources/application-secrets.properties
 /src/main/resources/application-*.properties.local
 .env
 .env.local
 .env.*.local
+.env.prod.local
 *.key
 *.pem
 /src/main/resources/*.key
