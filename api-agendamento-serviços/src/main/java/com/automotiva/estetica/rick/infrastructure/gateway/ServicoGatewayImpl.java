@@ -8,6 +8,7 @@ import com.automotiva.estetica.rick.domain.entity.Servico;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
 import com.automotiva.estetica.rick.domain.gateway.ServicoGateway;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,6 +37,11 @@ public class ServicoGatewayImpl implements ServicoGateway {
     public Page<Servico> buscarTodos(String filtro, Pageable pageable) {
         return servicoRepository.findAll(ServicoSpecification.filtroUnico(filtro), pageable)
                 .map(servicoEntityMapper::toDomain);
+    }
+
+    @Override
+    public List<Servico> buscarPorIds(List<Long> ids) {
+        return servicoRepository.findByIdIn(ids).stream().map(servicoEntityMapper::toDomain).toList();
     }
 
     @Override

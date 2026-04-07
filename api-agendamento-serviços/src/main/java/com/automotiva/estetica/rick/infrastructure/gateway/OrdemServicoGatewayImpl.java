@@ -4,7 +4,9 @@ import com.automotiva.estetica.rick.infrastructure.mapper.OrdemServicoEntityMapp
 import com.automotiva.estetica.rick.infrastructure.repository.ordemservico.OrdemServicoRepository;
 import com.automotiva.estetica.rick.infrastructure.repository.ordemservico.OrdemServicoSpecification;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
+import com.automotiva.estetica.rick.domain.entity.OrdemServicoDuracaoResumo;
 import com.automotiva.estetica.rick.domain.gateway.OrdemServicoGateway;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +56,13 @@ public class OrdemServicoGatewayImpl implements OrdemServicoGateway {
         return ordemServicoRepository
                 .findAll(OrdemServicoSpecification.filtroGestao(null, status, dataInicio, dataFim), pageable)
                 .map(ordemServicoEntityMapper::toDomain);
+    }
+
+    @Override
+    public List<OrdemServicoDuracaoResumo> buscarDuracaoTotalPorOS(LocalDate data) {
+        return ordemServicoRepository.buscarDuracaoTotalPorOS(data).stream()
+                .map(item -> new OrdemServicoDuracaoResumo(item.getId(), item.getDataAgendamento(), item.getDuracaoTotal()))
+                .toList();
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.automotiva.estetica.rick.domain.usecase;
 import com.automotiva.estetica.rick.domain.entity.Servico;
 import com.automotiva.estetica.rick.domain.gateway.ServicoGateway;
 import java.math.BigDecimal;
-import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +14,9 @@ public class AtualizarServicoUseCase {
     private final ServicoGateway servicoGateway;
 
     public Servico execute(Long id, String nome, String descricao, BigDecimal preco, String imagem, Long categoriaId,
-            LocalTime duracaoHoras) {
+            Integer duracaoMinutos) {
         Servico servico = buscarServicoPorIdUseCase.execute(id);
-        servico.atualizar(nome, descricao, preco, imagem, categoriaId, duracaoHoras);
+        servico.atualizar(nome, descricao, preco, imagem, categoriaId, duracaoMinutos);
         return servicoGateway.salvar(servico);
     }
 }

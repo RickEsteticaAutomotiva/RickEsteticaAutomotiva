@@ -2,6 +2,7 @@ package com.automotiva.estetica.rick.infrastructure.repository.ordemservico;
 
 import com.automotiva.estetica.rick.infrastructure.entity.OrdemServicoEntity;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,21 @@ public interface OrdemServicoRepository
     Page<OrdemServicoEntity> findAll(Specification<OrdemServicoEntity> spec, Pageable pageable);
 
     List<OrdemServicoEntity> findByVeiculo_Pessoa_Id(Long id);
+
+    @Query(value = """
+                SELECT
+                    o.id AS id,
+                    o.data_agendamento AS dataAgendamento,
+                    COALESCE(SUM(s.duracao_minutos), 0) AS duracaoTotal
+                FROM item_servico i
+                JOIN ordem_servico o ON o.id = i.ordem_servico_id
+                JOIN servico s ON s.id = i.servico_id
+                WHERE CAST(o.data_agendamento AS DATE) = :data
+                  AND o.fk_status = 2
+                GROUP BY o.id, o.data_agendamento
+                ORDER BY o.data_agendamento ASC
+            """, nativeQuery = true)
+    List<OrdemServicoDuracaoProjection> buscarDuracaoTotalPorOS(@Param("data") LocalDate data);
 
     @Query("""
                 SELECT COALESCE(SUM(o.precoMinimo), 0) FROM OrdemServicoEntity o

@@ -71,8 +71,9 @@ public class ServicoController {
     @ClienteOnly
     @Operation(summary = "Atualiza um serviço")
     public ResponseEntity<ServicoResponse> atualizar(@PathVariable Long id, @RequestBody ServicoRequest request) {
+        Integer duracaoMinutos = servicoDTOMapper.horasParaMinutos(request.getDuracaoHoras());
         Servico servico = atualizarServicoUseCase.execute(id, request.getNome(), request.getDescricao(),
-                request.getPreco(), request.getImagem(), request.getCategoriaId(), request.getDuracaoHoras());
+                request.getPreco(), request.getImagem(), request.getCategoriaId(), duracaoMinutos);
         return ResponseEntity.ok(servicoDTOMapper.toResponse(servico));
     }
 

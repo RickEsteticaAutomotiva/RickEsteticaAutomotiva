@@ -7,10 +7,13 @@ import static org.mockito.Mockito.when;
 
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
+import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
 import com.automotiva.estetica.rick.application.security.OwnershipValidator;
 import com.automotiva.estetica.rick.application.service.OrdemServicoApplicationService;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -109,6 +112,23 @@ class OrdemServicoControllerTest {
         assertNotNull(response.getBody());
         assertEquals(77L, response.getBody().getId());
         verify(ordemServicoUseCase).atualizar(77L, request);
+    }
+
+    @Test
+    @DisplayName("buscarHorariosDisponiveis deve delegar para service e retornar 200")
+    void buscarHorariosDisponiveis_deveDelegarERetornar200() {
+        LocalDate data = LocalDate.of(2025, 12, 1);
+        List<Long> servicosIds = List.of(1L, 2L);
+        when(ordemServicoUseCase.buscarHorariosDisponiveis(data, servicosIds))
+                .thenReturn(List.of(new HorarioDisponivelResponse(LocalTime.of(9, 0), LocalTime.of(10, 0))));
+
+        var response = ordemServicoController.buscarHorariosDisponiveis(data, servicosIds);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals(LocalTime.of(9, 0), response.getBody().getFirst().inicio());
+        verify(ordemServicoUseCase).buscarHorariosDisponiveis(data, servicosIds);
     }
 }
 

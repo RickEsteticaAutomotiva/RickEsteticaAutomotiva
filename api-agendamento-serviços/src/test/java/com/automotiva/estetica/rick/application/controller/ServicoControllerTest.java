@@ -115,7 +115,7 @@ class ServicoControllerTest {
         Servico servicoAtualizado = Servico.builder().id(4L).nome("Higienizacao").build();
         ServicoResponse response = ServicoResponse.builder().id(4L).nome("Higienizacao").build();
         when(atualizarServicoUseCase.execute(4L, request.getNome(), request.getDescricao(), request.getPreco(),
-                request.getImagem(), request.getCategoriaId(), request.getDuracaoHoras())).thenReturn(servicoAtualizado);
+                request.getImagem(), request.getCategoriaId(), 90)).thenReturn(servicoAtualizado);
         when(servicoDTOMapper.toResponse(servicoAtualizado)).thenReturn(response);
 
         var httpResponse = servicoController.atualizar(4L, request);

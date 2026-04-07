@@ -6,9 +6,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
+import com.automotiva.estetica.rick.infrastructure.repository.ordemservico.OrdemServicoDuracaoProjection;
 import com.automotiva.estetica.rick.infrastructure.entity.OrdemServicoEntity;
 import com.automotiva.estetica.rick.infrastructure.mapper.OrdemServicoEntityMapper;
 import com.automotiva.estetica.rick.infrastructure.repository.ordemservico.OrdemServicoRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -75,6 +77,35 @@ class OrdemServicoGatewayImplTest {
         boolean existe = gateway.existePorVeiculoIdEDataAgendamento(3L, data);
 
         assertTrue(existe);
+    }
+
+    @Test
+    void buscarDuracaoTotalPorOS_deveMapearProjecao() {
+        LocalDate data = LocalDate.of(2025, 12, 1);
+        OrdemServicoDuracaoProjection projection = new OrdemServicoDuracaoProjection() {
+            @Override
+            public Long getId() {
+                return 1L;
+            }
+
+            @Override
+            public LocalDateTime getDataAgendamento() {
+                return LocalDateTime.of(2025, 12, 1, 10, 0);
+            }
+
+            @Override
+            public Long getDuracaoTotal() {
+                return 180L;
+            }
+        };
+
+        when(ordemServicoRepository.buscarDuracaoTotalPorOS(data)).thenReturn(List.of(projection));
+
+        var resultado = gateway.buscarDuracaoTotalPorOS(data);
+
+        assertEquals(1, resultado.size());
+        assertEquals(1L, resultado.getFirst().id());
+        assertEquals(180L, resultado.getFirst().duracaoTotal());
     }
 }
 

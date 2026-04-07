@@ -130,4 +130,25 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("GET /ordem-servicos/horarios-disponiveis -> 200 com horarios livres")
+    void buscarHorariosDisponiveis_sucesso() throws Exception {
+        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/horarios-disponiveis")
+                .header("Authorization", bearer(tokenAdmin)).param("data", "2025-12-01")
+                .param("servicosIds", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$[0].inicio", notNullValue()))
+                .andExpect(jsonPath("$[0].fim", notNullValue()));
+    }
+
+    @Test
+    @DisplayName("GET /ordem-servicos/horarios-disponiveis -> 404 quando servicos nao existem")
+    void buscarHorariosDisponiveis_servicosNaoEncontrados() throws Exception {
+        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/horarios-disponiveis")
+                .header("Authorization", bearer(tokenAdmin)).param("data", "2025-12-01")
+                .param("servicosIds", "9999"))
+                .andExpect(status().isNotFound());
+    }
 }

@@ -27,11 +27,12 @@ class ServicoDTOMapperTest {
         assertNotNull(resultado.getCategoria());
         assertEquals(7L, resultado.getCategoria().getId());
         assertEquals("Polimento", resultado.getNome());
+        assertEquals(90, resultado.getDuracaoMinutos());
     }
 
     @Test
     void toResponse_deveMapearCategoriaParaCamposDaResposta() {
-        Servico servico = Servico.builder().id(11L).nome("Higienizacao")
+        Servico servico = Servico.builder().id(11L).nome("Higienizacao").duracaoMinutos(150)
                 .categoria(Categoria.builder().id(2L).nome("Interna").build()).build();
 
         ServicoResponse response = mapper.toResponse(servico);
@@ -40,6 +41,7 @@ class ServicoDTOMapperTest {
         assertEquals(2L, response.getCategoriaId());
         assertEquals("Interna", response.getCategoriaNome());
         assertEquals(11L, response.getId());
+        assertEquals(LocalTime.of(2, 30), response.getDuracaoHoras());
     }
 
     @Test

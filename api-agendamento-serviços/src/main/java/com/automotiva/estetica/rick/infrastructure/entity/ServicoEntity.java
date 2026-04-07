@@ -8,7 +8,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,8 +37,8 @@ public class ServicoEntity extends BaseEntity<Long> {
     @Column(name = "imagem")
     private String imagem;
 
-    @Column(name = "duracao_horas")
-    private LocalTime duracaoHoras;
+    @Column(name = "duracao_minutos")
+    private Integer duracaoMinutos;
 
     /**
      * Data e hora em que o serviÃ§o foi inativado (soft delete). {@code null}

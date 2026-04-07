@@ -16,7 +16,6 @@ import com.automotiva.estetica.rick.domain.gateway.PessoaGateway;
 import com.automotiva.estetica.rick.domain.gateway.ServicoGateway;
 import com.automotiva.estetica.rick.domain.gateway.VeiculoGateway;
 import java.math.BigDecimal;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -315,13 +314,13 @@ class CrudDelegationUseCasesTest {
         when(servicoGateway.salvar(servico)).thenReturn(servico);
 
         Servico resultado = useCase.execute(40L, "Polimento", "premium", new BigDecimal("120.00"), "img.png", 7L,
-                LocalTime.of(2, 0));
+                120);
 
         assertEquals("Polimento", resultado.getNome());
         assertEquals("premium", resultado.getDescricao());
         assertEquals(new BigDecimal("120.00"), resultado.getPreco());
         assertEquals(7L, resultado.getCategoria().getId());
-        assertEquals(LocalTime.of(2, 0), resultado.getDuracaoHoras());
+        assertEquals(120, resultado.getDuracaoMinutos());
         verify(servicoGateway).salvar(servico);
     }
 

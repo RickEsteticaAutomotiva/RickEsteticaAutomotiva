@@ -12,9 +12,11 @@ import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPa
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
 import com.automotiva.estetica.rick.application.dto.request.ServicoAplicadoRequest;
+import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
+import com.automotiva.estetica.rick.domain.entity.HorarioDisponivel;
 import com.automotiva.estetica.rick.domain.entity.ItemServico;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import com.automotiva.estetica.rick.domain.entity.Servico;
@@ -29,6 +31,7 @@ import com.automotiva.estetica.rick.domain.usecase.AtualizarOrdemServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.AtualizarStatusOrdemServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.AtualizarValorItemServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdemServicoComDetalhesUseCase;
+import com.automotiva.estetica.rick.domain.usecase.BuscarHorariosDisponiveisUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdemServicoPorIdUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdensServicoParaGestaoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdensServicoPorUsuarioUseCase;
@@ -40,6 +43,7 @@ import com.automotiva.estetica.rick.domain.usecase.RemoverServicoOrdemServicoUse
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -96,6 +100,9 @@ class OrdemServicoApplicationServiceTest {
     private BuscarOrdensServicoPorUsuarioUseCase buscarOrdensServicoPorUsuarioUseCase;
 
     @Mock
+    private BuscarHorariosDisponiveisUseCase buscarHorariosDisponiveisUseCase;
+
+    @Mock
     private NotificarAtualizacaoOrdemServicoUseCase notificarAtualizacaoOrdemServicoUseCase;
 
     @Spy
@@ -147,6 +154,39 @@ class OrdemServicoApplicationServiceTest {
 
         assertNotNull(resultado);
         assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Deve retornar horarios disponiveis para agendamento")
+    void buscarHorariosDisponiveis_sucesso() {
+        LocalDate data = LocalDate.of(2025, 12, 1);
+        List<Long> servicosIds = List.of(1L, 2L);
+
+        when(buscarHorariosDisponiveisUseCase.execute(data, servicosIds))
+                .thenReturn(List.of(new HorarioDisponivel(LocalTime.of(9, 0), LocalTime.of(11, 0))));
+
+        List<HorarioDisponivelResponse> resultado = ordemServicoApplicationService.buscarHorariosDisponiveis(data,
+                servicosIds);
+
+        assertEquals(1, resultado.size());
+        assertEquals(LocalTime.of(9, 0), resultado.getFirst().inicio());
+        assertEquals(LocalTime.of(11, 0), resultado.getFirst().fim());
+        verify(buscarHorariosDisponiveisUseCase).execute(data, servicosIds);
+    }
+
+    @Test
+    @DisplayName("Deve propagar excecao quando servicos nao forem encontrados")
+    void buscarHorariosDisponiveis_servicosNaoEncontrados_devePropagarExcecao() {
+        LocalDate data = LocalDate.of(2025, 12, 1);
+        List<Long> servicosIds = List.of(9999L);
+        RecursoNaoEncontradoException ex = RecursoNaoEncontradoException.builder().mensagem("Servico nao encontrado")
+                .detalhes("").build();
+        when(buscarHorariosDisponiveisUseCase.execute(data, servicosIds)).thenThrow(ex);
+
+        RecursoNaoEncontradoException thrown = assertThrows(RecursoNaoEncontradoException.class,
+                () -> ordemServicoApplicationService.buscarHorariosDisponiveis(data, servicosIds));
+
+        assertSame(ex, thrown);
     }
 
     @Test

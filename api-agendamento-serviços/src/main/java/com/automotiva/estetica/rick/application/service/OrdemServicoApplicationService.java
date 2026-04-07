@@ -9,6 +9,7 @@ import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPa
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
 import com.automotiva.estetica.rick.application.dto.request.ServicoAplicadoRequest;
+import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
@@ -22,6 +23,7 @@ import com.automotiva.estetica.rick.domain.usecase.AtualizarStatusOrdemServicoUs
 import com.automotiva.estetica.rick.domain.usecase.AtualizarValorItemServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdemServicoComDetalhesUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdemServicoPorIdUseCase;
+import com.automotiva.estetica.rick.domain.usecase.BuscarHorariosDisponiveisUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdensServicoPorUsuarioUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdensServicoParaGestaoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.CriarOrdemServicoUseCase;
@@ -30,6 +32,7 @@ import com.automotiva.estetica.rick.domain.usecase.ListarOrdensServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.NotificarAtualizacaoOrdemServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.RemoverServicoOrdemServicoUseCase;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +59,7 @@ public class OrdemServicoApplicationService {
     private final ListarOrdensServicoUseCase listarOrdensServicoUseCase;
     private final BuscarOrdemServicoPorIdUseCase buscarOrdemServicoPorIdUseCase;
     private final BuscarOrdensServicoPorUsuarioUseCase buscarOrdensServicoPorUsuarioUseCase;
+    private final BuscarHorariosDisponiveisUseCase buscarHorariosDisponiveisUseCase;
     private final NotificarAtualizacaoOrdemServicoUseCase notificarAtualizacaoOrdemServicoUseCase;
     private final OrdemServicoResponseAssembler ordemServicoResponseAssembler;
 
@@ -100,6 +104,11 @@ public class OrdemServicoApplicationService {
         return buscarOrdensServicoPorUsuarioUseCase.execute(usuarioId).stream()
                 .map(ordem -> ordemServicoResponseAssembler.toResponse(ordem, buscarItensPorOrdem(ordem.getId())))
                 .toList();
+    }
+
+    public List<HorarioDisponivelResponse> buscarHorariosDisponiveis(LocalDate data, List<Long> servicosIds) {
+        return buscarHorariosDisponiveisUseCase.execute(data, servicosIds).stream()
+                .map(horario -> new HorarioDisponivelResponse(horario.inicio(), horario.fim())).toList();
     }
 
     @Transactional

@@ -3,7 +3,10 @@ package com.automotiva.estetica.rick.infrastructure.gateway;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.automotiva.estetica.rick.infrastructure.entity.OrdemServicoEntity;
+import com.automotiva.estetica.rick.infrastructure.entity.CategoriaEntity;
+import com.automotiva.estetica.rick.infrastructure.entity.ItemServicoEntity;
 import com.automotiva.estetica.rick.infrastructure.entity.PessoaEntity;
+import com.automotiva.estetica.rick.infrastructure.entity.ServicoEntity;
 import com.automotiva.estetica.rick.infrastructure.entity.StatusEntity;
 import com.automotiva.estetica.rick.infrastructure.entity.VeiculoEntity;
 import com.automotiva.estetica.rick.infrastructure.mapper.OrdemServicoEntityMapperImpl;
@@ -38,6 +41,7 @@ class OrdemServicoGatewayImplIT {
 
     private VeiculoEntity veiculo;
     private StatusEntity statusAnalise;
+    private StatusEntity statusConfirmada;
 
     @BeforeEach
     void setUp() {
@@ -49,6 +53,7 @@ class OrdemServicoGatewayImplIT {
                 .porte("Pequeno").cor("Prata").ano("2010").pessoa(pessoa).build());
 
         statusAnalise = em.persistFlushFind(StatusEntity.builder().descricao("ANALISE").build());
+        statusConfirmada = em.persistFlushFind(StatusEntity.builder().descricao("AGENDA CONFIRMADA").build());
         em.persistFlushFind(StatusEntity.builder().descricao("CONCLUIDO").build());
         em.persistFlushFind(StatusEntity.builder().descricao("CANCELADO").build());
     }
@@ -111,5 +116,29 @@ class OrdemServicoGatewayImplIT {
         var ordens = gateway.buscarPorVeiculoPessoaId(99999L);
 
         assertThat(ordens).isEmpty();
+    }
+
+    @Test
+    @DisplayName("buscarDuracaoTotalPorOS - retorna duracao total por ordem no dia")
+    void buscarDuracaoTotalPorOS_sucesso() {
+        CategoriaEntity categoria = em.persistFlushFind(CategoriaEntity.builder().nome("Lavagem").build());
+        ServicoEntity servico1 = em.persistFlushFind(ServicoEntity.builder().nome("Servico 1").preco(BigDecimal.TEN)
+                .duracaoMinutos(60).categoria(categoria).build());
+        ServicoEntity servico2 = em.persistFlushFind(ServicoEntity.builder().nome("Servico 2").preco(BigDecimal.ONE)
+                .duracaoMinutos(30).categoria(categoria).build());
+
+        LocalDateTime dataAgendamento = LocalDateTime.of(2026, 5, 10, 14, 0);
+        OrdemServicoEntity ordem = persistirOrdem(dataAgendamento, statusConfirmada, BigDecimal.valueOf(50));
+
+        em.persistFlushFind(
+                ItemServicoEntity.builder().ordemServico(ordem).servico(servico1).preco(BigDecimal.TEN).build());
+        em.persistFlushFind(
+                ItemServicoEntity.builder().ordemServico(ordem).servico(servico2).preco(BigDecimal.ONE).build());
+
+        var resultado = gateway.buscarDuracaoTotalPorOS(LocalDate.of(2026, 5, 10));
+
+        assertThat(resultado).hasSize(1);
+        assertThat(resultado.getFirst().id()).isEqualTo(ordem.getId());
+        assertThat(resultado.getFirst().duracaoTotal()).isEqualTo(90L);
     }
 }

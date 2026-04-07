@@ -1,6 +1,8 @@
 package com.automotiva.estetica.rick.domain.gateway;
 
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
+import com.automotiva.estetica.rick.domain.entity.OrdemServicoDuracaoResumo;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,8 @@ public interface OrdemServicoGateway {
 
     Page<OrdemServico> buscarTodosParaGestao(Long status, LocalDateTime dataInicio, LocalDateTime dataFim,
             Pageable pageable);
+
+    List<OrdemServicoDuracaoResumo> buscarDuracaoTotalPorOS(LocalDate data);
 
     boolean existePorVeiculoIdEDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
 }

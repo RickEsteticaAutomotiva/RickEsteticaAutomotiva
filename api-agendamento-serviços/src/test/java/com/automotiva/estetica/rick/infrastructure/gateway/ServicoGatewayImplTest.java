@@ -13,6 +13,7 @@ import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoExcepti
 import com.automotiva.estetica.rick.infrastructure.entity.ServicoEntity;
 import com.automotiva.estetica.rick.infrastructure.mapper.ServicoEntityMapper;
 import com.automotiva.estetica.rick.infrastructure.repository.servico.ServicoRepository;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,6 +73,20 @@ class ServicoGatewayImplTest {
         assertTrue(byId.isPresent());
         assertEquals("Polimento", byId.orElseThrow().getNome());
         assertEquals(1, page.getTotalElements());
+    }
+
+    @Test
+    void buscarPorIds_deveMapearLista() {
+        ServicoEntity entity = ServicoEntity.builder().id(3L).nome("Higienizacao").build();
+        Servico servico = Servico.builder().id(3L).nome("Higienizacao").build();
+
+        when(servicoRepository.findByIdIn(List.of(3L))).thenReturn(List.of(entity));
+        when(servicoEntityMapper.toDomain(entity)).thenReturn(servico);
+
+        var resultado = gateway.buscarPorIds(List.of(3L));
+
+        assertEquals(1, resultado.size());
+        assertEquals(3L, resultado.getFirst().getId());
     }
 
     @Test
