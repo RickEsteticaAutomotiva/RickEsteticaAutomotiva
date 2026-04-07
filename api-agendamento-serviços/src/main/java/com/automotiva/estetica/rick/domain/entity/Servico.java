@@ -38,7 +38,4 @@ public class Servico {
             this.duracaoMinutos = duracaoMinutos;
     }
 
-    public int getDuracaoMinutos() {
-        return duracaoMinutos;
-    }
 }

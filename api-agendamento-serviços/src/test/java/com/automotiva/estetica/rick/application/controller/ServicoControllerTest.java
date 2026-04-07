@@ -114,6 +114,7 @@ class ServicoControllerTest {
                 .duracaoHoras(LocalTime.of(1, 30)).build();
         Servico servicoAtualizado = Servico.builder().id(4L).nome("Higienizacao").build();
         ServicoResponse response = ServicoResponse.builder().id(4L).nome("Higienizacao").build();
+        when(servicoDTOMapper.horasParaMinutos(request.getDuracaoHoras())).thenReturn(90);
         when(atualizarServicoUseCase.execute(4L, request.getNome(), request.getDescricao(), request.getPreco(),
                 request.getImagem(), request.getCategoriaId(), 90)).thenReturn(servicoAtualizado);
         when(servicoDTOMapper.toResponse(servicoAtualizado)).thenReturn(response);

@@ -40,8 +40,9 @@ public interface OrdemServicoRepository
                 FROM item_servico i
                 JOIN ordem_servico o ON o.id = i.ordem_servico_id
                 JOIN servico s ON s.id = i.servico_id
+                JOIN status st ON st.id = o.fk_status
                 WHERE CAST(o.data_agendamento AS DATE) = :data
-                  AND o.fk_status = 2
+                  AND st.descricao = 'AGENDA CONFIRMADA'
                 GROUP BY o.id, o.data_agendamento
                 ORDER BY o.data_agendamento ASC
             """, nativeQuery = true)
