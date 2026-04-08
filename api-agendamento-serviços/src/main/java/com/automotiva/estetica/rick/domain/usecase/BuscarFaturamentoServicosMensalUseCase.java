@@ -5,8 +5,6 @@ import com.automotiva.estetica.rick.domain.entity.FaturamentoServicoItemResumo;
 import com.automotiva.estetica.rick.domain.entity.FaturamentoServicoResumo;
 import com.automotiva.estetica.rick.domain.gateway.DashboardGateway;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +20,7 @@ public class BuscarFaturamentoServicosMensalUseCase {
     private final DashboardGateway dashboardGateway;
 
     public List<FaturamentoServicoCategoriaResumo> execute() {
-        PeriodoMensal mesAtual = getPeriodoMesAtual();
+        PeriodoMensal mesAtual = PeriodoMensalFactory.mesAtual();
 
         return dashboardGateway.buscarFaturamentoServicos(mesAtual.inicio(), mesAtual.fim()).stream()
                 .collect(Collectors.groupingBy(dto -> defaultCategoria(dto.categoria()), LinkedHashMap::new,
@@ -50,13 +48,5 @@ public class BuscarFaturamentoServicosMensalUseCase {
 
     private BigDecimal defaultValor(BigDecimal valor) {
         return valor == null ? ZERO : valor;
-    }
-
-    private PeriodoMensal getPeriodoMesAtual() {
-        LocalDate inicio = LocalDate.now().withDayOfMonth(1);
-        return new PeriodoMensal(inicio.atStartOfDay(), LocalDateTime.now());
-    }
-
-    private record PeriodoMensal(LocalDateTime inicio, LocalDateTime fim) {
     }
 }

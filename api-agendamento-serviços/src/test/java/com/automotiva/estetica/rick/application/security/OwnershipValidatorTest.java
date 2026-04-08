@@ -55,4 +55,3 @@ class OwnershipValidatorTest {
         assertThrows(AcessoNegadoException.class, () -> ownershipValidator.validarPropriedadePessoa(99L, 7L));
     }
 }
-

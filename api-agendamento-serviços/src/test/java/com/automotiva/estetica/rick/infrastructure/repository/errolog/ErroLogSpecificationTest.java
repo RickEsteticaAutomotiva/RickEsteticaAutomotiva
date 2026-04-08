@@ -42,7 +42,8 @@ class ErroLogSpecificationTest {
 
     @Test
     void comFiltros_quandoSemFiltros_deveRetornarTodosOrdenadosPorTimestampDesc() {
-        List<ErroLogEntity> resultado = repository.findAll(ErroLogSpecification.comFiltros(null, null, null, null, null));
+        List<ErroLogEntity> resultado = repository
+                .findAll(ErroLogSpecification.comFiltros(null, null, null, null, null));
 
         assertEquals(3, resultado.size());
         assertEquals(LocalDateTime.of(2026, 4, 2, 11, 0), resultado.get(0).getTimestamp());
@@ -52,7 +53,8 @@ class ErroLogSpecificationTest {
 
     @Test
     void comFiltros_deveFiltrarPorTipoExcecaoCaseInsensitive() {
-        long total = repository.findAll(ErroLogSpecification.comFiltros("runtimeexception", null, null, null, null)).size();
+        long total = repository.findAll(ErroLogSpecification.comFiltros("runtimeexception", null, null, null, null))
+                .size();
 
         assertEquals(1, total);
     }
@@ -79,4 +81,3 @@ class ErroLogSpecificationTest {
         assertEquals(1, total);
     }
 }
-

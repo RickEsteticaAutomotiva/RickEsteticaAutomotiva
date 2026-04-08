@@ -49,8 +49,8 @@ class BuscarHorariosDisponiveisUseCaseTest {
         Servico servico = Servico.builder().id(1L).duracaoMinutos(60).build();
         when(servicoGateway.buscarPorIds(List.of(1L))).thenReturn(List.of(servico));
 
-        when(ordemServicoGateway.buscarDuracaoTotalPorOS(data)).thenReturn(List.of(
-                new OrdemServicoDuracaoResumo(1L, LocalDateTime.of(2025, 12, 1, 10, 0), 180L)));
+        when(ordemServicoGateway.buscarDuracaoTotalPorOS(data))
+                .thenReturn(List.of(new OrdemServicoDuracaoResumo(1L, LocalDateTime.of(2025, 12, 1, 10, 0), 180L)));
 
         var resultado = useCase.execute(data, List.of(1L));
 
@@ -65,6 +65,3 @@ class BuscarHorariosDisponiveisUseCaseTest {
         assertEquals(LocalTime.of(16, 30), resultado.get(3).fim());
     }
 }
-
-
-

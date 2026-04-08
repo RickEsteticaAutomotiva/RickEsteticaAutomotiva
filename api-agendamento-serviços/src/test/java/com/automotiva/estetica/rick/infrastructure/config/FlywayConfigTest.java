@@ -36,4 +36,3 @@ class FlywayConfigTest {
         verify(fluentConfiguration).loggers("slf4j");
     }
 }
-

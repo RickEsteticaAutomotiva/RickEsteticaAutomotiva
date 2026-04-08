@@ -11,10 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface ErroLogRepository
-        extends
-            JpaRepository<ErroLogEntity, Long>,
-            JpaSpecificationExecutor<ErroLogEntity> {
+public interface ErroLogRepository extends JpaRepository<ErroLogEntity, Long>, JpaSpecificationExecutor<ErroLogEntity> {
 
     @Modifying
     @Transactional

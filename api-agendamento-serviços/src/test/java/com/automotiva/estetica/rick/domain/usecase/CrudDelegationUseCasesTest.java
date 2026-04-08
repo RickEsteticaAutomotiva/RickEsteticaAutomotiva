@@ -308,13 +308,12 @@ class CrudDelegationUseCasesTest {
     void atualizarServico_deveAtualizarCamposInformados() {
         BuscarServicoPorIdUseCase buscarServicoPorIdUseCase = org.mockito.Mockito.mock(BuscarServicoPorIdUseCase.class);
         AtualizarServicoUseCase useCase = new AtualizarServicoUseCase(buscarServicoPorIdUseCase, servicoGateway);
-        Servico servico = Servico.builder().id(40L).nome("Lavagem").descricao("desc")
-                .preco(new BigDecimal("50.00")).build();
+        Servico servico = Servico.builder().id(40L).nome("Lavagem").descricao("desc").preco(new BigDecimal("50.00"))
+                .build();
         when(buscarServicoPorIdUseCase.execute(40L)).thenReturn(servico);
         when(servicoGateway.salvar(servico)).thenReturn(servico);
 
-        Servico resultado = useCase.execute(40L, "Polimento", "premium", new BigDecimal("120.00"), "img.png", 7L,
-                120);
+        Servico resultado = useCase.execute(40L, "Polimento", "premium", new BigDecimal("120.00"), "img.png", 7L, 120);
 
         assertEquals("Polimento", resultado.getNome());
         assertEquals("premium", resultado.getDescricao());
@@ -329,8 +328,8 @@ class CrudDelegationUseCasesTest {
     void atualizarServico_deveManterCamposQuandoNulos() {
         BuscarServicoPorIdUseCase buscarServicoPorIdUseCase = org.mockito.Mockito.mock(BuscarServicoPorIdUseCase.class);
         AtualizarServicoUseCase useCase = new AtualizarServicoUseCase(buscarServicoPorIdUseCase, servicoGateway);
-        Servico servico = Servico.builder().id(41L).nome("Original").descricao("desc")
-                .preco(new BigDecimal("70.00")).build();
+        Servico servico = Servico.builder().id(41L).nome("Original").descricao("desc").preco(new BigDecimal("70.00"))
+                .build();
         when(buscarServicoPorIdUseCase.execute(41L)).thenReturn(servico);
         when(servicoGateway.salvar(servico)).thenReturn(servico);
 
@@ -342,6 +341,3 @@ class CrudDelegationUseCasesTest {
         verify(servicoGateway).salvar(servico);
     }
 }
-
-
-

@@ -61,8 +61,9 @@ class ServicoControllerTest {
         ServicoResponse servicoResponse = ServicoResponse.builder().id(1L).nome("Lavagem").build();
         Page<Servico> pagina = new PageImpl<>(List.of(servico), org.springframework.data.domain.PageRequest.of(0, 10),
                 1);
-        when(listarServicosUseCase.execute("lav", org.springframework.data.domain.PageRequest.of(0, 10,
-                org.springframework.data.domain.Sort.by("id")))).thenReturn(pagina);
+        when(listarServicosUseCase.execute("lav",
+                org.springframework.data.domain.PageRequest.of(0, 10, org.springframework.data.domain.Sort.by("id"))))
+                .thenReturn(pagina);
         when(servicoDTOMapper.toResponse(servico)).thenReturn(servicoResponse);
 
         var httpResponse = servicoController.buscarTodos(request);
@@ -110,19 +111,23 @@ class ServicoControllerTest {
     @DisplayName("atualizar deve delegar use case e retornar 200")
     void atualizar_deveDelegarERetornar200() {
         ServicoRequest request = ServicoRequest.builder().nome("Higienizacao").descricao("Interna")
-                .preco(new BigDecimal("180.00")).imagem("img.png").categoriaId(4L)
-                .duracaoHoras(LocalTime.of(1, 30)).build();
+                .preco(new BigDecimal("180.00")).imagem("img.png").categoriaId(4L).duracaoHoras(LocalTime.of(1, 30))
+                .build();
+        Integer duracaoMinutos = 90;
         Servico servicoAtualizado = Servico.builder().id(4L).nome("Higienizacao").build();
         ServicoResponse response = ServicoResponse.builder().id(4L).nome("Higienizacao").build();
-        when(servicoDTOMapper.horasParaMinutos(request.getDuracaoHoras())).thenReturn(90);
+        when(servicoDTOMapper.horasParaMinutos(request.getDuracaoHoras())).thenReturn(duracaoMinutos);
         when(atualizarServicoUseCase.execute(4L, request.getNome(), request.getDescricao(), request.getPreco(),
-                request.getImagem(), request.getCategoriaId(), 90)).thenReturn(servicoAtualizado);
+                request.getImagem(), request.getCategoriaId(), duracaoMinutos)).thenReturn(servicoAtualizado);
         when(servicoDTOMapper.toResponse(servicoAtualizado)).thenReturn(response);
 
         var httpResponse = servicoController.atualizar(4L, request);
 
         assertEquals(HttpStatus.OK, httpResponse.getStatusCode());
         assertEquals(response, httpResponse.getBody());
+        verify(servicoDTOMapper).horasParaMinutos(request.getDuracaoHoras());
+        verify(atualizarServicoUseCase).execute(4L, request.getNome(), request.getDescricao(), request.getPreco(),
+                request.getImagem(), request.getCategoriaId(), duracaoMinutos);
     }
 
     @Test
@@ -134,5 +139,3 @@ class ServicoControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, httpResponse.getStatusCode());
     }
 }
-
-

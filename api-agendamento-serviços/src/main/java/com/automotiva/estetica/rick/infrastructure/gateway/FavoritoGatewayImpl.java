@@ -30,8 +30,7 @@ public class FavoritoGatewayImpl implements FavoritoGateway {
 
     @Override
     public List<Favorito> buscarPorPessoaId(Long pessoaId) {
-        return favoritoRepository.findByPessoaId(pessoaId).stream().map(favoritoEntityMapper::toDomain)
-                .toList();
+        return favoritoRepository.findByPessoaId(pessoaId).stream().map(favoritoEntityMapper::toDomain).toList();
     }
 
     @Override

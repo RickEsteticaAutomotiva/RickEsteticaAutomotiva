@@ -191,9 +191,3 @@ class PessoaGatewayImplTest {
         assertTrue(gateway.existePorId(88L));
     }
 }
-
-
-
-
-
-

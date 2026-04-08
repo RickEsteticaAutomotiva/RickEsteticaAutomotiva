@@ -30,8 +30,7 @@ public class CarrinhoGatewayImpl implements CarrinhoGateway {
 
     @Override
     public List<Carrinho> buscarPorPessoaId(Long pessoaId) {
-        return carrinhoRepository.findByPessoaId(pessoaId).stream().map(carrinhoEntityMapper::toDomain)
-                .toList();
+        return carrinhoRepository.findByPessoaId(pessoaId).stream().map(carrinhoEntityMapper::toDomain).toList();
     }
 
     @Override

@@ -55,4 +55,3 @@ class ServicoSpecificationTest {
         assertEquals(1, repository.findAll(ServicoSpecification.filtroUnico("estetica")).size());
     }
 }
-

@@ -115,4 +115,3 @@ class ServicoGatewayImplTest {
         assertThrows(RecursoNaoEncontradoException.class, () -> gateway.deletarPorId(99L));
     }
 }
-

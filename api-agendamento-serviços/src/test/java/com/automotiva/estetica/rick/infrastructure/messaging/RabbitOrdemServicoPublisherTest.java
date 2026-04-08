@@ -33,12 +33,8 @@ class RabbitOrdemServicoPublisherTest {
     @DisplayName("deve publicar evento com observacoes quando valor nao for blank")
     void publicarOrdemServicoCriada_devePublicarEventoComObservacoes() {
         LocalDateTime dataAgendamento = LocalDateTime.of(2026, 4, 3, 20, 0);
-        OrdemServico ordemServico = OrdemServico.builder()
-                .id(55L)
-                .dataAgendamento(dataAgendamento)
-                .veiculo(Veiculo.builder().placa("ABC1D23").build())
-                .observacoes("Cliente pediu polimento")
-                .build();
+        OrdemServico ordemServico = OrdemServico.builder().id(55L).dataAgendamento(dataAgendamento)
+                .veiculo(Veiculo.builder().placa("ABC1D23").build()).observacoes("Cliente pediu polimento").build();
         List<String> nomesServicos = List.of("Polimento");
 
         rabbitOrdemServicoPublisher.publicarOrdemServicoCriada(ordemServico, nomesServicos);
@@ -46,8 +42,8 @@ class RabbitOrdemServicoPublisherTest {
         ArgumentCaptor<OrdemServicoCriadaEvent> eventCaptor = ArgumentCaptor.forClass(OrdemServicoCriadaEvent.class);
         verify(rabbitTemplate).convertAndSend(eq(RabbitMqConsts.ORDEM_SERVICO_CRIADA_QUEUE), eventCaptor.capture());
 
-        OrdemServicoCriadaEvent expected = new OrdemServicoCriadaEvent(55L, "ABC1D23", dataAgendamento,
-                nomesServicos, "Cliente pediu polimento");
+        OrdemServicoCriadaEvent expected = new OrdemServicoCriadaEvent(55L, "ABC1D23", dataAgendamento, nomesServicos,
+                "Cliente pediu polimento");
         assertEquals(expected, eventCaptor.getValue());
     }
 
@@ -55,12 +51,8 @@ class RabbitOrdemServicoPublisherTest {
     @DisplayName("deve publicar evento com observacoes nulas quando texto for blank")
     void publicarOrdemServicoCriada_deveNormalizarObservacoesBlankParaNull() {
         LocalDateTime dataAgendamento = LocalDateTime.of(2026, 4, 3, 21, 0);
-        OrdemServico ordemServico = OrdemServico.builder()
-                .id(99L)
-                .dataAgendamento(dataAgendamento)
-                .veiculo(Veiculo.builder().placa("XYZ9W88").build())
-                .observacoes("   ")
-                .build();
+        OrdemServico ordemServico = OrdemServico.builder().id(99L).dataAgendamento(dataAgendamento)
+                .veiculo(Veiculo.builder().placa("XYZ9W88").build()).observacoes("   ").build();
         List<String> nomesServicos = List.of("Lavagem", "Higienizacao");
 
         rabbitOrdemServicoPublisher.publicarOrdemServicoCriada(ordemServico, nomesServicos);
@@ -68,9 +60,8 @@ class RabbitOrdemServicoPublisherTest {
         ArgumentCaptor<OrdemServicoCriadaEvent> eventCaptor = ArgumentCaptor.forClass(OrdemServicoCriadaEvent.class);
         verify(rabbitTemplate).convertAndSend(eq(RabbitMqConsts.ORDEM_SERVICO_CRIADA_QUEUE), eventCaptor.capture());
 
-        OrdemServicoCriadaEvent expected = new OrdemServicoCriadaEvent(99L, "XYZ9W88", dataAgendamento,
-                nomesServicos, null);
+        OrdemServicoCriadaEvent expected = new OrdemServicoCriadaEvent(99L, "XYZ9W88", dataAgendamento, nomesServicos,
+                null);
         assertEquals(expected, eventCaptor.getValue());
     }
 }
-

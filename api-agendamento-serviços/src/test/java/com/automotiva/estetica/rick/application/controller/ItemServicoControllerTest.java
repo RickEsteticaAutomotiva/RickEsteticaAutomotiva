@@ -58,8 +58,8 @@ class ItemServicoControllerTest {
     @Test
     @DisplayName("buscarPorId deve mapear nulls quando servico e ordem estiverem ausentes")
     void buscarPorId_deveMapearNullsERetornar200() {
-        ItemServico item = ItemServico.builder().id(2L).servico(null).ordemServico(null)
-                .preco(new BigDecimal("50.00")).build();
+        ItemServico item = ItemServico.builder().id(2L).servico(null).ordemServico(null).preco(new BigDecimal("50.00"))
+                .build();
         when(buscarItemServicoPorIdUseCase.execute(2L)).thenReturn(item);
 
         var response = itemServicoController.buscarPorId(2L);
@@ -88,5 +88,3 @@ class ItemServicoControllerTest {
         assertEquals(300L, response.getBody().getFirst().getIdOrdemServico());
     }
 }
-
-

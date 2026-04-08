@@ -87,4 +87,3 @@ class CategoriaGatewayImplTest {
         verify(categoriaRepository).deleteById(7L);
     }
 }
-

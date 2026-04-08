@@ -51,8 +51,8 @@ public class ServicoGatewayImpl implements ServicoGateway {
 
     @Override
     public void deletarPorId(Long id) {
-        ServicoEntity entity = servicoRepository.findById(id).orElseThrow(() -> RecursoNaoEncontradoException
-                .builder().mensagem("o serviÃ§o com id " + id + " nÃ£o foi encontrado").detalhes("").build());
+        ServicoEntity entity = servicoRepository.findById(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                .mensagem("o serviÃ§o com id " + id + " nÃ£o foi encontrado").detalhes("").build());
         entity.setDeletadoEm(LocalDateTime.now());
         servicoRepository.save(entity);
     }

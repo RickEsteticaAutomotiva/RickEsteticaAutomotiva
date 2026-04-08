@@ -72,5 +72,3 @@ class ErroLogGatewayImplTest {
         verify(erroLogRepository).deleteByTimestampBefore(limite);
     }
 }
-
-

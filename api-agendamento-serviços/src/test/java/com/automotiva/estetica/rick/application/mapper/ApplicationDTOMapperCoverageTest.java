@@ -42,18 +42,17 @@ class ApplicationDTOMapperCoverageTest {
 
     @Test
     void pessoaMapper_deveMapearCadastroEResposta() {
-        PessoaCadastroRequest request = PessoaCadastroRequest.builder().nome("Ana")
-                .cpf("12345678900").email("ana@x.com").telefone("11999999999")
-                .dataNascimento(LocalDate.of(1995, 5, 10)).senha("hash").roles(EnumSet.of(RoleEnum.ROLE_GERENTE))
-                .build();
+        PessoaCadastroRequest request = PessoaCadastroRequest.builder().nome("Ana").cpf("12345678900")
+                .email("ana@x.com").telefone("11999999999").dataNascimento(LocalDate.of(1995, 5, 10)).senha("hash")
+                .roles(EnumSet.of(RoleEnum.ROLE_GERENTE)).build();
 
         Pessoa domain = pessoaMapper.toDomain(request);
         assertEquals("Ana", domain.getNome());
         assertEquals("ana@x.com", domain.getEmail());
         assertEquals("hash", domain.getSenha());
 
-        var response = pessoaMapper.toResponse(Pessoa.builder().id(5L).nome("Ana")
-                .roles(EnumSet.of(RoleEnum.ROLE_GERENTE)).build());
+        var response = pessoaMapper
+                .toResponse(Pessoa.builder().id(5L).nome("Ana").roles(EnumSet.of(RoleEnum.ROLE_GERENTE)).build());
         assertEquals(5L, response.getId());
         assertEquals("Ana", response.getNome());
         assertEquals(EnumSet.of(RoleEnum.ROLE_GERENTE), response.getRoles());
@@ -67,8 +66,8 @@ class ApplicationDTOMapperCoverageTest {
         assertEquals(12L, domain.getPessoa().getId());
         assertEquals("ABC1D23", domain.getPlaca());
 
-        VeiculoResponse response = veiculoMapper.toResponse(Veiculo.builder().id(22L).placa("ABC1D23")
-                .pessoa(Pessoa.builder().id(12L).build()).build());
+        VeiculoResponse response = veiculoMapper.toResponse(
+                Veiculo.builder().id(22L).placa("ABC1D23").pessoa(Pessoa.builder().id(12L).build()).build());
         assertEquals(22L, response.getId());
         assertEquals(12L, response.getIdPessoa());
     }
@@ -99,4 +98,3 @@ class ApplicationDTOMapperCoverageTest {
         assertEquals(500, response.getStatusHttp());
     }
 }
-

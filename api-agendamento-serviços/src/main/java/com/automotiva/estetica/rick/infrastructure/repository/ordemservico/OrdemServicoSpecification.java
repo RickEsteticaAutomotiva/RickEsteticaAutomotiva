@@ -28,8 +28,8 @@ public final class OrdemServicoSpecification {
         };
     }
 
-    public static Specification<OrdemServicoEntity> filtroGestao(String filtro, Long status,
-            LocalDateTime dataInicio, LocalDateTime dataFim) {
+    public static Specification<OrdemServicoEntity> filtroGestao(String filtro, Long status, LocalDateTime dataInicio,
+            LocalDateTime dataFim) {
         return (root, query, cb) -> {
             var predicates = new ArrayList<jakarta.persistence.criteria.Predicate>();
 

@@ -191,8 +191,8 @@ class ErroLogResponseRedactorTest {
     @Test
     @DisplayName("Deve preservar email muito curto ou invalido sem mascarar")
     void testMaskEmailFormatoInvalido() {
-        ErroLogResponse response = ErroLogResponse.builder().id(10L).timestamp(LocalDateTime.now())
-                .tipoExcecao("x").mensagem("x").usuarioEmail("a@dominio.com").ipCliente("10.0.0.1").build();
+        ErroLogResponse response = ErroLogResponse.builder().id(10L).timestamp(LocalDateTime.now()).tipoExcecao("x")
+                .mensagem("x").usuarioEmail("a@dominio.com").ipCliente("10.0.0.1").build();
 
         ErroLogResponse redacted = ErroLogResponseRedactor.redactResponse(response);
 
@@ -202,8 +202,8 @@ class ErroLogResponseRedactorTest {
     @Test
     @DisplayName("Deve retornar marcador padrao quando IP tiver formato invalido")
     void testMaskIpFormatoInvalido() {
-        ErroLogResponse response = ErroLogResponse.builder().id(11L).timestamp(LocalDateTime.now())
-                .tipoExcecao("x").mensagem("x").usuarioEmail("user@test.com").ipCliente("ip-invalido").build();
+        ErroLogResponse response = ErroLogResponse.builder().id(11L).timestamp(LocalDateTime.now()).tipoExcecao("x")
+                .mensagem("x").usuarioEmail("user@test.com").ipCliente("ip-invalido").build();
 
         ErroLogResponse redacted = ErroLogResponseRedactor.redactResponse(response);
 
@@ -213,8 +213,8 @@ class ErroLogResponseRedactorTest {
     @Test
     @DisplayName("Deve preservar email nulo e ip em branco")
     void testMaskEmailEIpNulosOuBlank() {
-        ErroLogResponse response = ErroLogResponse.builder().id(12L).timestamp(LocalDateTime.now())
-                .tipoExcecao("x").mensagem("x").usuarioEmail(null).ipCliente("   ").build();
+        ErroLogResponse response = ErroLogResponse.builder().id(12L).timestamp(LocalDateTime.now()).tipoExcecao("x")
+                .mensagem("x").usuarioEmail(null).ipCliente("   ").build();
 
         ErroLogResponse redacted = ErroLogResponseRedactor.redactResponse(response);
 

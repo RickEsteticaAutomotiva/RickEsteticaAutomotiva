@@ -60,5 +60,3 @@ class RequestCachingFilterTest {
         assertNull(RequestIdHolder.getRequestId());
     }
 }
-
-

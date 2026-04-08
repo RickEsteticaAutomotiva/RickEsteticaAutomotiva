@@ -63,4 +63,3 @@ class EmailEntityMapperTest {
         assertNull(mapper.toEntity(null));
     }
 }
-

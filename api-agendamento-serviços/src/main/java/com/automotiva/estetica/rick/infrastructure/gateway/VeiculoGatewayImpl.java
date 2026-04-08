@@ -21,8 +21,7 @@ public class VeiculoGatewayImpl implements VeiculoGateway {
 
     @Override
     public Veiculo salvar(Veiculo veiculo) {
-        return veiculoEntityMapper
-                .toDomain(veiculoRepository.save(veiculoEntityMapper.toEntity(veiculo)));
+        return veiculoEntityMapper.toDomain(veiculoRepository.save(veiculoEntityMapper.toEntity(veiculo)));
     }
 
     @Override
@@ -47,8 +46,8 @@ public class VeiculoGatewayImpl implements VeiculoGateway {
 
     @Override
     public void deletarPorId(Long id) {
-        VeiculoEntity entity = veiculoRepository.findById(id).orElseThrow(() -> RecursoNaoEncontradoException
-                .builder().mensagem("o veÃ­culo com id " + id + " nÃ£o foi encontrado").detalhes("").build());
+        VeiculoEntity entity = veiculoRepository.findById(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                .mensagem("o veÃ­culo com id " + id + " nÃ£o foi encontrado").detalhes("").build());
         entity.setDeletadoEm(LocalDateTime.now());
         veiculoRepository.save(entity);
     }

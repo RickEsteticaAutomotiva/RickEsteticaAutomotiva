@@ -30,8 +30,7 @@ public class CategoriaGatewayImpl implements CategoriaGateway {
 
     @Override
     public Categoria salvar(Categoria categoria) {
-        return categoriaEntityMapper
-                .toDomain(categoriaRepository.save(categoriaEntityMapper.toEntity(categoria)));
+        return categoriaEntityMapper.toDomain(categoriaRepository.save(categoriaEntityMapper.toEntity(categoria)));
     }
 
     @Override

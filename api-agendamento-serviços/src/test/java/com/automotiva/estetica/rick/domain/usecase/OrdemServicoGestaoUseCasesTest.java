@@ -44,7 +44,8 @@ class OrdemServicoGestaoUseCasesTest {
     private ServicoGateway servicoGateway;
 
     private OrdemServico ordemBase() {
-        return OrdemServico.builder().id(10L).dataAgendamento(LocalDateTime.now()).veiculo(Veiculo.builder().id(1L).build())
+        return OrdemServico.builder().id(10L).dataAgendamento(LocalDateTime.now())
+                .veiculo(Veiculo.builder().id(1L).build())
                 .status(Status.builder().id(StatusOrdem.AGUARDANDO.getId()).build()).build();
     }
 
@@ -108,8 +109,8 @@ class OrdemServicoGestaoUseCasesTest {
         when(ordemServicoGateway.buscarPorIdComDetalhes(10L)).thenReturn(Optional.of(ordem));
         when(itemServicoGateway.existePorOrdemServicoIdEServicoId(10L, 1L)).thenReturn(false);
         when(itemServicoGateway.existePorOrdemServicoIdEServicoId(10L, 2L)).thenReturn(false);
-        when(servicoGateway.buscarPorId(1L))
-                .thenReturn(Optional.of(Servico.builder().id(1L).nome("Lavagem").preco(new BigDecimal("50.00")).build()));
+        when(servicoGateway.buscarPorId(1L)).thenReturn(
+                Optional.of(Servico.builder().id(1L).nome("Lavagem").preco(new BigDecimal("50.00")).build()));
         when(servicoGateway.buscarPorId(2L)).thenReturn(
                 Optional.of(Servico.builder().id(2L).nome("Polimento").preco(new BigDecimal("120.00")).build()));
 
@@ -132,8 +133,8 @@ class OrdemServicoGestaoUseCasesTest {
         OrdemServico ordem = ordemBase();
         when(ordemServicoGateway.buscarPorIdComDetalhes(10L)).thenReturn(Optional.of(ordem));
         when(itemServicoGateway.existePorOrdemServicoIdEServicoId(10L, 1L)).thenReturn(false);
-        when(servicoGateway.buscarPorId(1L))
-                .thenReturn(Optional.of(Servico.builder().id(1L).nome("Lavagem").preco(new BigDecimal("50.00")).build()));
+        when(servicoGateway.buscarPorId(1L)).thenReturn(
+                Optional.of(Servico.builder().id(1L).nome("Lavagem").preco(new BigDecimal("50.00")).build()));
 
         OrdemServico resultado = useCase.execute(10L, List.of(1L), null);
 
@@ -168,8 +169,7 @@ class OrdemServicoGestaoUseCasesTest {
                 itemServicoGateway);
         when(ordemServicoGateway.buscarPorIdComDetalhes(10L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class,
-                () -> useCase.execute(10L, 1L, new BigDecimal("10.00")));
+        assertThrows(RecursoNaoEncontradoException.class, () -> useCase.execute(10L, 1L, new BigDecimal("10.00")));
     }
 
     @Test
@@ -180,8 +180,7 @@ class OrdemServicoGestaoUseCasesTest {
         when(ordemServicoGateway.buscarPorIdComDetalhes(10L)).thenReturn(Optional.of(ordemBase()));
         when(itemServicoGateway.buscarPorOrdemServicoIdEServicoId(10L, 1L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class,
-                () -> useCase.execute(10L, 1L, new BigDecimal("10.00")));
+        assertThrows(RecursoNaoEncontradoException.class, () -> useCase.execute(10L, 1L, new BigDecimal("10.00")));
     }
 
     @Test
@@ -238,9 +237,8 @@ class OrdemServicoGestaoUseCasesTest {
     void buscarOrdensParaGestao_deveLancarQuandoPeriodoInvalido() {
         BuscarOrdensServicoParaGestaoUseCase useCase = new BuscarOrdensServicoParaGestaoUseCase(ordemServicoGateway);
 
-        assertThrows(CampoInvalidoException.class,
-                () -> useCase.execute(1L, LocalDate.of(2026, 4, 5), LocalDate.of(2026, 4, 4),
-                        org.springframework.data.domain.PageRequest.of(0, 10)));
+        assertThrows(CampoInvalidoException.class, () -> useCase.execute(1L, LocalDate.of(2026, 4, 5),
+                LocalDate.of(2026, 4, 4), org.springframework.data.domain.PageRequest.of(0, 10)));
     }
 
     @Test
@@ -298,8 +296,7 @@ class OrdemServicoGestaoUseCasesTest {
         var pageable = org.springframework.data.domain.PageRequest.of(0, 10);
         var page = new org.springframework.data.domain.PageImpl<>(List.of(ordemBase()));
         LocalDate dataInicio = LocalDate.of(2026, 4, 1);
-        when(ordemServicoGateway.buscarTodosParaGestao(4L, dataInicio.atStartOfDay(), null, pageable))
-                .thenReturn(page);
+        when(ordemServicoGateway.buscarTodosParaGestao(4L, dataInicio.atStartOfDay(), null, pageable)).thenReturn(page);
 
         var resultado = useCase.execute(4L, dataInicio, null, pageable);
 
@@ -310,7 +307,8 @@ class OrdemServicoGestaoUseCasesTest {
     @Test
     @DisplayName("AtualizarOrdemServicoUseCase deve atualizar campos e salvar")
     void atualizarOrdemServico_deveAtualizarCamposESalvar() {
-        BuscarOrdemServicoComDetalhesUseCase buscarUseCase = org.mockito.Mockito.mock(BuscarOrdemServicoComDetalhesUseCase.class);
+        BuscarOrdemServicoComDetalhesUseCase buscarUseCase = org.mockito.Mockito
+                .mock(BuscarOrdemServicoComDetalhesUseCase.class);
         AtualizarOrdemServicoUseCase useCase = new AtualizarOrdemServicoUseCase(buscarUseCase, ordemServicoGateway);
         OrdemServico ordem = ordemBase();
         LocalDateTime novaData = LocalDateTime.of(2026, 5, 10, 14, 0);
@@ -330,7 +328,8 @@ class OrdemServicoGestaoUseCasesTest {
     @Test
     @DisplayName("AtualizarOrdemServicoUseCase deve preencher data de conclusao ao concluir ordem")
     void atualizarOrdemServico_devePreencherDataConclusaoAoConcluir() {
-        BuscarOrdemServicoComDetalhesUseCase buscarUseCase = org.mockito.Mockito.mock(BuscarOrdemServicoComDetalhesUseCase.class);
+        BuscarOrdemServicoComDetalhesUseCase buscarUseCase = org.mockito.Mockito
+                .mock(BuscarOrdemServicoComDetalhesUseCase.class);
         AtualizarOrdemServicoUseCase useCase = new AtualizarOrdemServicoUseCase(buscarUseCase, ordemServicoGateway);
         OrdemServico ordem = ordemBase();
         when(buscarUseCase.execute(10L)).thenReturn(ordem);
@@ -343,9 +342,3 @@ class OrdemServicoGestaoUseCasesTest {
         verify(ordemServicoGateway).salvar(ordem);
     }
 }
-
-
-
-
-
-

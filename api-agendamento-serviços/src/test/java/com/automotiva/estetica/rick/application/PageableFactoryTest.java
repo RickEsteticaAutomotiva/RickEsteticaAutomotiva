@@ -60,4 +60,3 @@ class PageableFactoryTest {
         assertEquals(Sort.Direction.ASC, pageable.getSort().getOrderFor("dataAgendamento").getDirection());
     }
 }
-

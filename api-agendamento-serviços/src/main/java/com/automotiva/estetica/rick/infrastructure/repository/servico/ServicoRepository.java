@@ -13,10 +13,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ServicoRepository
-        extends
-            JpaRepository<ServicoEntity, Long>,
-            JpaSpecificationExecutor<ServicoEntity> {
+public interface ServicoRepository extends JpaRepository<ServicoEntity, Long>, JpaSpecificationExecutor<ServicoEntity> {
 
     @Override
     @NonNull

@@ -188,10 +188,9 @@ class DashboardUseCasesTest {
     @Test
     @DisplayName("Cancelamentos mensais: deve somar motivos normalizados equivalentes")
     void buscarCancelamentosMensais_deveSomarMotivosEquivalentes() {
-        when(dashboardGateway.buscarCancelamentosPorMotivoDoPeriodo(any(), any())).thenReturn(List.of(
-                new CancelamentoMotivoResumo("Falta peca", 2L),
-                new CancelamentoMotivoResumo("falta peça", 3L),
-                new CancelamentoMotivoResumo("___", null)));
+        when(dashboardGateway.buscarCancelamentosPorMotivoDoPeriodo(any(), any()))
+                .thenReturn(List.of(new CancelamentoMotivoResumo("Falta peca", 2L),
+                        new CancelamentoMotivoResumo("falta peça", 3L), new CancelamentoMotivoResumo("___", null)));
 
         List<CancelamentoResumo> result = buscarCancelamentosMensaisUseCase.execute();
 
@@ -258,8 +257,8 @@ class DashboardUseCasesTest {
     @Test
     @DisplayName("Faturamento servicos: deve aplicar defaults para campos nulos/blank")
     void buscarFaturamentoServicosMensal_deveAplicarDefaults() {
-        when(dashboardGateway.buscarFaturamentoServicos(any(), any())).thenReturn(List.of(
-                new FaturamentoServicoResumo(1L, " ", 10L, "", null, null)));
+        when(dashboardGateway.buscarFaturamentoServicos(any(), any()))
+                .thenReturn(List.of(new FaturamentoServicoResumo(1L, " ", 10L, "", null, null)));
 
         List<FaturamentoServicoCategoriaResumo> result = buscarFaturamentoServicosMensalUseCase.execute();
 
@@ -273,8 +272,8 @@ class DashboardUseCasesTest {
     @Test
     @DisplayName("Faturamento servicos: deve aplicar defaults quando categoria e servico forem nulos")
     void buscarFaturamentoServicosMensal_quandoCategoriaEServicoNulos_deveAplicarDefaults() {
-        when(dashboardGateway.buscarFaturamentoServicos(any(), any())).thenReturn(List.of(
-                new FaturamentoServicoResumo(3L, null, 99L, null, 1L, BigDecimal.TEN)));
+        when(dashboardGateway.buscarFaturamentoServicos(any(), any()))
+                .thenReturn(List.of(new FaturamentoServicoResumo(3L, null, 99L, null, 1L, BigDecimal.TEN)));
 
         List<FaturamentoServicoCategoriaResumo> result = buscarFaturamentoServicosMensalUseCase.execute();
 

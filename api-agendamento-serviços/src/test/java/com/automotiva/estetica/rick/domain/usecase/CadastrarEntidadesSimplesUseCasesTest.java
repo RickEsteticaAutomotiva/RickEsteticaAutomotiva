@@ -80,4 +80,3 @@ class CadastrarEntidadesSimplesUseCasesTest {
         assertThrows(RuntimeException.class, () -> useCase.execute(servico));
     }
 }
-

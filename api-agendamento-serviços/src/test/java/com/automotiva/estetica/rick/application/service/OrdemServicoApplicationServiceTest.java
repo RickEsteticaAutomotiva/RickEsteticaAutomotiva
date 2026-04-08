@@ -386,8 +386,8 @@ class OrdemServicoApplicationServiceTest {
 
         OrdemServicoDetalheResponse response = ordemServicoApplicationService.adicionarServicosParaGestao(10L, request);
 
-        verify(adicionarServicosOrdemServicoUseCase).execute(10L, List.of(1L, 2L), List.of(BigDecimal.TEN,
-                BigDecimal.ONE));
+        verify(adicionarServicosOrdemServicoUseCase).execute(10L, List.of(1L, 2L),
+                List.of(BigDecimal.TEN, BigDecimal.ONE));
         assertEquals(10L, response.getId());
     }
 
@@ -439,7 +439,8 @@ class OrdemServicoApplicationServiceTest {
         OrdemServicoRequest request = OrdemServicoRequest.builder().veiculo(1L).dataAgendamento(LocalDateTime.now())
                 .servicos(List.of(1L)).build();
 
-        when(criarOrdemServicoUseCase.execute(any(), any(), any(), any(), any())).thenThrow(new RuntimeException("boom"));
+        when(criarOrdemServicoUseCase.execute(any(), any(), any(), any(), any()))
+                .thenThrow(new RuntimeException("boom"));
 
         assertThrows(IntegracaoException.class, () -> ordemServicoApplicationService.criar(request));
     }
@@ -483,8 +484,8 @@ class OrdemServicoApplicationServiceTest {
     void criar_semVeiculo_naoDeveLimparCarrinho() {
         OrdemServicoRequest request = OrdemServicoRequest.builder().veiculo(1L).dataAgendamento(LocalDateTime.now())
                 .servicos(List.of(1L)).build();
-        OrdemServico ordemSemVeiculo = OrdemServico.builder().id(21L).veiculo(null).status(Status.builder().id(1L).build())
-                .build();
+        OrdemServico ordemSemVeiculo = OrdemServico.builder().id(21L).veiculo(null)
+                .status(Status.builder().id(1L).build()).build();
 
         when(criarOrdemServicoUseCase.execute(any(), any(), any(), any(), any())).thenReturn(ordemSemVeiculo);
         when(itemServicoGateway.buscarPorOrdemServicoId(21L)).thenReturn(emptyList());
@@ -501,7 +502,8 @@ class OrdemServicoApplicationServiceTest {
         OrdemServicoRequest request = OrdemServicoRequest.builder().veiculo(1L).dataAgendamento(LocalDateTime.now())
                 .servicos(List.of(1L)).build();
         OrdemServico ordemPessoaSemId = OrdemServico.builder().id(22L)
-                .veiculo(Veiculo.builder().id(1L).pessoa(com.automotiva.estetica.rick.domain.entity.Pessoa.builder().build()).build())
+                .veiculo(Veiculo.builder().id(1L)
+                        .pessoa(com.automotiva.estetica.rick.domain.entity.Pessoa.builder().build()).build())
                 .status(Status.builder().id(1L).build()).build();
 
         when(criarOrdemServicoUseCase.execute(any(), any(), any(), any(), any())).thenReturn(ordemPessoaSemId);

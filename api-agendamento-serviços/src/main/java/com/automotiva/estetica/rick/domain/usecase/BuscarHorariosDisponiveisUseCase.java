@@ -66,9 +66,3 @@ public class BuscarHorariosDisponiveisUseCase {
         return horarioAtual;
     }
 }
-
-
-
-
-
-

@@ -45,4 +45,3 @@ class ListarItensServicoUseCaseTest {
         assertThrows(RecursoNaoEncontradoException.class, () -> useCase.execute());
     }
 }
-

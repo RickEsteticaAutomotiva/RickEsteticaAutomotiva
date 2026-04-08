@@ -4,4 +4,3 @@ import java.time.LocalTime;
 
 public record HorarioDisponivel(LocalTime inicio, LocalTime fim) {
 }
-

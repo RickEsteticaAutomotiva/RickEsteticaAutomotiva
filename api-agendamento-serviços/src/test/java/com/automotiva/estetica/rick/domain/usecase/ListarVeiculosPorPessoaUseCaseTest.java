@@ -51,4 +51,3 @@ class ListarVeiculosPorPessoaUseCaseTest {
         verify(veiculoGateway).buscarPorPessoaId(10L);
     }
 }
-

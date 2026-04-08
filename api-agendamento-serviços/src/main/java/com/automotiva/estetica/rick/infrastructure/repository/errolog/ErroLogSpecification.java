@@ -18,8 +18,8 @@ public final class ErroLogSpecification {
     private ErroLogSpecification() {
     }
 
-    public static Specification<ErroLogEntity> comFiltros(String tipoExcecao, Integer statusHttp,
-            String usuarioEmail, LocalDateTime de, LocalDateTime ate) {
+    public static Specification<ErroLogEntity> comFiltros(String tipoExcecao, Integer statusHttp, String usuarioEmail,
+            LocalDateTime de, LocalDateTime ate) {
 
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();

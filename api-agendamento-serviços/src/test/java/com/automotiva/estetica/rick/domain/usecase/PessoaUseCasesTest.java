@@ -115,8 +115,7 @@ class PessoaUseCasesTest {
         AtualizarPessoaUseCase useCase = new AtualizarPessoaUseCase(pessoaGateway);
         when(pessoaGateway.buscarPorId(1L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class,
-                () -> useCase.execute(1L, "Ana", null, null, null, null));
+        assertThrows(RecursoNaoEncontradoException.class, () -> useCase.execute(1L, "Ana", null, null, null, null));
     }
 
     @Test
@@ -127,8 +126,7 @@ class PessoaUseCasesTest {
         when(pessoaGateway.buscarPorId(1L)).thenReturn(Optional.of(pessoa));
         when(pessoaGateway.existePorCpf("222")).thenReturn(true);
 
-        assertThrows(RecursoJaExisteException.class,
-                () -> useCase.execute(1L, null, "222", null, null, null));
+        assertThrows(RecursoJaExisteException.class, () -> useCase.execute(1L, null, "222", null, null, null));
     }
 
     @Test
@@ -139,8 +137,7 @@ class PessoaUseCasesTest {
         when(pessoaGateway.buscarPorId(1L)).thenReturn(Optional.of(pessoa));
         when(pessoaGateway.existePorEmail("novo@x.com")).thenReturn(true);
 
-        assertThrows(RecursoJaExisteException.class,
-                () -> useCase.execute(1L, null, null, "novo@x.com", null, null));
+        assertThrows(RecursoJaExisteException.class, () -> useCase.execute(1L, null, null, "novo@x.com", null, null));
     }
 
     @Test
@@ -289,7 +286,3 @@ class PessoaUseCasesTest {
         assertThrows(UsernameNotFoundException.class, () -> useCase.execute("inexistente@x.com"));
     }
 }
-
-
-
-

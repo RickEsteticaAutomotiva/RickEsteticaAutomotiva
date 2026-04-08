@@ -34,9 +34,10 @@ class SecurityUtilsTest {
     @DisplayName("obterIdUsuarioAutenticado deve retornar id quando usuario existir")
     void obterIdUsuarioAutenticado_deveRetornarId() {
         SecurityUtils securityUtils = new SecurityUtils(pessoaGateway);
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
-                "cliente@rick.com", "senha", List.of()));
-        when(pessoaGateway.buscarPorEmail("cliente@rick.com")).thenReturn(Optional.of(Pessoa.builder().id(77L).build()));
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken("cliente@rick.com", "senha", List.of()));
+        when(pessoaGateway.buscarPorEmail("cliente@rick.com"))
+                .thenReturn(Optional.of(Pessoa.builder().id(77L).build()));
 
         Long idUsuario = securityUtils.obterIdUsuarioAutenticado();
 
@@ -56,8 +57,8 @@ class SecurityUtilsTest {
     @DisplayName("obterIdUsuarioAutenticado deve falhar quando usuario nao existir")
     void obterIdUsuarioAutenticado_deveFalharQuandoUsuarioNaoExistir() {
         SecurityUtils securityUtils = new SecurityUtils(pessoaGateway);
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
-                "inexistente@rick.com", "senha", List.of()));
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken("inexistente@rick.com", "senha", List.of()));
         when(pessoaGateway.buscarPorEmail("inexistente@rick.com")).thenReturn(Optional.empty());
 
         assertThrows(AcessoNegadoException.class, securityUtils::obterIdUsuarioAutenticado);
@@ -67,8 +68,8 @@ class SecurityUtilsTest {
     @DisplayName("obterUsernameAutenticado deve retornar username autenticado")
     void obterUsernameAutenticado_deveRetornarUsername() {
         SecurityUtils securityUtils = new SecurityUtils(pessoaGateway);
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
-                "gerente@rick.com", "senha", List.of()));
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken("gerente@rick.com", "senha", List.of()));
 
         String username = securityUtils.obterUsernameAutenticado();
 
@@ -84,4 +85,3 @@ class SecurityUtilsTest {
         assertThrows(AcessoNegadoException.class, securityUtils::obterUsernameAutenticado);
     }
 }
-

@@ -7,10 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PessoaRepository
-        extends
-            JpaRepository<PessoaEntity, Long>,
-            JpaSpecificationExecutor<PessoaEntity> {
+public interface PessoaRepository extends JpaRepository<PessoaEntity, Long>, JpaSpecificationExecutor<PessoaEntity> {
 
     Optional<PessoaEntity> findByEmail(String email);
 

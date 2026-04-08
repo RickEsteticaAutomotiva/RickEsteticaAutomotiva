@@ -33,4 +33,3 @@ class PessoaEntityMapperTest {
         assertTrue(resultado.contains(RoleEnum.ROLE_CLIENTE));
     }
 }
-

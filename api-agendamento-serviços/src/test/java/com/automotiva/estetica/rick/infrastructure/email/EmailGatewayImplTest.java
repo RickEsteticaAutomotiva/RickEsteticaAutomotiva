@@ -121,8 +121,8 @@ class EmailGatewayImplTest {
 
     @Test
     void deveEnviarComDestinatarioEVaziosSemAplicarCcBccNemAnexos() {
-        Email email = Email.builder().destinatario("").comCopia("").comCopiaOculta("").assunto("Assunto")
-                .corpo("Corpo").build();
+        Email email = Email.builder().destinatario("").comCopia("").comCopiaOculta("").assunto("Assunto").corpo("Corpo")
+                .build();
         EmailEntity entity = new EmailEntity();
         MimeMessage mimeMessage = new MimeMessage(Session.getDefaultInstance(new Properties()));
 

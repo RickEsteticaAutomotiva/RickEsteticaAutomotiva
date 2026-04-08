@@ -76,4 +76,3 @@ class FavoritoControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 }
-

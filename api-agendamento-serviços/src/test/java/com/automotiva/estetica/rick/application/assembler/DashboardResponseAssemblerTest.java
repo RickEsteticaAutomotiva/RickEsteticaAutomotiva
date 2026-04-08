@@ -60,8 +60,8 @@ class DashboardResponseAssemblerTest {
     @Test
     @DisplayName("deve formatar data hora e montar descricao de veiculo por marca e modelo")
     void toProximoAgendamentoResponse_deveFormatarDataHoraEVeiculo() {
-        var resumo = new ProximoAgendamentoResumo(10L, " Lavagem ", LocalDateTime.of(2026, 4, 10, 14, 30),
-                " Joao ", " Honda ", " Civic ", "ABC1D23", 2L);
+        var resumo = new ProximoAgendamentoResumo(10L, " Lavagem ", LocalDateTime.of(2026, 4, 10, 14, 30), " Joao ",
+                " Honda ", " Civic ", "ABC1D23", 2L);
 
         var response = assembler.toProximoAgendamentoResponse(resumo);
 
@@ -87,4 +87,3 @@ class DashboardResponseAssemblerTest {
         assertEquals("XYZ9K88", response.getVeiculoDescricao());
     }
 }
-

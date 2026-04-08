@@ -121,8 +121,7 @@ class ServicoGatewayImplIT {
     @Test
     @DisplayName("buscarTodos - filtra por nome da categoria via ServicoSpecification")
     void buscarTodos_filtroNomeCategoria() {
-        CategoriaEntity outraCategoria = em
-                .persistFlushFind(CategoriaEntity.builder().nome("Vitrificacao IT").build());
+        CategoriaEntity outraCategoria = em.persistFlushFind(CategoriaEntity.builder().nome("Vitrificacao IT").build());
 
         em.persistFlushFind(ServicoEntity.builder().nome("Servico de Vidro").descricao("Descricao generica")
                 .preco(BigDecimal.valueOf(200)).categoria(outraCategoria).build());

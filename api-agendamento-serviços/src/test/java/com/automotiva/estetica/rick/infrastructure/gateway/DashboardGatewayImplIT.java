@@ -73,8 +73,7 @@ class DashboardGatewayImplIT {
         servicoPolimento = em.persistFlushFind(ServicoEntity.builder().nome("Polimento").descricao("Polimento")
                 .preco(BigDecimal.valueOf(150)).categoria(categoria).build());
 
-        motivoCliente = em
-                .persistFlushFind(MotivoCancelamentoEntity.builder().descricao("Cliente desistiu").build());
+        motivoCliente = em.persistFlushFind(MotivoCancelamentoEntity.builder().descricao("Cliente desistiu").build());
         motivoPeca = em.persistFlushFind(MotivoCancelamentoEntity.builder().descricao("Falta peca").build());
     }
 

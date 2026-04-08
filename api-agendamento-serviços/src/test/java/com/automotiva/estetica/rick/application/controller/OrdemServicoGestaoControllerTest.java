@@ -40,7 +40,8 @@ class OrdemServicoGestaoControllerTest {
     void buscarTodosParaGestao_deveRetornarPaginaComStatus200() {
         OrdemServicoGestaoPageRequest request = OrdemServicoGestaoPageRequest.builder().status(1L)
                 .dataInicio(LocalDate.now().minusDays(7)).dataFim(LocalDate.now()).build();
-        Page<OrdemServicoResumoResponse> page = new PageImpl<>(List.of(OrdemServicoResumoResponse.builder().id(1L).build()));
+        Page<OrdemServicoResumoResponse> page = new PageImpl<>(
+                List.of(OrdemServicoResumoResponse.builder().id(1L).build()));
         when(ordemServicoUseCase.buscarTodosParaGestao(request)).thenReturn(page);
 
         var response = controller.buscarTodosParaGestao(request);
@@ -125,5 +126,3 @@ class OrdemServicoGestaoControllerTest {
         verify(ordemServicoUseCase).removerServicoParaGestao(14L, 3L);
     }
 }
-
-

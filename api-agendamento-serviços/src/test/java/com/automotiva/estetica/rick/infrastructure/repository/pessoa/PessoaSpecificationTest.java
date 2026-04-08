@@ -51,4 +51,3 @@ class PessoaSpecificationTest {
         assertEquals(1, repository.findAll(PessoaSpecification.filtroUnico("55566677788")).size());
     }
 }
-

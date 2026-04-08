@@ -75,5 +75,3 @@ class FavoritoGatewayImplTest {
         verify(favoritoRepository).deleteById(20L);
     }
 }
-
-

@@ -21,8 +21,7 @@ public class ErroLogGatewayImpl implements ErroLogGateway {
 
     @Override
     public ErroLog salvar(ErroLog erroLog) {
-        return erroLogEntityMapper
-                .toDomain(erroLogRepository.save(erroLogEntityMapper.toEntity(erroLog)));
+        return erroLogEntityMapper.toDomain(erroLogRepository.save(erroLogEntityMapper.toEntity(erroLog)));
     }
 
     @Override

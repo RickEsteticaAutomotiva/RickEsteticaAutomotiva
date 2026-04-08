@@ -48,7 +48,8 @@ class JwtServiceImplTest {
     @Test
     @DisplayName("tokenValido deve retornar true quando usuario bater")
     void tokenValido_deveRetornarTrueQuandoUsuarioCorresponder() {
-        var authentication = new UsernamePasswordAuthenticationToken("ana@rick.com", "x", List.of(() -> "ROLE_CLIENTE"));
+        var authentication = new UsernamePasswordAuthenticationToken("ana@rick.com", "x",
+                List.of(() -> "ROLE_CLIENTE"));
         String token = jwtService.gerarToken(authentication);
         UserDetails userDetails = User.withUsername("ana@rick.com").password("x").authorities("ROLE_CLIENTE").build();
 
@@ -58,9 +59,11 @@ class JwtServiceImplTest {
     @Test
     @DisplayName("tokenValido deve retornar false quando usuario nao bater")
     void tokenValido_deveRetornarFalseQuandoUsuarioNaoCorresponder() {
-        var authentication = new UsernamePasswordAuthenticationToken("ana@rick.com", "x", List.of(() -> "ROLE_CLIENTE"));
+        var authentication = new UsernamePasswordAuthenticationToken("ana@rick.com", "x",
+                List.of(() -> "ROLE_CLIENTE"));
         String token = jwtService.gerarToken(authentication);
-        UserDetails outroUsuario = User.withUsername("outro@rick.com").password("x").authorities("ROLE_CLIENTE").build();
+        UserDetails outroUsuario = User.withUsername("outro@rick.com").password("x").authorities("ROLE_CLIENTE")
+                .build();
 
         assertFalse(jwtService.tokenValido(token, outroUsuario));
     }
@@ -83,5 +86,3 @@ class JwtServiceImplTest {
         assertThrows(Exception.class, () -> jwtService.obterUsernameDoToken("token-invalido"));
     }
 }
-
-

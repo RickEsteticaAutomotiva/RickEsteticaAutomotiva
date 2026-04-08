@@ -34,10 +34,10 @@ class DashboardGatewayImplTest {
     @Test
     void buscarCancelamentosPorMotivoDoPeriodo_deveMapearQuantidadeNulaComoZero() {
         when(repository.buscarCancelamentosPorMotivoDoPeriodo(any(), any()))
-                .thenReturn(java.util.Collections.singletonList(new Object[] {"Cliente", null}));
+                .thenReturn(java.util.Collections.singletonList(new Object[]{"Cliente", null}));
 
-        List<CancelamentoMotivoResumo> resultado = gateway.buscarCancelamentosPorMotivoDoPeriodo(
-                LocalDateTime.now().minusDays(1), LocalDateTime.now());
+        List<CancelamentoMotivoResumo> resultado = gateway
+                .buscarCancelamentosPorMotivoDoPeriodo(LocalDateTime.now().minusDays(1), LocalDateTime.now());
 
         assertEquals(1, resultado.size());
         assertEquals("Cliente", resultado.getFirst().tipo());
@@ -47,10 +47,10 @@ class DashboardGatewayImplTest {
     @Test
     void buscarCancelamentosPorMotivoDoPeriodo_deveMapearQuantidadeQuandoNaoNula() {
         when(repository.buscarCancelamentosPorMotivoDoPeriodo(any(), any()))
-                .thenReturn(java.util.Collections.singletonList(new Object[] {"Operacional", 3L}));
+                .thenReturn(java.util.Collections.singletonList(new Object[]{"Operacional", 3L}));
 
-        List<CancelamentoMotivoResumo> resultado = gateway.buscarCancelamentosPorMotivoDoPeriodo(
-                LocalDateTime.now().minusDays(2), LocalDateTime.now());
+        List<CancelamentoMotivoResumo> resultado = gateway
+                .buscarCancelamentosPorMotivoDoPeriodo(LocalDateTime.now().minusDays(2), LocalDateTime.now());
 
         assertEquals(1, resultado.size());
         assertEquals("Operacional", resultado.getFirst().tipo());
@@ -59,12 +59,11 @@ class DashboardGatewayImplTest {
 
     @Test
     void buscarFaturamentoServicos_deveAplicarFallbacksDeNull() {
-        when(repository.buscarFaturamentoServicos(any(), any()))
-                .thenReturn(java.util.Collections.singletonList(new Object[] {null, "Servico X", null, "Categoria",
-                        null, BigDecimal.TEN}));
+        when(repository.buscarFaturamentoServicos(any(), any())).thenReturn(java.util.Collections
+                .singletonList(new Object[]{null, "Servico X", null, "Categoria", null, BigDecimal.TEN}));
 
-        List<FaturamentoServicoResumo> resultado = gateway.buscarFaturamentoServicos(
-                LocalDateTime.now().minusDays(1), LocalDateTime.now());
+        List<FaturamentoServicoResumo> resultado = gateway.buscarFaturamentoServicos(LocalDateTime.now().minusDays(1),
+                LocalDateTime.now());
 
         assertEquals(1, resultado.size());
         FaturamentoServicoResumo item = resultado.getFirst();
@@ -76,11 +75,11 @@ class DashboardGatewayImplTest {
 
     @Test
     void buscarFaturamentoServicos_deveMapearCamposQuandoNaoNulos() {
-        when(repository.buscarFaturamentoServicos(any(), any())).thenReturn(java.util.Collections.singletonList(
-                new Object[] {1L, "Servico Y", 2L, "Categoria Y", 4L, BigDecimal.valueOf(40)}));
+        when(repository.buscarFaturamentoServicos(any(), any())).thenReturn(java.util.Collections
+                .singletonList(new Object[]{1L, "Servico Y", 2L, "Categoria Y", 4L, BigDecimal.valueOf(40)}));
 
-        List<FaturamentoServicoResumo> resultado = gateway.buscarFaturamentoServicos(
-                LocalDateTime.now().minusDays(1), LocalDateTime.now());
+        List<FaturamentoServicoResumo> resultado = gateway.buscarFaturamentoServicos(LocalDateTime.now().minusDays(1),
+                LocalDateTime.now());
 
         assertEquals(1, resultado.size());
         FaturamentoServicoResumo item = resultado.getFirst();
@@ -168,7 +167,7 @@ class DashboardGatewayImplTest {
     @Test
     void buscarFaturamentoPorDia_deveMapearDataSqlParaLocalDate() {
         when(repository.buscarFaturamentoPorDia(any())).thenReturn(
-                java.util.Collections.singletonList(new Object[] {Date.valueOf("2026-04-03"), BigDecimal.valueOf(250)}));
+                java.util.Collections.singletonList(new Object[]{Date.valueOf("2026-04-03"), BigDecimal.valueOf(250)}));
 
         List<FaturamentoDiarioResumo> resultado = gateway.buscarFaturamentoPorDia(LocalDateTime.now().minusDays(5));
 
@@ -192,8 +191,7 @@ class DashboardGatewayImplTest {
         assertEquals(BigDecimal.valueOf(1000),
                 gateway.somarFaturamentoDoPeriodo(LocalDateTime.now().minusDays(1), LocalDateTime.now()));
         assertEquals(12, gateway.buscarQtdOrdensDoMes(LocalDateTime.now().minusDays(1), LocalDateTime.now()));
-        assertEquals(7,
-                gateway.buscarQtdOrdensConcluidasNoMes(LocalDateTime.now().minusDays(1), LocalDateTime.now()));
+        assertEquals(7, gateway.buscarQtdOrdensConcluidasNoMes(LocalDateTime.now().minusDays(1), LocalDateTime.now()));
         assertEquals(BigDecimal.valueOf(85),
                 gateway.calcularTicketMedioDoMes(LocalDateTime.now().minusDays(1), LocalDateTime.now()));
         assertEquals(BigDecimal.valueOf(900),
@@ -206,4 +204,3 @@ class DashboardGatewayImplTest {
                 LocalDateTime.now().minusDays(1), LocalDateTime.now(), 2L));
     }
 }
-

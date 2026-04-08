@@ -55,4 +55,3 @@ class ServicoDTOMapperTest {
         assertNull(response.getCategoriaNome());
     }
 }
-

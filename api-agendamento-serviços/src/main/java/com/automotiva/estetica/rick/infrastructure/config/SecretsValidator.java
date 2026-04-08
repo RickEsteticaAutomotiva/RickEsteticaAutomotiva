@@ -10,21 +10,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
- * Valida presença de secrets críticos no startup conforme OWASP A02.
- * Em dev apenas registra WARN; em homolog/prod/staging interrompe a aplicação.
+ * Valida presença de secrets críticos no startup conforme OWASP A02. Em dev
+ * apenas registra WARN; em homolog/prod/staging interrompe a aplicação.
  */
 @Configuration
 public class SecretsValidator implements InitializingBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretsValidator.class);
 
-    private static final List<String> INVALID_SECRET_VALUES = List.of(
-            "placeholder",
-            "{{null}}",
-            "#{null}",
-            "test",
-            "123456",
-            "rick@dev2024");
+    private static final List<String> INVALID_SECRET_VALUES = List.of("placeholder", "{{null}}", "#{null}", "test",
+            "123456", "rick@dev2024");
 
     @Value("${JWT_SECRET:#{null}}")
     private String jwtSecret;
@@ -123,10 +118,8 @@ public class SecretsValidator implements InitializingBean {
     private boolean isRestrictedEnvironment() {
         String[] profiles = environment.getActiveProfiles();
         for (String profile : profiles) {
-            if ("prod".equalsIgnoreCase(profile)
-                    || "production".equalsIgnoreCase(profile)
-                    || "homolog".equalsIgnoreCase(profile)
-                    || "staging".equalsIgnoreCase(profile)) {
+            if ("prod".equalsIgnoreCase(profile) || "production".equalsIgnoreCase(profile)
+                    || "homolog".equalsIgnoreCase(profile) || "staging".equalsIgnoreCase(profile)) {
                 return true;
             }
         }

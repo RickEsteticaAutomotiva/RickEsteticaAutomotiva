@@ -79,8 +79,8 @@ public class PessoaGatewayImpl implements PessoaGateway {
 
     @Override
     public void deletarPorId(Long id) {
-        PessoaEntity entity = pessoaRepository.findById(id).orElseThrow(() -> RecursoNaoEncontradoException
-                .builder().mensagem("a pessoa com id " + id + " nÃ£o foi encontrada").detalhes("").build());
+        PessoaEntity entity = pessoaRepository.findById(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
+                .mensagem("a pessoa com id " + id + " nÃ£o foi encontrada").detalhes("").build());
         entity.setDeletadoEm(LocalDateTime.now());
         pessoaRepository.save(entity);
     }

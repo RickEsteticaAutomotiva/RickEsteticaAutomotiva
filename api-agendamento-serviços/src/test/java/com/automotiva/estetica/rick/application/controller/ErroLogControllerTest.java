@@ -76,4 +76,3 @@ class ErroLogControllerTest {
         assertEquals(esperado, response.getBody());
     }
 }
-

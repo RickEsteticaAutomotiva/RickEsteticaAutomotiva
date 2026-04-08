@@ -37,14 +37,14 @@ class OrdemServicoSpecificationTest {
         statusCancelado = em.persistFlushFind(StatusEntity.builder().descricao("Cancelado").build());
         motivo = em.persistFlushFind(MotivoCancelamentoEntity.builder().descricao("Cliente desistiu").build());
 
-        PessoaEntity pessoa = em.persistFlushFind(PessoaEntity.builder().nome("Pessoa Teste").cpf("00011122233")
-                .email("pessoa.spec@teste.com").telefone("11999999999").dataNascimento(LocalDate.of(1990, 1, 1))
-                .senha("123").build());
+        PessoaEntity pessoa = em.persistFlushFind(
+                PessoaEntity.builder().nome("Pessoa Teste").cpf("00011122233").email("pessoa.spec@teste.com")
+                        .telefone("11999999999").dataNascimento(LocalDate.of(1990, 1, 1)).senha("123").build());
 
         VeiculoEntity v1 = em.persistFlushFind(VeiculoEntity.builder().placa("AAA1234").modelo("Gol").marca("VW")
                 .porte("P").cor("Prata").ano("2012").pessoa(pessoa).build());
-        VeiculoEntity v2 = em.persistFlushFind(VeiculoEntity.builder().placa("BBB0001").modelo("Civic")
-                .marca("Honda").porte("M").cor("Preto").ano("2018").pessoa(pessoa).build());
+        VeiculoEntity v2 = em.persistFlushFind(VeiculoEntity.builder().placa("BBB0001").modelo("Civic").marca("Honda")
+                .porte("M").cor("Preto").ano("2018").pessoa(pessoa).build());
 
         em.persistFlushFind(OrdemServicoEntity.builder().dataAgendamento(LocalDateTime.of(2026, 4, 1, 10, 0))
                 .precoMinimo(BigDecimal.valueOf(100)).status(statusAnalise).veiculo(v1).observacoes("polimento geral")
@@ -91,4 +91,3 @@ class OrdemServicoSpecificationTest {
         assertEquals(2L, total);
     }
 }
-

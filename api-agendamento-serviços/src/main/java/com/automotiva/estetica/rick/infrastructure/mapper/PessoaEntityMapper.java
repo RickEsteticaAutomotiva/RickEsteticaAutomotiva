@@ -12,8 +12,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 /**
- * Mapper MapStruct para conversÃ£o entre {@link PessoaEntity} e
- * {@link Pessoa}.
+ * Mapper MapStruct para conversÃ£o entre {@link PessoaEntity} e {@link Pessoa}.
  *
  * <p>
  * O campo {@code roles} precisa de conversÃ£o explÃ­cita porque o tipo no
@@ -51,8 +50,8 @@ public interface PessoaEntityMapper {
     // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /**
-     * Converte {@code Set<RoleEntity>} â†’ {@code Set<RoleEnum>} para o
-     * domÃ­nio. Retorna conjunto vazio quando a entrada for nula.
+     * Converte {@code Set<RoleEntity>} â†’ {@code Set<RoleEnum>} para o domÃ­nio.
+     * Retorna conjunto vazio quando a entrada for nula.
      */
     @Named("roleEntitiesToEnums")
     default Set<RoleEnum> roleEntitiesToEnums(Set<RoleEntity> entities) {

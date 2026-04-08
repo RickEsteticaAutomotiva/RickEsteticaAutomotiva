@@ -87,4 +87,3 @@ class CategoriaControllerTest {
         verify(atualizarCategoriaUseCase).execute(9L, "Lavagem");
     }
 }
-

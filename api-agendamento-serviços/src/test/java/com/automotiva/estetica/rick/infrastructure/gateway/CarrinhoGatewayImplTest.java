@@ -80,4 +80,3 @@ class CarrinhoGatewayImplTest {
         verify(carrinhoRepository).deleteAll(List.of(entityA, entityB));
     }
 }
-

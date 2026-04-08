@@ -61,8 +61,7 @@ class UseCasesRestantesDelegationTest {
         AtualizarVeiculoUseCase useCase = new AtualizarVeiculoUseCase(veiculoGateway);
         when(veiculoGateway.buscarPorId(99L)).thenReturn(Optional.empty());
 
-        assertThrows(RecursoNaoEncontradoException.class,
-                () -> useCase.execute(99L, "X", "Y", "Z", "P", "C", "A"));
+        assertThrows(RecursoNaoEncontradoException.class, () -> useCase.execute(99L, "X", "Y", "Z", "P", "C", "A"));
     }
 
     @Test
@@ -93,7 +92,8 @@ class UseCasesRestantesDelegationTest {
     void removerServicoOrdem_quandoItemNaoExiste_deveLancar() {
         RemoverServicoOrdemServicoUseCase useCase = new RemoverServicoOrdemServicoUseCase(ordemServicoGateway,
                 itemServicoGateway);
-        when(ordemServicoGateway.buscarPorIdComDetalhes(10L)).thenReturn(Optional.of(OrdemServico.builder().id(10L).build()));
+        when(ordemServicoGateway.buscarPorIdComDetalhes(10L))
+                .thenReturn(Optional.of(OrdemServico.builder().id(10L).build()));
         when(itemServicoGateway.buscarPorOrdemServicoIdEServicoId(10L, 3L)).thenReturn(Optional.empty());
 
         assertThrows(RecursoNaoEncontradoException.class, () -> useCase.execute(10L, 3L));
@@ -126,7 +126,8 @@ class UseCasesRestantesDelegationTest {
     @Test
     void buscarOrdensPorUsuario_deveDelegar() {
         BuscarOrdensServicoPorUsuarioUseCase useCase = new BuscarOrdensServicoPorUsuarioUseCase(ordemServicoGateway);
-        when(ordemServicoGateway.buscarPorVeiculoPessoaId(7L)).thenReturn(List.of(OrdemServico.builder().id(7L).build()));
+        when(ordemServicoGateway.buscarPorVeiculoPessoaId(7L))
+                .thenReturn(List.of(OrdemServico.builder().id(7L).build()));
 
         List<OrdemServico> resultado = useCase.execute(7L);
 
@@ -259,4 +260,3 @@ class UseCasesRestantesDelegationTest {
         verify(erroLogGateway).deletarAnterioresA(limite);
     }
 }
-

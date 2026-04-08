@@ -44,4 +44,3 @@ class RabbitMqConnectionTest {
         assertTrue(ex.getMessage().contains("Falha ao inicializar RabbitMQ filas"));
     }
 }
-

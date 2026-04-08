@@ -4,8 +4,6 @@ import com.automotiva.estetica.rick.domain.entity.FluxoCaixaResumo;
 import com.automotiva.estetica.rick.domain.gateway.DashboardGateway;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +18,7 @@ public class BuscarFluxoCaixaMensalUseCase {
     private final DashboardGateway dashboardGateway;
 
     public FluxoCaixaResumo execute() {
-        PeriodoMensal mesAtual = getPeriodoMesAtual();
+        PeriodoMensal mesAtual = PeriodoMensalFactory.mesAtual();
 
         BigDecimal lucro = defaultValor(
                 dashboardGateway.somarReceitaRecebidaDoPeriodo(mesAtual.inicio(), mesAtual.fim()));
@@ -45,13 +43,5 @@ public class BuscarFluxoCaixaMensalUseCase {
 
     private BigDecimal defaultValor(BigDecimal valor) {
         return valor == null ? ZERO : valor;
-    }
-
-    private PeriodoMensal getPeriodoMesAtual() {
-        LocalDate inicio = LocalDate.now().withDayOfMonth(1);
-        return new PeriodoMensal(inicio.atStartOfDay(), LocalDateTime.now());
-    }
-
-    private record PeriodoMensal(LocalDateTime inicio, LocalDateTime fim) {
     }
 }

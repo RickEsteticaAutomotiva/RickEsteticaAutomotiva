@@ -41,8 +41,8 @@ public class OrdemServicoGatewayImpl implements OrdemServicoGateway {
 
     @Override
     public List<OrdemServico> buscarPorVeiculoPessoaId(Long pessoaId) {
-        return ordemServicoRepository.findByVeiculo_Pessoa_Id(pessoaId).stream()
-                .map(ordemServicoEntityMapper::toDomain).toList();
+        return ordemServicoRepository.findByVeiculo_Pessoa_Id(pessoaId).stream().map(ordemServicoEntityMapper::toDomain)
+                .toList();
     }
 
     @Override
@@ -60,8 +60,8 @@ public class OrdemServicoGatewayImpl implements OrdemServicoGateway {
 
     @Override
     public List<OrdemServicoDuracaoResumo> buscarDuracaoTotalPorOS(LocalDate data) {
-        return ordemServicoRepository.buscarDuracaoTotalPorOS(data).stream()
-                .map(item -> new OrdemServicoDuracaoResumo(item.getId(), item.getDataAgendamento(), item.getDuracaoTotal()))
+        return ordemServicoRepository.buscarDuracaoTotalPorOS(data).stream().map(
+                item -> new OrdemServicoDuracaoResumo(item.getId(), item.getDataAgendamento(), item.getDuracaoTotal()))
                 .toList();
     }
 

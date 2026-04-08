@@ -80,4 +80,3 @@ class VeiculoGatewayImplTest {
         assertThrows(RecursoNaoEncontradoException.class, () -> gateway.deletarPorId(88L));
     }
 }
-

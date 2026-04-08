@@ -17,5 +17,3 @@ class ServicoTest {
         assertEquals(150, minutos);
     }
 }
-
-

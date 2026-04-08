@@ -269,8 +269,8 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Deve relançar AccessDeniedException quando usuário for anônimo")
     void handleAccessDenied_quandoAnonimo_deveRelancarExcecao() {
-        SecurityContextHolder.getContext().setAuthentication(
-                new AnonymousAuthenticationToken("key", "anonymousUser", List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))));
+        SecurityContextHolder.getContext().setAuthentication(new AnonymousAuthenticationToken("key", "anonymousUser",
+                List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))));
 
         AccessDeniedException ex = new AccessDeniedException("Access Denied");
 
@@ -565,8 +565,8 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Helper obterUsuarioAutenticado deve retornar anonimo para anonymousUser")
     void obterUsuarioAutenticado_quandoAnonymousUser_deveRetornarAnonimo() {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken("anonymousUser", null, List.of()));
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken("anonymousUser", null, List.of()));
 
         String usuario = ReflectionTestUtils.invokeMethod(handler, "obterUsuarioAutenticado");
 

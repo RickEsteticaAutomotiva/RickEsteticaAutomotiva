@@ -36,7 +36,7 @@ class SecretsValidatorTest {
     @Test
     @DisplayName("deve falhar startup em prod quando faltar secret")
     void afterPropertiesSet_deveFalharEmProdQuandoFaltarSecret() {
-        when(environment.getActiveProfiles()).thenReturn(new String[] {"prod"});
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"prod"});
         ReflectionTestUtils.setField(secretsValidator, "mailPassword", " ");
 
         assertThrows(IllegalStateException.class, () -> secretsValidator.afterPropertiesSet());
@@ -45,7 +45,7 @@ class SecretsValidatorTest {
     @Test
     @DisplayName("deve permitir startup em dev quando faltar secret")
     void afterPropertiesSet_devePermitirEmDevQuandoFaltarSecret() {
-        when(environment.getActiveProfiles()).thenReturn(new String[] {"dev"});
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"dev"});
         ReflectionTestUtils.setField(secretsValidator, "jwtSecret", " ");
 
         assertDoesNotThrow(() -> secretsValidator.afterPropertiesSet());
@@ -54,7 +54,7 @@ class SecretsValidatorTest {
     @Test
     @DisplayName("deve validar sucesso quando todos secrets existirem")
     void afterPropertiesSet_deveValidarQuandoTodosSecretsExistirem() {
-        when(environment.getActiveProfiles()).thenReturn(new String[] {"production"});
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"production"});
 
         assertDoesNotThrow(() -> secretsValidator.afterPropertiesSet());
     }
@@ -62,7 +62,7 @@ class SecretsValidatorTest {
     @Test
     @DisplayName("deve tratar placeholders como secret ausente em prod")
     void afterPropertiesSet_deveTratarPlaceholderComoAusente() {
-        when(environment.getActiveProfiles()).thenReturn(new String[] {"prod"});
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"prod"});
         ReflectionTestUtils.setField(secretsValidator, "rabbitmqPassword", "#{null}");
 
         assertThrows(IllegalStateException.class, () -> secretsValidator.afterPropertiesSet());
@@ -71,7 +71,7 @@ class SecretsValidatorTest {
     @Test
     @DisplayName("deve falhar em homolog quando usar secret fraco conhecido")
     void afterPropertiesSet_deveFalharEmHomologQuandoSecretFraco() {
-        when(environment.getActiveProfiles()).thenReturn(new String[] {"homolog"});
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"homolog"});
         ReflectionTestUtils.setField(secretsValidator, "rabbitmqPassword", "123456");
 
         assertThrows(IllegalStateException.class, () -> secretsValidator.afterPropertiesSet());
@@ -80,7 +80,7 @@ class SecretsValidatorTest {
     @Test
     @DisplayName("deve tratar {{null}} como secret ausente em prod")
     void afterPropertiesSet_deveTratarDoubleBracesNullComoAusente() {
-        when(environment.getActiveProfiles()).thenReturn(new String[] {"prod"});
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"prod"});
         ReflectionTestUtils.setField(secretsValidator, "dbPassword", "{{null}}");
 
         assertThrows(IllegalStateException.class, () -> secretsValidator.afterPropertiesSet());
@@ -91,7 +91,8 @@ class SecretsValidatorTest {
     void isSecretMissing_deveIdentificarValoresInvalidos() {
         Boolean missingNull = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", (String) null);
         Boolean missingBlank = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", " ");
-        Boolean missingPlaceholder = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", "placeholder");
+        Boolean missingPlaceholder = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing",
+                "placeholder");
         Boolean missingWeakDefault = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", "test");
         Boolean validSecret = ReflectionTestUtils.invokeMethod(secretsValidator, "isSecretMissing", "abc123@Forte");
 
@@ -105,7 +106,7 @@ class SecretsValidatorTest {
     @Test
     @DisplayName("helper isRestrictedEnvironment deve aceitar production em qualquer caixa")
     void isRestrictedEnvironment_deveAceitarCaseInsensitive() {
-        when(environment.getActiveProfiles()).thenReturn(new String[] {"PrOdUcTiOn"});
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"PrOdUcTiOn"});
 
         Boolean result = ReflectionTestUtils.invokeMethod(secretsValidator, "isRestrictedEnvironment");
 
@@ -115,7 +116,7 @@ class SecretsValidatorTest {
     @Test
     @DisplayName("helper isRestrictedEnvironment deve retornar false quando profile nao for restrito")
     void isRestrictedEnvironment_deveRetornarFalseParaDev() {
-        when(environment.getActiveProfiles()).thenReturn(new String[] {"dev"});
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"dev"});
 
         Boolean result = ReflectionTestUtils.invokeMethod(secretsValidator, "isRestrictedEnvironment");
 
@@ -125,7 +126,7 @@ class SecretsValidatorTest {
     @Test
     @DisplayName("deve permitir startup quando sem profile de producao")
     void afterPropertiesSet_devePermitirQuandoSemProfileProd() {
-        when(environment.getActiveProfiles()).thenReturn(new String[] {});
+        when(environment.getActiveProfiles()).thenReturn(new String[]{});
         ReflectionTestUtils.setField(secretsValidator, "jwtSecret", "placeholder");
 
         assertDoesNotThrow(() -> secretsValidator.afterPropertiesSet());

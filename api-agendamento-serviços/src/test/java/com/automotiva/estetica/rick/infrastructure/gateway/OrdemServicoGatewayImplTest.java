@@ -108,5 +108,3 @@ class OrdemServicoGatewayImplTest {
         assertEquals(180L, resultado.getFirst().duracaoTotal());
     }
 }
-
-

@@ -67,4 +67,3 @@ class ItemServicoGatewayImplTest {
         verify(itemServicoRepository).deleteById(77L);
     }
 }
-

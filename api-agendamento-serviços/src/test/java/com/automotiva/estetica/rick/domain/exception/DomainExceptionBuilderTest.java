@@ -12,12 +12,8 @@ class DomainExceptionBuilderTest {
     @Test
     @DisplayName("builder base deve aplicar tipo, mensagem, detalhes e status")
     void builderBase_deveAplicarCampos() {
-        var ex = TestException.builder()
-                .tipo("REGRA_NEGOCIO")
-                .mensagem("falha")
-                .detalhes("detalhes")
-                .status(HttpStatus.BAD_REQUEST)
-                .build();
+        var ex = TestException.builder().tipo("REGRA_NEGOCIO").mensagem("falha").detalhes("detalhes")
+                .status(HttpStatus.BAD_REQUEST).build();
 
         assertEquals("REGRA_NEGOCIO", ex.getTipo());
         assertEquals("falha", ex.getMensagem());
@@ -49,4 +45,3 @@ class DomainExceptionBuilderTest {
         }
     }
 }
-

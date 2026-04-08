@@ -131,5 +131,3 @@ class OrdemServicoControllerTest {
         verify(ordemServicoUseCase).buscarHorariosDisponiveis(data, servicosIds);
     }
 }
-
-

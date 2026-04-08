@@ -91,8 +91,8 @@ public class DashboardGatewayImpl implements DashboardGateway {
             LocalDateTime fim, Long statusIdIgnorado) {
         return ordemServicoRepository.findFirstByDataAgendamentoBetweenAndStatus_IdNotOrderByDataAgendamentoAscIdAsc(
                 inicio, fim, statusIdIgnorado).map(ordem -> {
-                    String servicoPrincipal = ordemServicoRepository.buscarNomesServicosDaOrdem(ordem.getId())
-                            .stream().findFirst().orElse("");
+                    String servicoPrincipal = ordemServicoRepository.buscarNomesServicosDaOrdem(ordem.getId()).stream()
+                            .findFirst().orElse("");
 
                     return new ProximoAgendamentoResumo(ordem.getId(), servicoPrincipal, ordem.getDataAgendamento(),
                             ordem.getVeiculo() != null && ordem.getVeiculo().getPessoa() != null

@@ -125,5 +125,3 @@ class VeiculoControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, httpResponse.getStatusCode());
     }
 }
-
-

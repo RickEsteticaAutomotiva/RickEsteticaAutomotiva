@@ -64,7 +64,8 @@ class OrdemServicoResponseAssemblerTest {
         OrdemServico ordem = OrdemServico.builder().id(99L).dataAgendamento(LocalDateTime.now()).status(null)
                 .veiculo(null).build();
 
-        var response = assembler.toResponse(ordem, List.of(ItemServico.builder().id(1L).servico(null).preco(null).build()));
+        var response = assembler.toResponse(ordem,
+                List.of(ItemServico.builder().id(1L).servico(null).preco(null).build()));
 
         assertNull(response.getCliente());
         assertNull(response.getVeiculo());
@@ -79,8 +80,11 @@ class OrdemServicoResponseAssemblerTest {
     void toResumoGestao_quandoItensComPrecoNulo_deveSomarApenasValidos() {
         OrdemServico ordem = ordemComRelacionamentos();
         var itens = List.of(
-                ItemServico.builder().id(1L).ordemServico(ordem).servico(Servico.builder().id(1L).nome("A").preco(BigDecimal.TEN).build()).preco(null).build(),
-                ItemServico.builder().id(2L).ordemServico(ordem).servico(Servico.builder().id(2L).nome("B").preco(BigDecimal.ONE).build()).preco(BigDecimal.ONE).build());
+                ItemServico.builder().id(1L).ordemServico(ordem)
+                        .servico(Servico.builder().id(1L).nome("A").preco(BigDecimal.TEN).build()).preco(null).build(),
+                ItemServico.builder().id(2L).ordemServico(ordem)
+                        .servico(Servico.builder().id(2L).nome("B").preco(BigDecimal.ONE).build()).preco(BigDecimal.ONE)
+                        .build());
 
         var resumo = assembler.toResumoGestao(ordem, itens);
 

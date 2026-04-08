@@ -104,7 +104,8 @@ class DashboardControllerTest {
     @Test
     @DisplayName("buscarFaturamentoServicos deve delegar e retornar 200")
     void buscarFaturamentoServicos_deveDelegarERetornar200() {
-        List<FaturamentoServicoResponse> esperado = List.of(FaturamentoServicoResponse.builder().categoria("Lavagem").build());
+        List<FaturamentoServicoResponse> esperado = List
+                .of(FaturamentoServicoResponse.builder().categoria("Lavagem").build());
         when(dashboardUseCase.buscarFaturamentoServicos()).thenReturn(esperado);
 
         var response = dashboardController.buscarFaturamentoServicos();
@@ -153,4 +154,3 @@ class DashboardControllerTest {
         assertEquals(esperado, response.getBody());
     }
 }
-

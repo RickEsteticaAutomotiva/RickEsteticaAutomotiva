@@ -23,4 +23,3 @@ class PasswordEncoderConfigTest {
         assertTrue(passwordEncoder.matches(senhaOriginal, senhaCriptografada));
     }
 }
-

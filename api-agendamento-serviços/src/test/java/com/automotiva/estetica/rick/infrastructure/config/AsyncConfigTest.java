@@ -27,4 +27,3 @@ class AsyncConfigTest {
         threadPoolExecutor.shutdown();
     }
 }
-

@@ -135,4 +135,3 @@ class PessoaControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, httpResponse.getStatusCode());
     }
 }
-

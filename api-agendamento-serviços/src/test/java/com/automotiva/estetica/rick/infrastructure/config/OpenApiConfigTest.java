@@ -33,5 +33,3 @@ class OpenApiConfigTest {
         assertEquals("JWT", securityScheme.getBearerFormat());
     }
 }
-
-
