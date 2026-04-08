@@ -142,5 +142,15 @@ docker compose -f docker/docker-compose.yml up -d
 ./mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev,swagger"
 ```
 
+---
+
+## ☁️ Deploy em EC2 (JAR sem Docker)
+
+Para executar em producao na AWS EC2 com `java -jar`, consulte:
+
+- `DEPLOY_EC2_JAR.md`
+
+---
+
 Última atualização: 03 de abril de 2026
 
