@@ -63,7 +63,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(parseSecret()).build().parseClaimsJws(token).getBody();
+        return Jwts.parser().verifyWith(parseSecret()).build().parseSignedClaims(token).getPayload();
     }
 
     private SecretKey parseSecret() {

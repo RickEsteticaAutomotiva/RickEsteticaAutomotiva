@@ -16,4 +16,3 @@ public class StatusResumoResponse {
     private Long id;
     private String descricao;
 }
-

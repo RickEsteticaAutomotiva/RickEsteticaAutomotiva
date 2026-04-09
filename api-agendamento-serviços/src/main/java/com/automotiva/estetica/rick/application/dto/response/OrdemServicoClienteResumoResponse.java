@@ -16,4 +16,3 @@ public class OrdemServicoClienteResumoResponse {
     private Long id;
     private String nome;
 }
-

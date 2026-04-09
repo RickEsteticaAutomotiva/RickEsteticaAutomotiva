@@ -34,7 +34,20 @@ build/
 /src/main/resources/credentials.json
 /src/main/resources/credentials-oauth.json
 /tokens/StoredCredential
-/src/main/resources/*.properties
+
+# =====================================================
+# OWASP A02: Cryptographic Failures — Secrets Management
+# NUNCA commit de secrets, credenciais ou configurações sensíveis
+# =====================================================
+/src/main/resources/application-*.properties.local
+.env
+.env.local
+.env.*.local
+.env.prod.local
+*.key
+*.pem
+/src/main/resources/*.key
+/src/main/resources/*.pem
 
 ### DOCKER CONTAINER ###
 /docker/dados/

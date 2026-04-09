@@ -19,4 +19,3 @@ public class OrdemServicoServicoResumoResponse {
     private BigDecimal valorAplicado;
     private BigDecimal preco;
 }
-

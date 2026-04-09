@@ -18,4 +18,3 @@ public class OrdemServicoVeiculoResumoResponse {
     private String modelo;
     private String placa;
 }
-

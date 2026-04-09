@@ -29,4 +29,3 @@ public class OrdemServicoGestaoPageRequest {
     private String ordenarPor = "dataAgendamento";
     private String direcao = "desc";
 }
-

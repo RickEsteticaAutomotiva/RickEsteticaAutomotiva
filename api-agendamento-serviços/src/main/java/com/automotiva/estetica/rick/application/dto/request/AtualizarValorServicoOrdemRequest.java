@@ -20,4 +20,3 @@ public class AtualizarValorServicoOrdemRequest {
     @DecimalMin(value = "0.00", message = "valorAplicado deve ser maior ou igual a zero")
     private BigDecimal valorAplicado;
 }
-

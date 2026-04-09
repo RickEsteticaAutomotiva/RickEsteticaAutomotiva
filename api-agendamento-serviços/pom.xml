@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.4</version>
+		<version>3.5.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.automotiva.estetica.rick</groupId>
@@ -28,6 +28,26 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<argLine></argLine>
+		<surefireArgLine></surefireArgLine>
+		<failsafeArgLine></failsafeArgLine>
+		<pmd.skip>false</pmd.skip>
+		<!-- Versões de dependências críticas (melhor controle e rastreabilidade) -->
+		<mapstruct.version>1.6.3</mapstruct.version>
+		<springdoc-openapi.version>2.8.9</springdoc-openapi.version>
+		<jjwt.version>0.12.7</jjwt.version>
+		<google-api-client.version>2.8.1</google-api-client.version>
+		<google-oauth-client.version>1.37.0</google-oauth-client.version>
+		<google-http-client.version>1.45.2</google-http-client.version>
+		<google-api-services-calendar.version>v3-rev20230825-2.0.0</google-api-services-calendar.version>
+		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+		<spotless-maven-plugin.version>2.44.0</spotless-maven-plugin.version>
+		<maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
+		<jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+		<lombok.version>1.18.38</lombok.version>
+		<h2.version>2.2.224</h2.version>
+		<mysql-connector.version>8.3.0</mysql-connector.version>
+		<flyway.version>10.18.1</flyway.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -51,6 +71,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<version>${h2.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -58,6 +79,7 @@
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
+			<version>${mysql-connector.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -76,6 +98,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.tngtech.archunit</groupId>
+			<artifactId>archunit-junit5</artifactId>
+			<version>1.4.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
@@ -89,57 +117,25 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.7.0</version>
+			<version>${springdoc-openapi.version}</version>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>com.google.api-client</groupId>-->
-<!--			<artifactId>google-api-client</artifactId>-->
-<!--			<version>1.23.0</version>-->
-<!--		</dependency>-->
-
-		<!-- Google Calendar API -->
-		<dependency>
-			<groupId>com.google.apis</groupId>
-			<artifactId>google-api-services-calendar</artifactId>
-			<version>v3-rev20230825-2.0.0</version>
-		</dependency>
-
-		<!-- Google API Client Library -->
-		<dependency>
-			<groupId>com.google.api-client</groupId>
-			<artifactId>google-api-client</artifactId>
-			<version>2.2.0</version>
-		</dependency>
-
-		<!-- Google OAuth Client Jetty (para OAuth 2.0 local server) -->
-		<dependency>
-			<groupId>com.google.oauth-client</groupId>
-			<artifactId>google-oauth-client-jetty</artifactId>
-			<version>1.34.1</version>
-		</dependency>
-
-		<!-- Google HTTP Client Jackson2 -->
-		<dependency>
-			<groupId>com.google.http-client</groupId>
-			<artifactId>google-http-client-jackson2</artifactId>
-			<version>1.43.3</version>
-		</dependency>
 
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
+            <version>${jjwt.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <version>0.11.5</version>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.5</version>
+            <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -159,15 +155,18 @@
           <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+
 		<!-- Flyway: versionamento e migração de schema -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
+			<version>${flyway.version}</version>
 		</dependency>
 		<!-- flyway-mysql obrigatório para MySQL 8+ (driver dedicado) -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-mysql</artifactId>
+			<version>${flyway.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -177,6 +176,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
+					<argLine>@{surefireArgLine} ${argLine}</argLine>
+					<forkCount>1</forkCount>
+					<reuseForks>true</reuseForks>
 					<!-- Exclui arquivos *IT.java do surefire (unitários apenas) -->
 					<excludes>
 						<exclude>**/*IT.java</exclude>
@@ -188,6 +190,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<configuration>
+					<argLine>@{failsafeArgLine} ${argLine}</argLine>
+					<forkCount>1</forkCount>
+					<reuseForks>true</reuseForks>
 					<!-- Inclui todos os testes de integração (*IT.java) -->
 					<includes>
 						<include>**/*IT.java</include>
@@ -206,26 +211,128 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
-				<configuration>
-					<source>21</source>
-					<target>21</target>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-							<version>1.18.38</version>
-						</path>
-						<path>
-							<groupId>org.mapstruct</groupId>
-							<artifactId>mapstruct-processor</artifactId>
-							<version>1.6.3</version>
-						</path>
-					</annotationProcessorPaths>
-				</configuration>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>jacoco-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<propertyName>surefireArgLine</propertyName>
+							<destFile>${project.build.directory}/jacoco-ut.exec</destFile>
+							<append>false</append>
+							<includes>
+								<include>com.automotiva.estetica.rick.*</include>
+							</includes>
+							<excludes>
+								<exclude>*MockitoMock*</exclude>
+								<exclude>*$auxiliary$*</exclude>
+								<exclude>**/*MapperImpl*</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>jacoco-prepare-agent-integration</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>prepare-agent-integration</goal>
+						</goals>
+						<configuration>
+							<propertyName>failsafeArgLine</propertyName>
+							<destFile>${project.build.directory}/jacoco-it.exec</destFile>
+							<append>false</append>
+							<includes>
+								<include>com.automotiva.estetica.rick.*</include>
+							</includes>
+							<excludes>
+								<exclude>*MockitoMock*</exclude>
+								<exclude>*$auxiliary$*</exclude>
+								<exclude>**/*MapperImpl*</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>jacoco-merge</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>merge</goal>
+						</goals>
+						<configuration>
+							<destFile>${project.build.directory}/jacoco.exec</destFile>
+							<fileSets>
+								<fileSet>
+									<directory>${project.build.directory}</directory>
+									<includes>
+										<include>jacoco-*.exec</include>
+									</includes>
+								</fileSet>
+							</fileSets>
+						</configuration>
+					</execution>
+					<execution>
+						<id>jacoco-report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<dataFile>${project.build.directory}/jacoco.exec</dataFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>jacoco-check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<dataFile>${project.build.directory}/jacoco.exec</dataFile>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.75</minimum>
+										</limit>
+										<limit>
+											<counter>BRANCH</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.65</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
+
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>${maven-compiler-plugin.version}</version>
+			<configuration>
+				<source>21</source>
+				<target>21</target>
+				<annotationProcessorPaths>
+					<path>
+						<groupId>org.projectlombok</groupId>
+						<artifactId>lombok</artifactId>
+						<version>${lombok.version}</version>
+					</path>
+					<path>
+						<groupId>org.mapstruct</groupId>
+						<artifactId>mapstruct-processor</artifactId>
+						<version>${mapstruct.version}</version>
+					</path>
+				</annotationProcessorPaths>
+			</configuration>
+		</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -239,40 +346,41 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.28.0</version>
-				<configuration>
-					<minimumTokens>120</minimumTokens>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-pmd-plugin</artifactId>
+			<version>${maven-pmd-plugin.version}</version>
+			<configuration>
+				<skip>${pmd.skip}</skip>
+				<minimumTokens>120</minimumTokens>
 
-					<!-- Falha o build se encontrar violações -->
-					<failOnViolation>true</failOnViolation>
+				<!-- Falha o build se encontrar violações -->
+				<failOnViolation>true</failOnViolation>
 
-					<!-- Mostra as violações no console -->
-					<printFailingErrors>true</printFailingErrors>
+				<!-- Mostra as violações no console -->
+				<printFailingErrors>true</printFailingErrors>
 
-					<!-- Evita gerar links HTML desnecessários -->
-					<linkXRef>false</linkXRef>
+				<!-- Evita gerar links HTML desnecessários -->
+				<linkXRef>false</linkXRef>
 
-					<!-- Opcional: define prioridade mínima para alertas (1=crítico, 5=leve) -->
-					<minimumPriority>4</minimumPriority>
-				</configuration>
+				<!-- Opcional: define prioridade mínima para alertas (1=crítico, 5=leve) -->
+				<minimumPriority>4</minimumPriority>
+			</configuration>
 
-				<executions>
-					<execution>
-						<phase>verify</phase>
-						<goals>
-							<goal>check</goal>
-							<goal>cpd-check</goal> <!-- também bloqueia se encontrar código duplicado -->
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			<executions>
+				<execution>
+					<phase>verify</phase>
+					<goals>
+						<goal>check</goal>
+						<goal>cpd-check</goal> <!-- também bloqueia se encontrar código duplicado -->
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>2.43.0</version>
+				<version>${spotless-maven-plugin.version}</version>
 
 				<configuration>
 					<java>
@@ -298,5 +406,17 @@
 		</plugins>
 
 	</build>
+
+	<profiles>
+		<profile>
+			<id>skip-pmd-on-jdk22plus</id>
+			<activation>
+				<jdk>[22,)</jdk>
+			</activation>
+			<properties>
+				<pmd.skip>true</pmd.skip>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
