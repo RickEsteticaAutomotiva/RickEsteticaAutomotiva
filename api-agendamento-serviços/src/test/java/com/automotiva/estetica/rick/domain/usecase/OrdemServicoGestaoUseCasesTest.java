@@ -16,6 +16,7 @@ import com.automotiva.estetica.rick.domain.exception.CampoInvalidoException;
 import com.automotiva.estetica.rick.domain.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
 import com.automotiva.estetica.rick.domain.gateway.ItemServicoGateway;
+import com.automotiva.estetica.rick.domain.gateway.OrdemServicoEventGateway;
 import com.automotiva.estetica.rick.domain.gateway.OrdemServicoGateway;
 import com.automotiva.estetica.rick.domain.gateway.ServicoGateway;
 import java.math.BigDecimal;
@@ -36,6 +37,9 @@ class OrdemServicoGestaoUseCasesTest {
 
     @Mock
     private OrdemServicoGateway ordemServicoGateway;
+
+    @Mock
+    private OrdemServicoEventGateway ordemServicoEventGateway;
 
     @Mock
     private ItemServicoGateway itemServicoGateway;
@@ -309,7 +313,8 @@ class OrdemServicoGestaoUseCasesTest {
     void atualizarOrdemServico_deveAtualizarCamposESalvar() {
         BuscarOrdemServicoComDetalhesUseCase buscarUseCase = org.mockito.Mockito
                 .mock(BuscarOrdemServicoComDetalhesUseCase.class);
-        AtualizarOrdemServicoUseCase useCase = new AtualizarOrdemServicoUseCase(buscarUseCase, ordemServicoGateway);
+        AtualizarOrdemServicoUseCase useCase = new AtualizarOrdemServicoUseCase(buscarUseCase, ordemServicoEventGateway,
+                ordemServicoGateway);
         OrdemServico ordem = ordemBase();
         LocalDateTime novaData = LocalDateTime.of(2026, 5, 10, 14, 0);
         when(buscarUseCase.execute(10L)).thenReturn(ordem);
@@ -330,7 +335,8 @@ class OrdemServicoGestaoUseCasesTest {
     void atualizarOrdemServico_devePreencherDataConclusaoAoConcluir() {
         BuscarOrdemServicoComDetalhesUseCase buscarUseCase = org.mockito.Mockito
                 .mock(BuscarOrdemServicoComDetalhesUseCase.class);
-        AtualizarOrdemServicoUseCase useCase = new AtualizarOrdemServicoUseCase(buscarUseCase, ordemServicoGateway);
+        AtualizarOrdemServicoUseCase useCase = new AtualizarOrdemServicoUseCase(buscarUseCase, ordemServicoEventGateway,
+                ordemServicoGateway);
         OrdemServico ordem = ordemBase();
         when(buscarUseCase.execute(10L)).thenReturn(ordem);
         when(ordemServicoGateway.salvar(ordem)).thenReturn(ordem);

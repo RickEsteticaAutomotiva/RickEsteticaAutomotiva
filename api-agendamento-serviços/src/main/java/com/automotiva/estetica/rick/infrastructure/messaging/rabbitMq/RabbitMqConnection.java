@@ -10,6 +10,8 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Slf4j
 @Component
 @Profile("!test & !integration-test")
@@ -25,29 +27,34 @@ public class RabbitMqConnection {
         return new Queue(RabbitMqConsts.ORDEM_SERVICO_CRIADA_QUEUE, true, false, false);
     }
 
+    private Queue ordemServicoAtualizadaQueue() {
+        return new Queue(RabbitMqConsts.ORDEM_SERVICO_ATUALIZADA_QUEUE, true, false, false);
+    }
+
     private DirectExchange directExchange() {
         return new DirectExchange(RabbitMqConsts.EXCHANGE_NAME);
     }
 
-    private Binding binding(Queue queue, DirectExchange exchange) {
-        return new Binding(queue.getName(), Binding.DestinationType.QUEUE, exchange.getName(), queue.getName(), null);
+    private List<Binding> binding(List<Queue> queues, DirectExchange exchange) {
+        return queues.stream().map(queue -> new Binding(queue.getName(), Binding.DestinationType.QUEUE,
+                exchange.getName(), queue.getName(), null)).toList();
     }
 
     @PostConstruct
     private void addingQueues() {
         try {
             log.info("Inicializando filas do RabbitMQ...");
-            Queue ordemServicoCriadaQueue = this.ordemServicoCriadaQueue();
+            List<Queue> queues = List.of(this.ordemServicoCriadaQueue(), this.ordemServicoAtualizadaQueue());
             DirectExchange exchange = this.directExchange();
-            Binding binding = this.binding(ordemServicoCriadaQueue, exchange);
+            List<Binding> binding = this.binding(queues, exchange);
 
-            this.amqpAdmin.declareQueue(ordemServicoCriadaQueue);
+            queues.forEach(this.amqpAdmin::declareQueue);
             this.amqpAdmin.declareExchange(exchange);
-            this.amqpAdmin.declareBinding(binding);
+            binding.forEach(this.amqpAdmin::declareBinding);
 
-            log.info("✅ Filas do RabbitMQ inicializadas com sucesso!");
+            log.info("Filas do RabbitMQ inicializadas com sucesso!");
         } catch (Exception e) {
-            log.error("❌ Erro ao inicializar filas do RabbitMQ", e);
+            log.error("Erro ao inicializar filas do RabbitMQ", e);
             throw new RuntimeException("Falha ao inicializar RabbitMQ filas", e);
         }
     }
