@@ -30,6 +30,9 @@ public class CadastrarPessoaUseCase {
             throw RecursoJaExisteException.builder().mensagem("o email já existe no sistema").detalhes("").build();
         }
 
+        // Validação de força da senha (regra de domínio)
+        pessoa.validaSenha(pessoa.getSenha());
+
         // Roles: usa as informadas no request ou ROLE_CLIENTE por padrão
         Set<RoleEnum> roles = (rolesRequest != null && !rolesRequest.isEmpty())
                 ? EnumSet.copyOf(rolesRequest)

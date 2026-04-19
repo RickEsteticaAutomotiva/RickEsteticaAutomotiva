@@ -46,54 +46,114 @@ class PessoaTest {
         assertEquals(novaData, pessoa.getDataNascimento());
     }
 
+    // ─── validaSenha ───────────────────────────────────────────────────────────
+
     @Test
-    @DisplayName("Deve lançar CampoInvalidoException quando senhaAtual for nula")
-    void validarDadosSenha_senhaAtualNula_deveLancarExcecao() {
+    @DisplayName("Deve lançar exceção quando senha for nula")
+    void validaSenha_senhaNula_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        assertThrows(CampoInvalidoException.class, () -> pessoa.validarDadosSenha(null, "novaSenha"));
+        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class,
+                () -> pessoa.validaSenha(null));
+
+        assertTrue(exception.getMensagem().contains("não pode ser nula ou vazia"));
     }
 
     @Test
-    @DisplayName("Deve lançar CampoInvalidoException quando senhaAtual for em branco")
-    void validarDadosSenha_senhaAtualEmBranco_deveLancarExcecao() {
+    @DisplayName("Deve lançar exceção quando senha for em branco")
+    void validaSenha_senhaEmBranco_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        assertThrows(CampoInvalidoException.class, () -> pessoa.validarDadosSenha("  ", "novaSenha"));
+        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class,
+                () -> pessoa.validaSenha("   "));
+
+        assertTrue(exception.getMensagem().contains("não pode ser nula ou vazia"));
     }
 
     @Test
-    @DisplayName("Deve lançar CampoInvalidoException quando novaSenha for nula")
-    void validarDadosSenha_novaSenhaNula_deveLancarExcecao() {
+    @DisplayName("Deve lançar exceção quando senha tem menos de 8 caracteres")
+    void validaSenha_comprimentoMenor8_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        assertThrows(CampoInvalidoException.class, () -> pessoa.validarDadosSenha("senhaAtual", null));
+        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class,
+                () -> pessoa.validaSenha("Abc@12"));
+
+        assertTrue(exception.getMensagem().contains("Mínimo de 8 caracteres"));
     }
 
     @Test
-    @DisplayName("Deve lançar CampoInvalidoException quando novaSenha for em branco")
-    void validarDadosSenha_novaSenhaEmBranco_deveLancarExcecao() {
+    @DisplayName("Deve lançar exceção quando senha não tem letra maiúscula")
+    void validaSenha_semMaiuscula_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        assertThrows(CampoInvalidoException.class, () -> pessoa.validarDadosSenha("senhaAtual", "   "));
+        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class,
+                () -> pessoa.validaSenha("abcdef123@"));
+
+        assertTrue(exception.getMensagem().contains("Pelo menos 1 letra maiúscula"));
     }
 
     @Test
-    @DisplayName("Não deve lançar exceção quando ambas as senhas forem válidas")
-    void validarDadosSenha_dadosValidos_naoDeveLancarExcecao() {
+    @DisplayName("Deve lançar exceção quando senha não tem letra minúscula")
+    void validaSenha_semMinuscula_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        assertDoesNotThrow(() -> pessoa.validarDadosSenha("senhaAtual", "novaSenha123"));
+        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class,
+                () -> pessoa.validaSenha("ABCDEF123@"));
+
+        assertTrue(exception.getMensagem().contains("Pelo menos 1 letra minúscula"));
     }
 
     @Test
-    @DisplayName("Deve alterar a senha corretamente")
-    void alterarSenha_devePersistirNovaSenha() {
+    @DisplayName("Deve lançar exceção quando senha não tem número")
+    void validaSenha_semNumero_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        pessoa.alterarSenha("novaSenhaEncodada");
+        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class,
+                () -> pessoa.validaSenha("AbCdEfgh@"));
 
-        assertEquals("novaSenhaEncodada", pessoa.getSenha());
+        assertTrue(exception.getMensagem().contains("Pelo menos 1 número"));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando senha não tem caractere especial")
+    void validaSenha_semEspecial_deveLancarExcecao() {
+        Pessoa pessoa = pessoaMock();
+
+        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class,
+                () -> pessoa.validaSenha("Abcdefgh123"));
+
+        assertTrue(exception.getMensagem().contains("Pelo menos 1 caractere especial"));
+    }
+
+    @Test
+    @DisplayName("Deve aceitar senha forte com todos os requisitos")
+    void validaSenha_senhaForte_naoDeveLancarExcecao() {
+        Pessoa pessoa = pessoaMock();
+
+        assertDoesNotThrow(() -> pessoa.validaSenha("Senha123@Forte"));
+    }
+
+    @Test
+    @DisplayName("Deve aceitar senha forte com diversos caracteres especiais")
+    void validaSenha_senhaForteComEspeciais_naoDeveLancarExcecao() {
+        Pessoa pessoa = pessoaMock();
+
+        assertDoesNotThrow(() -> pessoa.validaSenha("P@ssw0rd!Segura"));
+        assertDoesNotThrow(() -> pessoa.validaSenha("Test#2024_Senha"));
+        assertDoesNotThrow(() -> pessoa.validaSenha("Complex(Pwd)456"));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção com múltiplos requisitos não atendidos")
+    void validaSenha_multiploErros_deveListarTodosErros() {
+        Pessoa pessoa = pessoaMock();
+
+        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class,
+                () -> pessoa.validaSenha("abc123"));
+
+        String mensagem = exception.getMensagem();
+        assertTrue(mensagem.contains("Mínimo de 8 caracteres"));
+        assertTrue(mensagem.contains("Pelo menos 1 letra maiúscula"));
     }
 
     // ─── roles ──────────────────────────────────────────────────────────────
