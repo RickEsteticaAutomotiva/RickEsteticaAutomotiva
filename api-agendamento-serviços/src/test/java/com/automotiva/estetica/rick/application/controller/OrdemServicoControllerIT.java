@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -134,8 +135,9 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("GET /ordem-servicos/horarios-disponiveis -> 200 com horarios livres")
     void buscarHorariosDisponiveis_sucesso() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/horarios-disponiveis")
-                .header("Authorization", bearer(tokenAdmin)).param("data", "2025-12-01").param("servicosIds", "1"))
+        mockMvc.perform(
+                get(BASE_PATH + "/ordem-servicos/horarios-disponiveis").header("Authorization", bearer(tokenAdmin))
+                        .param("data", LocalDate.now().toString()).param("servicosIds", "1"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
                 .andExpect(jsonPath("$[0].inicio", notNullValue())).andExpect(jsonPath("$[0].fim", notNullValue()));
     }
@@ -143,8 +145,9 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("GET /ordem-servicos/horarios-disponiveis -> 404 quando servicos nao existem")
     void buscarHorariosDisponiveis_servicosNaoEncontrados() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/horarios-disponiveis")
-                .header("Authorization", bearer(tokenAdmin)).param("data", "2025-12-01").param("servicosIds", "9999"))
+        mockMvc.perform(
+                get(BASE_PATH + "/ordem-servicos/horarios-disponiveis").header("Authorization", bearer(tokenAdmin))
+                        .param("data", LocalDate.now().toString()).param("servicosIds", "9999"))
                 .andExpect(status().isNotFound());
     }
 }

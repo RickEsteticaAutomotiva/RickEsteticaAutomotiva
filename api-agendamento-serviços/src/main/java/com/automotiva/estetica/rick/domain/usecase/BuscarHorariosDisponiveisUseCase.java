@@ -3,6 +3,7 @@ package com.automotiva.estetica.rick.domain.usecase;
 import com.automotiva.estetica.rick.domain.entity.HorarioDisponivel;
 import com.automotiva.estetica.rick.domain.entity.OrdemServicoDuracaoResumo;
 import com.automotiva.estetica.rick.domain.entity.Servico;
+import com.automotiva.estetica.rick.domain.exception.DataInvalidaException;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
 import com.automotiva.estetica.rick.domain.gateway.OrdemServicoGateway;
 import com.automotiva.estetica.rick.domain.gateway.ServicoGateway;
@@ -11,6 +12,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +28,16 @@ public class BuscarHorariosDisponiveisUseCase {
     private final OrdemServicoGateway ordemServicoGateway;
 
     public List<HorarioDisponivel> execute(LocalDate data, List<Long> servicosIds) {
-        List<HorarioDisponivel> horariosDisponiveis = new ArrayList<>();
 
+        if (data.isBefore(LocalDate.now())) {
+            throw DataInvalidaException.builder().mensagem("A data informada é anterior ao dia atual").detalhes("")
+                    .build();
+        }
+
+        List<HorarioDisponivel> horariosDisponiveis = new ArrayList<>();
+        LocalTime ponteiro = data.equals(LocalDate.now()) ? LocalTime.now() : INICIO_TRABALHO;
         List<Servico> servicos = servicoGateway.buscarPorIds(servicosIds);
+
         if (servicos.isEmpty()) {
             throw RecursoNaoEncontradoException.builder().mensagem("Servico nao encontrado").detalhes("").build();
         }
@@ -36,8 +45,6 @@ public class BuscarHorariosDisponiveisUseCase {
         int duracaoServicos = servicos.stream().mapToInt(Servico::getDuracaoMinutos).sum();
 
         List<OrdemServicoDuracaoResumo> ordensDoDia = ordemServicoGateway.buscarDuracaoTotalPorOS(data);
-
-        LocalTime ponteiro = INICIO_TRABALHO;
 
         for (OrdemServicoDuracaoResumo ordem : ordensDoDia) {
             int duracaoOS = Optional.ofNullable(ordem.duracaoTotal()).map(Long::intValue).orElse(0);

@@ -23,6 +23,7 @@ import com.automotiva.estetica.rick.domain.entity.Servico;
 import com.automotiva.estetica.rick.domain.entity.Status;
 import com.automotiva.estetica.rick.domain.entity.Veiculo;
 import com.automotiva.estetica.rick.domain.exception.CampoInvalidoException;
+import com.automotiva.estetica.rick.domain.exception.DataInvalidaException;
 import com.automotiva.estetica.rick.domain.exception.IntegracaoException;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
 import com.automotiva.estetica.rick.domain.gateway.ItemServicoGateway;
@@ -45,12 +46,13 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -110,6 +112,19 @@ class OrdemServicoApplicationServiceTest {
 
     @InjectMocks
     private OrdemServicoApplicationService ordemServicoApplicationService;
+
+    private MockedStatic<LocalDate> mockedDate;
+    @BeforeEach
+    void setup() {
+        LocalDate now = LocalDate.now();
+        mockedDate = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS);
+        mockedDate.when(LocalDate::now).thenReturn(now);
+    }
+
+    @AfterEach
+    void tearDown() {
+        mockedDate.close();
+    }
 
     private OrdemServico ordemMock() {
         Veiculo veiculo = Veiculo.builder().id(1L).build();
@@ -177,13 +192,28 @@ class OrdemServicoApplicationServiceTest {
     @Test
     @DisplayName("Deve propagar excecao quando servicos nao forem encontrados")
     void buscarHorariosDisponiveis_servicosNaoEncontrados_devePropagarExcecao() {
-        LocalDate data = LocalDate.of(2025, 12, 1);
+        LocalDate data = LocalDate.now();
         List<Long> servicosIds = List.of(9999L);
         RecursoNaoEncontradoException ex = RecursoNaoEncontradoException.builder().mensagem("Servico nao encontrado")
                 .detalhes("").build();
         when(buscarHorariosDisponiveisUseCase.execute(data, servicosIds)).thenThrow(ex);
 
         RecursoNaoEncontradoException thrown = assertThrows(RecursoNaoEncontradoException.class,
+                () -> ordemServicoApplicationService.buscarHorariosDisponiveis(data, servicosIds));
+
+        assertSame(ex, thrown);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando a data solicitada for anterior à atual")
+    void buscarHorariosDisponiveis_dataAnteriorAtual_devePropagarExcecao() {
+        LocalDate data = LocalDate.of(2025, 12, 1);
+        List<Long> servicosIds = List.of(9999L);
+        DataInvalidaException ex = DataInvalidaException.builder().mensagem("Data inválida").detalhes("").build();
+
+        when(buscarHorariosDisponiveisUseCase.execute(data, servicosIds)).thenThrow(ex);
+
+        DataInvalidaException thrown = assertThrows(DataInvalidaException.class,
                 () -> ordemServicoApplicationService.buscarHorariosDisponiveis(data, servicosIds));
 
         assertSame(ex, thrown);

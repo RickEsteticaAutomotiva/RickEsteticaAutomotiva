@@ -1,11 +1,13 @@
 package com.automotiva.estetica.rick.infrastructure.repository.ordemservico;
 
 import com.automotiva.estetica.rick.infrastructure.entity.OrdemServicoEntity;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,12 +39,11 @@ public interface OrdemServicoRepository
                     o.id AS id,
                     o.data_agendamento AS dataAgendamento,
                     COALESCE(SUM(s.duracao_minutos), 0) AS duracaoTotal
-                FROM item_servico i
-                JOIN ordem_servico o ON o.id = i.ordem_servico_id
+                FROM ordem_servico o
+                JOIN item_servico i ON i.ordem_servico_id = o.id
                 JOIN servico s ON s.id = i.servico_id
-                JOIN status st ON st.id = o.fk_status
                 WHERE CAST(o.data_agendamento AS DATE) = :data
-                  AND st.descricao = 'AGENDA CONFIRMADA'
+                AND s.id = 2
                 GROUP BY o.id, o.data_agendamento
                 ORDER BY o.data_agendamento ASC
             """, nativeQuery = true)

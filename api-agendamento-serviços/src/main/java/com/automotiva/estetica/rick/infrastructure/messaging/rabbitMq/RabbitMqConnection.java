@@ -45,9 +45,9 @@ public class RabbitMqConnection {
             this.amqpAdmin.declareExchange(exchange);
             this.amqpAdmin.declareBinding(binding);
 
-            log.info("✅ Filas do RabbitMQ inicializadas com sucesso!");
+            log.info("Filas do RabbitMQ inicializadas com sucesso!");
         } catch (Exception e) {
-            log.error("❌ Erro ao inicializar filas do RabbitMQ", e);
+            log.error("Erro ao inicializar filas do RabbitMQ", e);
             throw new RuntimeException("Falha ao inicializar RabbitMQ filas", e);
         }
     }
