@@ -16,6 +16,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static java.util.Collections.emptyList;
+
 @Service
 @RequiredArgsConstructor
 public class BuscarHorariosDisponiveisUseCase {
@@ -34,8 +36,12 @@ public class BuscarHorariosDisponiveisUseCase {
                     .build();
         }
 
-        List<HorarioDisponivel> horariosDisponiveis = new ArrayList<>();
         LocalTime ponteiro = data.equals(LocalDate.now()) ? LocalTime.now() : INICIO_TRABALHO;
+        if (ponteiro.isAfter(FIM_TRABALHO)) {
+            return emptyList();
+        }
+
+        List<HorarioDisponivel> horariosDisponiveis = new ArrayList<>();
         List<Servico> servicos = servicoGateway.buscarPorIds(servicosIds);
 
         if (servicos.isEmpty()) {
