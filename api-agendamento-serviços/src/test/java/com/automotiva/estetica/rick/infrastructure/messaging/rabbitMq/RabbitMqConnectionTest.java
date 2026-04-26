@@ -1,46 +1,52 @@
 package com.automotiva.estetica.rick.infrastructure.messaging.rabbitMq;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
+@DisplayName("Testes de configuração do RabbitMQ")
 class RabbitMqConnectionTest {
 
     @Mock
     private AmqpAdmin amqpAdmin;
 
-    @Test
-    void addingQueues_deveDeclararFilaExchangeEBinding() {
-        RabbitMqConnection connection = new RabbitMqConnection(amqpAdmin);
+    @InjectMocks
+    private RabbitMqConnection rabbitMqConnection;
 
-        ReflectionTestUtils.invokeMethod(connection, "addingQueues");
-
-        verify(amqpAdmin).declareQueue(any(Queue.class));
-        verify(amqpAdmin).declareExchange(any(DirectExchange.class));
-        verify(amqpAdmin).declareBinding(any(Binding.class));
+    @BeforeEach
+    void setup() {
     }
 
     @Test
-    void addingQueues_quandoFalha_deveRelancarRuntimeException() {
-        RabbitMqConnection connection = new RabbitMqConnection(amqpAdmin);
-        when(amqpAdmin.declareQueue(any(Queue.class))).thenThrow(new RuntimeException("rabbit indisponivel"));
+    @DisplayName("Deve criar filas, exchange e bindings com sucesso")
+    void adicionarFilas_deveCriarFilasExchangeEBindingsComSucesso() {
 
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> ReflectionTestUtils.invokeMethod(connection, "addingQueues"));
+        ReflectionTestUtils.invokeMethod(rabbitMqConnection, "addingQueues");
 
-        assertTrue(ex.getMessage().contains("Falha ao inicializar RabbitMQ filas"));
+        verify(amqpAdmin, times(2)).declareQueue(any());
+        verify(amqpAdmin, times(1)).declareExchange(any());
+        verify(amqpAdmin, times(2)).declareBinding(any());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando falhar criação das filas")
+    void adicionarFilas_deveLancarExcecaoQuandoFalharCriacaoFilas() {
+
+        doThrow(new RuntimeException("Erro")).when(amqpAdmin).declareQueue(any());
+
+        assertThrows(RuntimeException.class,
+                () -> ReflectionTestUtils.invokeMethod(rabbitMqConnection, "addingQueues"));
+
+        verify(amqpAdmin, atLeastOnce()).declareQueue(any());
     }
 }

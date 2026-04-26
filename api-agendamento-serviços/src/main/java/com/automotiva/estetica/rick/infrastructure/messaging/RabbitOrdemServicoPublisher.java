@@ -1,10 +1,14 @@
 package com.automotiva.estetica.rick.infrastructure.messaging;
 
 import com.automotiva.estetica.rick.constantes.RabbitMqConsts;
+import com.automotiva.estetica.rick.domain.entity.MotivoCancelamento;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import com.automotiva.estetica.rick.domain.gateway.OrdemServicoEventGateway;
+import com.automotiva.estetica.rick.dto.OrdemServicoAtualizadaEvent;
 import com.automotiva.estetica.rick.dto.OrdemServicoCriadaEvent;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -31,5 +35,18 @@ public class RabbitOrdemServicoPublisher implements OrdemServicoEventGateway {
                 event.IdOrdemServico());
 
         rabbitTemplate.convertAndSend(RabbitMqConsts.ORDEM_SERVICO_CRIADA_QUEUE, event);
+    }
+
+    @Override
+    public void publicarOrdemServicoAtualizada(OrdemServico ordemServico) {
+        OrdemServicoAtualizadaEvent event = new OrdemServicoAtualizadaEvent(ordemServico.getId(),
+                ordemServico.getDataAgendamento(), ordemServico.getPrecoMinimo(),
+                ordemServico.getObservacoes() != null ? ordemServico.getObservacoes() : null,
+                ordemServico.getStatus().getId(),
+                Optional.ofNullable(ordemServico.getMotivoCancelamento()).map(MotivoCancelamento::getId).orElse(null));
+
+        log.info("Enviando evento para a fila de atualização de ordem de serviço | id ordem de serviço: {}",
+                ordemServico.getId());
+        rabbitTemplate.convertAndSend(RabbitMqConsts.ORDEM_SERVICO_ATUALIZADA_QUEUE, event);
     }
 }

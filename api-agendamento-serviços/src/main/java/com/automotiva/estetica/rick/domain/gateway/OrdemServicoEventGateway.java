@@ -6,4 +6,6 @@ import java.util.List;
 public interface OrdemServicoEventGateway {
 
     void publicarOrdemServicoCriada(OrdemServico ordemServico, List<String> nomesServicos);
+
+    void publicarOrdemServicoAtualizada(OrdemServico ordemServico);
 }
