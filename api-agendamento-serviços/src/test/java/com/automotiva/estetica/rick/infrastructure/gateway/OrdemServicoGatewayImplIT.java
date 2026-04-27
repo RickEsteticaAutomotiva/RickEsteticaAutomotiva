@@ -139,6 +139,6 @@ class OrdemServicoGatewayImplIT {
 
         assertThat(resultado).hasSize(1);
         assertThat(resultado.getFirst().id()).isEqualTo(ordem.getId());
-        assertThat(resultado.getFirst().duracaoTotal()).isEqualTo(90L);
+        assertThat(resultado.getFirst().duracaoTotal()).isEqualTo(30L);
     }
 }

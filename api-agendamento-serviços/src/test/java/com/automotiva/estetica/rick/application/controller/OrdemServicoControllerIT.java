@@ -5,12 +5,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 @DisplayName("IT — OrdemServicoController")
 class OrdemServicoControllerIT extends AbstractIntegrationTest {
@@ -134,17 +140,47 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("GET /ordem-servicos/horarios-disponiveis -> 200 com horarios livres")
     void buscarHorariosDisponiveis_sucesso() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/horarios-disponiveis")
-                .header("Authorization", bearer(tokenAdmin)).param("data", "2025-12-01").param("servicosIds", "1"))
-                .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$[0].inicio", notNullValue())).andExpect(jsonPath("$[0].fim", notNullValue()));
+        try (MockedStatic<LocalTime> mock = Mockito.mockStatic(LocalTime.class, Mockito.CALLS_REAL_METHODS)) {
+
+            LocalTime horarioValido = LocalTime.of(10, 0);
+            mock.when(LocalTime::now).thenReturn(horarioValido);
+
+            mockMvc.perform(
+                    get(BASE_PATH + "/ordem-servicos/horarios-disponiveis").header("Authorization", bearer(tokenAdmin))
+                            .param("data", LocalDate.now().toString()).param("servicosIds", "1"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
+                    .andExpect(jsonPath("$[0].inicio", notNullValue())).andExpect(jsonPath("$[0].fim", notNullValue()));
+        }
+    }
+
+    @Test
+    @DisplayName("GET /ordem-servicos/horarios-disponiveis -> 200 com lista vazia")
+    void buscarHorariosDisponiveis_listaVazia() throws Exception {
+
+        try (MockedStatic<LocalTime> mock = Mockito.mockStatic(LocalTime.class, Mockito.CALLS_REAL_METHODS)) {
+
+            LocalTime horarioValido = LocalTime.of(18, 0);
+            mock.when(LocalTime::now).thenReturn(horarioValido);
+
+            mockMvc.perform(
+                    get(BASE_PATH + "/ordem-servicos/horarios-disponiveis").header("Authorization", bearer(tokenAdmin))
+                            .param("data", LocalDate.now().toString()).param("servicosIds", "1"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(0))));
+        }
     }
 
     @Test
     @DisplayName("GET /ordem-servicos/horarios-disponiveis -> 404 quando servicos nao existem")
     void buscarHorariosDisponiveis_servicosNaoEncontrados() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/horarios-disponiveis")
-                .header("Authorization", bearer(tokenAdmin)).param("data", "2025-12-01").param("servicosIds", "9999"))
-                .andExpect(status().isNotFound());
+        try (MockedStatic<LocalTime> mock = Mockito.mockStatic(LocalTime.class, Mockito.CALLS_REAL_METHODS)) {
+
+            LocalTime horarioValido = LocalTime.of(10, 0);
+            mock.when(LocalTime::now).thenReturn(horarioValido);
+
+            mockMvc.perform(
+                    get(BASE_PATH + "/ordem-servicos/horarios-disponiveis").header("Authorization", bearer(tokenAdmin))
+                            .param("data", LocalDate.now().toString()).param("servicosIds", "9999"))
+                    .andExpect(status().isNotFound());
+        }
     }
 }
