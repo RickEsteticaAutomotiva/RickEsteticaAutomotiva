@@ -161,4 +161,13 @@ public interface OrdemServicoRepository
                 ORDER BY i.id ASC
             """)
     List<String> buscarNomesServicosDaOrdem(@Param("ordemServicoId") Long ordemServicoId);
+
+    @EntityGraph(attributePaths = {"veiculo", "veiculo.pessoa", "status"})
+    @Query("""
+                SELECT o FROM OrdemServicoEntity o
+                WHERE CAST(o.dataAgendamento AS date) = :data
+                ORDER BY o.dataAgendamento ASC, 
+                         CASE WHEN o.status.descricao = 'CANCELADO' THEN 1 ELSE 0 END ASC
+            """)
+    List<OrdemServicoEntity> buscarAgendamentosDodia(@Param("data") LocalDate data);
 }

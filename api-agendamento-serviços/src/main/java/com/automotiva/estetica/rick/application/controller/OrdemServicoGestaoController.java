@@ -1,9 +1,11 @@
 package com.automotiva.estetica.rick.application.controller;
 
 import com.automotiva.estetica.rick.application.dto.request.AdicionarServicosOrdemRequest;
+import com.automotiva.estetica.rick.application.dto.request.AtualizarOrdemServicoGestaoRequest;
 import com.automotiva.estetica.rick.application.dto.request.AtualizarStatusOrdemRequest;
 import com.automotiva.estetica.rick.application.dto.request.AtualizarValorServicoOrdemRequest;
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPageRequest;
+import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
 import com.automotiva.estetica.rick.application.security.GerenteOnly;
@@ -33,6 +35,14 @@ public class OrdemServicoGestaoController {
 
     private final OrdemServicoApplicationService ordemServicoUseCase;
 
+    @PostMapping
+    @Operation(summary = "Cria uma nova ordem de serviço (gerente)")
+    public ResponseEntity<OrdemServicoDetalheResponse> criarParaGestao(
+            @Valid @RequestBody OrdemServicoRequest request) {
+        return ResponseEntity.status(201)
+                .body(ordemServicoUseCase.criarParaGestao(request));
+    }
+
     @GetMapping
     @Operation(summary = "Lista ordens de serviço com filtros para gestão")
     public ResponseEntity<Page<OrdemServicoResumoResponse>> buscarTodosParaGestao(
@@ -47,16 +57,16 @@ public class OrdemServicoGestaoController {
     }
 
     @PatchMapping("/{ordemServicoId}")
-    @Operation(summary = "Atualiza o status de uma ordem de serviço")
+    @Operation(summary = "Atualiza uma ordem de serviço (data, observações e/ou status)")
     // Status possíveis:
     // 1 = AGUARDANDO (análise/confirmação)
     // 2 = EM_ANDAMENTO (em execução - notifica email)
     // 3 = AGUARDANDO_PECAS (peças/componentes)
     // 4 = CANCELADO
     // 5 = CONCLUIDO (notifica email)
-    public ResponseEntity<OrdemServicoDetalheResponse> atualizarStatusParaGestao(@PathVariable Long ordemServicoId,
-            @Valid @RequestBody AtualizarStatusOrdemRequest request) {
-        return ResponseEntity.ok(ordemServicoUseCase.atualizarStatusParaGestao(ordemServicoId, request));
+    public ResponseEntity<OrdemServicoDetalheResponse> atualizarParaGestao(@PathVariable Long ordemServicoId,
+            @Valid @RequestBody AtualizarOrdemServicoGestaoRequest request) {
+        return ResponseEntity.ok(ordemServicoUseCase.atualizarParaGestao(ordemServicoId, request));
     }
 
     @PostMapping("/{ordemServicoId}/servicos")

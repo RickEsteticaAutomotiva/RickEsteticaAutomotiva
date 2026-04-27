@@ -27,4 +27,6 @@ public interface OrdemServicoGateway {
     List<OrdemServicoDuracaoResumo> buscarDuracaoTotalPorOS(LocalDate data);
 
     boolean existePorVeiculoIdEDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento);
+
+    List<OrdemServico> buscarAgendamentosDodia(LocalDate data);
 }

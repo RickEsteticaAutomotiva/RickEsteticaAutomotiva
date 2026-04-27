@@ -3,6 +3,7 @@ package com.automotiva.estetica.rick.application.service;
 import com.automotiva.estetica.rick.application.assembler.OrdemServicoResponseAssembler;
 import com.automotiva.estetica.rick.application.PageableFactory;
 import com.automotiva.estetica.rick.application.dto.request.AdicionarServicosOrdemRequest;
+import com.automotiva.estetica.rick.application.dto.request.AtualizarOrdemServicoGestaoRequest;
 import com.automotiva.estetica.rick.application.dto.request.AtualizarStatusOrdemRequest;
 import com.automotiva.estetica.rick.application.dto.request.AtualizarValorServicoOrdemRequest;
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPageRequest;
@@ -31,8 +32,10 @@ import com.automotiva.estetica.rick.domain.usecase.LimparCarrinhoPessoaUseCase;
 import com.automotiva.estetica.rick.domain.usecase.ListarOrdensServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.NotificarAtualizacaoOrdemServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.RemoverServicoOrdemServicoUseCase;
+import com.automotiva.estetica.rick.domain.usecase.BuscarAgendamentosHojeUseCase;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +65,7 @@ public class OrdemServicoApplicationService {
     private final BuscarHorariosDisponiveisUseCase buscarHorariosDisponiveisUseCase;
     private final NotificarAtualizacaoOrdemServicoUseCase notificarAtualizacaoOrdemServicoUseCase;
     private final OrdemServicoResponseAssembler ordemServicoResponseAssembler;
+    private final BuscarAgendamentosHojeUseCase buscarAgendamentosHojeUseCase;
 
     public Page<OrdemServicoResponse> buscarTodos(PageRequest pageRequest) {
         Pageable pageable = PageableFactory.from(pageRequest);
@@ -93,6 +97,14 @@ public class OrdemServicoApplicationService {
         }
 
         return ordemServicoResponseAssembler.toResponse(ordemServico, buscarItensPorOrdem(ordemServico.getId()));
+    }
+
+    @Transactional
+    public OrdemServicoDetalheResponse criarParaGestao(OrdemServicoRequest request) {
+        OrdemServico ordemServico = criarOrdemServicoUseCase.execute(request.getDataAgendamento(),
+                request.getPrecoMinimo(), request.getVeiculo(), request.getObservacoes(), request.getServicos());
+        return ordemServicoResponseAssembler.toDetalheGestao(ordemServico,
+                buscarItensPorOrdem(ordemServico.getId()));
     }
 
     public OrdemServicoResponse buscarPorId(Long id) {
@@ -148,6 +160,24 @@ public class OrdemServicoApplicationService {
     }
 
     @Transactional
+    public OrdemServicoDetalheResponse atualizarParaGestao(Long ordemServicoId,
+            AtualizarOrdemServicoGestaoRequest request) {
+        LocalDateTime dataAgendamento = request != null ? request.getDataAgendamento() : null;
+        String observacoes = request != null && request.getObservacoes() != null
+                ? request.getObservacoes().trim()
+                : null;
+        Long statusId = request != null ? request.getStatus() : null;
+
+        OrdemServico ordemServico = atualizarOrdemServicoUseCase.execute(ordemServicoId, dataAgendamento, null,
+                observacoes, statusId, null);
+
+        notificarAtualizacaoOrdemServicoUseCase.execute(ordemServico);
+
+        OrdemServico ordemComDetalhes = buscarOrdemPorIdComDetalhes(ordemServicoId);
+        return ordemServicoResponseAssembler.toDetalheGestao(ordemComDetalhes, buscarItensPorOrdem(ordemServicoId));
+    }
+
+    @Transactional
     public OrdemServicoDetalheResponse adicionarServicosParaGestao(Long ordemServicoId,
             AdicionarServicosOrdemRequest request) {
         List<Long> servicoIds = request != null && request.getServicos() != null
@@ -184,5 +214,9 @@ public class OrdemServicoApplicationService {
 
     private List<ItemServico> buscarItensPorOrdem(Long ordemId) {
         return itemServicoGateway.buscarPorOrdemServicoId(ordemId);
+    }
+
+    public List<OrdemServico> buscarAgendamentosHoje(LocalDate data) {
+        return buscarAgendamentosHojeUseCase.execute(data);
     }
 }

@@ -47,3 +47,4 @@ public class OrdemServicoEntity extends BaseEntity<Long> {
     @JoinColumn(name = "fk_motivo")
     private MotivoCancelamentoEntity motivoCancelamento;
 }
+

@@ -69,4 +69,11 @@ public class OrdemServicoGatewayImpl implements OrdemServicoGateway {
     public boolean existePorVeiculoIdEDataAgendamento(Long veiculoId, LocalDateTime dataAgendamento) {
         return ordemServicoRepository.existsByVeiculoIdAndDataAgendamento(veiculoId, dataAgendamento);
     }
+
+    @Override
+    public List<OrdemServico> buscarAgendamentosDodia(LocalDate data) {
+        return ordemServicoRepository.buscarAgendamentosDodia(data).stream()
+                .map(ordemServicoEntityMapper::toDomain)
+                .toList();
+    }
 }
