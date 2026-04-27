@@ -22,7 +22,7 @@ public class CadastrarPessoaUseCase {
     private final PasswordEncoder passwordEncoder;
 
     public Pessoa execute(Pessoa pessoa, Set<RoleEnum> rolesRequest) {
-        // Validação de duplicação
+
         if (pessoaGateway.existePorCpf(pessoa.getCpf())) {
             throw RecursoJaExisteException.builder().mensagem("o cpf já existe no sistema").detalhes("").build();
         }
@@ -30,12 +30,13 @@ public class CadastrarPessoaUseCase {
             throw RecursoJaExisteException.builder().mensagem("o email já existe no sistema").detalhes("").build();
         }
 
+        pessoa.validaSenha(pessoa.getSenha());
+
         // Roles: usa as informadas no request ou ROLE_CLIENTE por padrão
         Set<RoleEnum> roles = (rolesRequest != null && !rolesRequest.isEmpty())
                 ? EnumSet.copyOf(rolesRequest)
                 : EnumSet.of(RoleEnum.ROLE_CLIENTE);
 
-        // Codificar senha
         pessoa.setSenha(passwordEncoder.encode(pessoa.getSenha()));
         pessoa.setRoles(roles);
 

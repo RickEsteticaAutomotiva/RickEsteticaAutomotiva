@@ -52,17 +52,59 @@ public class Pessoa {
     }
 
     /**
-     * Regra de domínio: valida que os campos de troca de senha não são nulos nem em
-     * branco. Deve ser chamado antes de codificar a nova senha na camada de
-     * aplicação.
+     * Valida a força da senha de acordo com critérios de segurança.
+     * Também valida que a senha não é nula nem em branco.
+     * Requisitos:
+     * - Não nula nem em branco
+     * - Mínimo de 8 caracteres
+     * - Pelo menos 1 letra maiúscula
+     * - Pelo menos 1 letra minúscula
+     * - Pelo menos 1 número
+     * - Pelo menos 1 caractere especial (!@#$%^&*()_+-=[]{}|;':"<>,.?/)
+     *
+     * @param senha A senha a ser validada
+     * @throws CampoInvalidoException se a senha não atender aos critérios de força
      */
-    public void validarDadosSenha(String senhaAtual, String novaSenha) {
-        if (senhaAtual == null || senhaAtual.isBlank() || novaSenha == null || novaSenha.isBlank()) {
-            throw CampoInvalidoException.builder().mensagem("dados de senha inválidos").detalhes("").build();
+    public void validaSenha(String senha) {
+        // Validação de nulo ou em branco
+        if (senha == null || senha.isBlank()) {
+            throw CampoInvalidoException.builder().mensagem("senha não pode ser nula ou vazia").detalhes("").build();
         }
-    }
 
-    public void alterarSenha(String senhaNova) {
-        this.senha = senhaNova;
+        StringBuilder erros = new StringBuilder();
+
+        // Validar comprimento mínimo
+        if (senha.length() < 8) {
+            erros.append("Mínimo de 8 caracteres; ");
+        }
+
+        // Validar presença de letra maiúscula
+        if (!senha.matches(".*[A-Z].*")) {
+            erros.append("Pelo menos 1 letra maiúscula; ");
+        }
+
+        // Validar presença de letra minúscula
+        if (!senha.matches(".*[a-z].*")) {
+            erros.append("Pelo menos 1 letra minúscula; ");
+        }
+
+        // Validar presença de número
+        if (!senha.matches(".*[0-9].*")) {
+            erros.append("Pelo menos 1 número; ");
+        }
+
+        // Validar presença de caractere especial
+        if (!senha.matches(".*[!@#$%^&*()_+\\-=\\[\\]{}|;':\"<>,.?/].*")) {
+            erros.append("Pelo menos 1 caractere especial (!@#$%^&*()_+-=[]{}|;':\"<>,.?/)");
+        }
+
+        // Se houver erros, lançar exceção
+        if (erros.length() > 0) {
+            String mensagemErro = "Senha fraca. Requisitos: " + erros.toString().trim();
+            if (mensagemErro.endsWith(";")) {
+                mensagemErro = mensagemErro.substring(0, mensagemErro.length() - 1);
+            }
+            throw CampoInvalidoException.builder().mensagem(mensagemErro).detalhes("").build();
+        }
     }
 }

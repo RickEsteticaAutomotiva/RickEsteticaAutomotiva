@@ -22,15 +22,15 @@ public class AtualizarSenhaPessoaUseCase {
         Pessoa pessoa = pessoaGateway.buscarPorId(id).orElseThrow(() -> RecursoNaoEncontradoException.builder()
                 .mensagem("a pessoa com id " + id + " não foi encontrada").detalhes("").build());
 
-        // Validação de campos nulos/em branco (regra de domínio)
-        pessoa.validarDadosSenha(senhaAtual, novaSenha);
+        // Validação de força da senha (regra de domínio - valida nulo/branco/força)
+        pessoa.validaSenha(novaSenha);
 
         // Validar que senha atual está correta
         if (!passwordEncoder.matches(senhaAtual, pessoa.getSenha())) {
             throw CampoInvalidoException.builder().mensagem("dados de senha inválidos").detalhes("").build();
         }
 
-        pessoa.alterarSenha(passwordEncoder.encode(novaSenha));
+        pessoa.setSenha(passwordEncoder.encode(novaSenha));
         pessoaGateway.salvar(pessoa);
     }
 }
