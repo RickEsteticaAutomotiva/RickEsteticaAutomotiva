@@ -63,10 +63,10 @@ class PessoaUseCasesTest {
     @DisplayName("CadastrarPessoaUseCase deve aplicar ROLE_CLIENTE quando rolesRequest vier vazio")
     void cadastrarPessoa_deveAplicarRolePadraoQuandoRolesVazio() {
         CadastrarPessoaUseCase useCase = new CadastrarPessoaUseCase(pessoaGateway, passwordEncoder);
-        Pessoa pessoa = Pessoa.builder().cpf("123").email("a@x.com").senha("123").build();
+        Pessoa pessoa = Pessoa.builder().cpf("123").email("a@x.com").senha("Teste@1234").build();
         when(pessoaGateway.existePorCpf("123")).thenReturn(false);
         when(pessoaGateway.existePorEmail("a@x.com")).thenReturn(false);
-        when(passwordEncoder.encode("123")).thenReturn("hash");
+        when(passwordEncoder.encode("Teste@1234")).thenReturn("hash");
         when(pessoaGateway.salvar(pessoa)).thenReturn(pessoa);
 
         Pessoa resultado = useCase.execute(pessoa, Collections.emptySet());
@@ -78,10 +78,10 @@ class PessoaUseCasesTest {
     @DisplayName("CadastrarPessoaUseCase deve aplicar ROLE_CLIENTE por padrão")
     void cadastrarPessoa_deveAplicarRolePadrao() {
         CadastrarPessoaUseCase useCase = new CadastrarPessoaUseCase(pessoaGateway, passwordEncoder);
-        Pessoa pessoa = Pessoa.builder().cpf("123").email("a@x.com").senha("123").build();
+        Pessoa pessoa = Pessoa.builder().cpf("123").email("a@x.com").senha("Teste@1234").build();
         when(pessoaGateway.existePorCpf("123")).thenReturn(false);
         when(pessoaGateway.existePorEmail("a@x.com")).thenReturn(false);
-        when(passwordEncoder.encode("123")).thenReturn("hash");
+        when(passwordEncoder.encode("Teste@1234")).thenReturn("hash");
         when(pessoaGateway.salvar(pessoa)).thenReturn(pessoa);
 
         Pessoa resultado = useCase.execute(pessoa, null);
@@ -95,11 +95,11 @@ class PessoaUseCasesTest {
     @DisplayName("CadastrarPessoaUseCase deve usar roles informadas")
     void cadastrarPessoa_deveUsarRolesInformadas() {
         CadastrarPessoaUseCase useCase = new CadastrarPessoaUseCase(pessoaGateway, passwordEncoder);
-        Pessoa pessoa = Pessoa.builder().cpf("123").email("a@x.com").senha("123").build();
+        Pessoa pessoa = Pessoa.builder().cpf("123").email("a@x.com").senha("Teste@1234").build();
         Set<RoleEnum> roles = EnumSet.of(RoleEnum.ROLE_GERENTE);
         when(pessoaGateway.existePorCpf("123")).thenReturn(false);
         when(pessoaGateway.existePorEmail("a@x.com")).thenReturn(false);
-        when(passwordEncoder.encode("123")).thenReturn("hash");
+        when(passwordEncoder.encode("Teste@1234")).thenReturn("hash");
         when(pessoaGateway.salvar(pessoa)).thenReturn(pessoa);
 
         Pessoa resultado = useCase.execute(pessoa, roles);
@@ -244,7 +244,6 @@ class PessoaUseCasesTest {
         AtualizarSenhaPessoaUseCase useCase = new AtualizarSenhaPessoaUseCase(pessoaGateway, passwordEncoder);
         Pessoa pessoa = Pessoa.builder().id(1L).senha("hash").build();
         when(pessoaGateway.buscarPorId(1L)).thenReturn(Optional.of(pessoa));
-        when(passwordEncoder.matches("123", "hash")).thenReturn(false);
 
         assertThrows(CampoInvalidoException.class, () -> useCase.execute(1L, "123", "456"));
         verify(pessoaGateway, never()).salvar(pessoa);
@@ -256,10 +255,10 @@ class PessoaUseCasesTest {
         AtualizarSenhaPessoaUseCase useCase = new AtualizarSenhaPessoaUseCase(pessoaGateway, passwordEncoder);
         Pessoa pessoa = Pessoa.builder().id(1L).senha("hash").build();
         when(pessoaGateway.buscarPorId(1L)).thenReturn(Optional.of(pessoa));
-        when(passwordEncoder.matches("123", "hash")).thenReturn(true);
-        when(passwordEncoder.encode("456")).thenReturn("hash-novo");
+        when(passwordEncoder.matches("Teste@1234", "hash")).thenReturn(true);
+        when(passwordEncoder.encode("Teste@4321")).thenReturn("hash-novo");
 
-        useCase.execute(1L, "123", "456");
+        useCase.execute(1L, "Teste@1234", "Teste@4321");
 
         assertEquals("hash-novo", pessoa.getSenha());
         verify(pessoaGateway).salvar(pessoa);

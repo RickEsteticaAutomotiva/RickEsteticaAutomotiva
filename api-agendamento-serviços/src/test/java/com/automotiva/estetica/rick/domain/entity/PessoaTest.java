@@ -53,8 +53,7 @@ class PessoaTest {
     void validaSenha_senhaNula_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class,
-                () -> pessoa.validaSenha(null));
+        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class, () -> pessoa.validaSenha(null));
 
         assertTrue(exception.getMensagem().contains("não pode ser nula ou vazia"));
     }
@@ -64,8 +63,7 @@ class PessoaTest {
     void validaSenha_senhaEmBranco_deveLancarExcecao() {
         Pessoa pessoa = pessoaMock();
 
-        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class,
-                () -> pessoa.validaSenha("   "));
+        CampoInvalidoException exception = assertThrows(CampoInvalidoException.class, () -> pessoa.validaSenha("   "));
 
         assertTrue(exception.getMensagem().contains("não pode ser nula ou vazia"));
     }

@@ -140,10 +140,10 @@ class PessoaApplicationServiceTest {
         PessoaCadastroRequest request = new PessoaCadastroRequest();
         request.setNome("Joao Silva");
         request.setEmail("joao@email.com");
-        request.setSenha("senha123");
+        request.setSenha("Teste@1234");
         request.setRoles(EnumSet.of(RoleEnum.ROLE_CLIENTE));
 
-        Pessoa entrada = Pessoa.builder().nome("Joao Silva").email("joao@email.com").senha("senha123").build();
+        Pessoa entrada = Pessoa.builder().nome("Joao Silva").email("joao@email.com").senha("Teste@1234").build();
         Pessoa criada = pessoaMock();
         PessoaResponse response = PessoaResponse.builder().id(1L).email("joao@email.com").build();
 
@@ -191,10 +191,10 @@ class PessoaApplicationServiceTest {
     void login_sucesso() {
         LoginRequest request = new LoginRequest();
         request.setEmail("joao@email.com");
-        request.setSenha("senha123");
+        request.setSenha("Teste@1234");
 
         Pessoa pessoa = pessoaMock();
-        Authentication auth = new UsernamePasswordAuthenticationToken("joao@email.com", "senha123");
+        Authentication auth = new UsernamePasswordAuthenticationToken("joao@email.com", "Teste@1234");
         TokenResponse tokenResponse = TokenResponse.builder().id(1L).email("joao@email.com").nome("Joao Silva")
                 .token("jwt.token").roles(EnumSet.of(RoleEnum.ROLE_CLIENTE)).build();
 
