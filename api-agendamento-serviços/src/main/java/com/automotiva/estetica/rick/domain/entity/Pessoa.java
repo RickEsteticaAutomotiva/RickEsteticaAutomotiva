@@ -52,18 +52,16 @@ public class Pessoa {
     }
 
     /**
-     * Valida a força da senha de acordo com critérios de segurança.
-     * Também valida que a senha não é nula nem em branco.
-     * Requisitos:
-     * - Não nula nem em branco
-     * - Mínimo de 8 caracteres
-     * - Pelo menos 1 letra maiúscula
-     * - Pelo menos 1 letra minúscula
-     * - Pelo menos 1 número
-     * - Pelo menos 1 caractere especial (!@#$%^&*()_+-=[]{}|;':"<>,.?/)
+     * Valida a força da senha de acordo com critérios de segurança. Também valida
+     * que a senha não é nula nem em branco. Requisitos: - Não nula nem em branco -
+     * Mínimo de 8 caracteres - Pelo menos 1 letra maiúscula - Pelo menos 1 letra
+     * minúscula - Pelo menos 1 número - Pelo menos 1 caractere especial
+     * (!@#$%^&*()_+-=[]{}|;':"<>,.?/)
      *
-     * @param senha A senha a ser validada
-     * @throws CampoInvalidoException se a senha não atender aos critérios de força
+     * @param senha
+     *            A senha a ser validada
+     * @throws CampoInvalidoException
+     *             se a senha não atender aos critérios de força
      */
     public void validaSenha(String senha) {
         // Validação de nulo ou em branco

@@ -22,7 +22,7 @@ class PessoaControllerIT extends AbstractIntegrationTest {
     void cadastrar_sucesso() throws Exception {
         PessoaCadastroRequest req = PessoaCadastroRequest.builder().nome("Carlos Novo").cpf("99988877766")
                 .email("carlos.novo@email.com").telefone("11911223344").dataNascimento(LocalDate.of(1995, 3, 10))
-                .senha("senha123").build();
+                .senha("Teste@1234").build();
 
         mockMvc.perform(post(BASE_PATH + "/pessoas/").contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req))).andExpect(status().isCreated())
@@ -37,7 +37,7 @@ class PessoaControllerIT extends AbstractIntegrationTest {
                                                                                                              // admin já
                                                                                                              // inserido
                                                                                                              // no seed
-                .email("outroemail@email.com").senha("senha123").build();
+                .email("outroemail@email.com").senha("Teste@1234").build();
 
         mockMvc.perform(post(BASE_PATH + "/pessoas/").contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req))).andExpect(status().isConflict());
@@ -48,7 +48,7 @@ class PessoaControllerIT extends AbstractIntegrationTest {
     void cadastrar_emailDuplicado() throws Exception {
         PessoaCadastroRequest req = PessoaCadastroRequest.builder().nome("Duplicado Email").cpf("00011122233")
                 .email("rodrigoapolodev@gmail.com") // e-mail do admin já no seed
-                .senha("senha123").build();
+                .senha("Teste@1234").build();
 
         mockMvc.perform(post(BASE_PATH + "/pessoas/").contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req))).andExpect(status().isConflict());
