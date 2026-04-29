@@ -3,18 +3,15 @@ package com.automotiva.estetica.rick.application.controller;
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
 import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
-import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
 import com.automotiva.estetica.rick.application.dto.response.AgendamentosHojeListResponse;
-import com.automotiva.estetica.rick.application.mapper.AgendamentoHojeMapper;
+import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
 import com.automotiva.estetica.rick.application.security.ClienteOnly;
 import com.automotiva.estetica.rick.application.security.OwnershipValidator;
 import com.automotiva.estetica.rick.application.service.OrdemServicoApplicationService;
-import com.automotiva.estetica.rick.domain.gateway.ItemServicoGateway;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,8 +36,6 @@ public class OrdemServicoController {
 
     private final OrdemServicoApplicationService ordemServicoUseCase;
     private final OwnershipValidator ownershipValidator;
-    private final ItemServicoGateway itemServicoGateway;
-    private final AgendamentoHojeMapper agendamentoHojeMapper;
 
     @GetMapping
     @Operation(summary = "Lista todas as ordens de serviço paginadas")
@@ -85,22 +80,6 @@ public class OrdemServicoController {
     @GetMapping("/hoje")
     @Operation(summary = "Lista todos os agendamentos do dia atual com detalhes completos para visualização no dashboard")
     public ResponseEntity<AgendamentosHojeListResponse> buscarAgendamentosHoje() {
-        LocalDate hoje = LocalDate.now();
-        var agendamentos = ordemServicoUseCase.buscarAgendamentosHoje(hoje);
-
-        var agendamentosResponse = agendamentos.stream()
-                .map(ordem -> {
-                    var itens = itemServicoGateway.buscarPorOrdemServicoId(ordem.getId());
-                    return agendamentoHojeMapper.toResponseWithCalculations(ordem, itens);
-                })
-                .toList();
-
-        var response = AgendamentosHojeListResponse.builder()
-                .data(agendamentosResponse)
-                .total(agendamentosResponse.size())
-                .timestamp(LocalDateTime.now())
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ordemServicoUseCase.buscarAgendamentosHoje());
     }
 }

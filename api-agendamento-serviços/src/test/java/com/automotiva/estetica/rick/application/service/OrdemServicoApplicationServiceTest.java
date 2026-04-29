@@ -12,6 +12,7 @@ import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPa
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
 import com.automotiva.estetica.rick.application.dto.request.ServicoAplicadoRequest;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentosHojeListResponse;
 import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
@@ -32,6 +33,7 @@ import com.automotiva.estetica.rick.domain.usecase.AtualizarStatusOrdemServicoUs
 import com.automotiva.estetica.rick.domain.usecase.AtualizarValorItemServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdemServicoComDetalhesUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarHorariosDisponiveisUseCase;
+import com.automotiva.estetica.rick.domain.usecase.BuscarAgendamentosHojeUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdemServicoPorIdUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdensServicoParaGestaoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.BuscarOrdensServicoPorUsuarioUseCase;
@@ -41,13 +43,14 @@ import com.automotiva.estetica.rick.domain.usecase.ListarOrdensServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.NotificarAtualizacaoOrdemServicoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.RemoverServicoOrdemServicoUseCase;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -101,6 +104,9 @@ class OrdemServicoApplicationServiceTest {
 
     @Mock
     private BuscarHorariosDisponiveisUseCase buscarHorariosDisponiveisUseCase;
+
+    @Mock
+    private BuscarAgendamentosHojeUseCase buscarAgendamentosHojeUseCase;
 
     @Mock
     private NotificarAtualizacaoOrdemServicoUseCase notificarAtualizacaoOrdemServicoUseCase;
@@ -187,6 +193,31 @@ class OrdemServicoApplicationServiceTest {
                 () -> ordemServicoApplicationService.buscarHorariosDisponiveis(data, servicosIds));
 
         assertSame(ex, thrown);
+    }
+
+    @Test
+    @DisplayName("Deve buscar agendamentos de hoje e montar response completa")
+    void buscarAgendamentosHoje_sucesso() {
+        OrdemServico ordem = ordemMock();
+        List<ItemServico> itens = itensMock(ordem);
+        LocalDate hojeEsperado = LocalDate.now();
+
+        when(buscarAgendamentosHojeUseCase.execute(any(LocalDate.class))).thenReturn(List.of(ordem));
+        when(itemServicoGateway.buscarPorOrdemServicoId(10L)).thenReturn(itens);
+
+        AgendamentosHojeListResponse response = ordemServicoApplicationService.buscarAgendamentosHoje();
+
+        ArgumentCaptor<LocalDate> captor = ArgumentCaptor.forClass(LocalDate.class);
+        verify(buscarAgendamentosHojeUseCase).execute(captor.capture());
+
+        assertEquals(hojeEsperado, captor.getValue());
+        assertNotNull(response);
+        assertEquals(1, response.getTotal());
+        assertEquals(1, response.getData().size());
+        assertEquals(10L, response.getData().getFirst().getId());
+        assertEquals(BigDecimal.valueOf(180), response.getData().getFirst().getPrecoTotal());
+        assertNotNull(response.getTimestamp());
+        verify(itemServicoGateway).buscarPorOrdemServicoId(10L);
     }
 
     @Test

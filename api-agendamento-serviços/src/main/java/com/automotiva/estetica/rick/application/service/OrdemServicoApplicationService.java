@@ -10,6 +10,8 @@ import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPa
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
 import com.automotiva.estetica.rick.application.dto.request.ServicoAplicadoRequest;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentoHojeResponse;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentosHojeListResponse;
 import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
@@ -121,6 +123,20 @@ public class OrdemServicoApplicationService {
     public List<HorarioDisponivelResponse> buscarHorariosDisponiveis(LocalDate data, List<Long> servicosIds) {
         return buscarHorariosDisponiveisUseCase.execute(data, servicosIds).stream()
                 .map(horario -> new HorarioDisponivelResponse(horario.inicio(), horario.fim())).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public AgendamentosHojeListResponse buscarAgendamentosHoje() {
+        LocalDate hoje = LocalDate.now();
+        List<OrdemServico> agendamentos = buscarAgendamentosHoje(hoje);
+
+        List<AgendamentoHojeResponse> agendamentosResponse = agendamentos.stream()
+                .map(ordem -> ordemServicoResponseAssembler.toAgendamentoHojeResponse(ordem,
+                        buscarItensPorOrdem(ordem.getId())))
+                .toList();
+
+        return AgendamentosHojeListResponse.builder().data(agendamentosResponse).total(agendamentosResponse.size())
+                .timestamp(LocalDateTime.now()).build();
     }
 
     @Transactional

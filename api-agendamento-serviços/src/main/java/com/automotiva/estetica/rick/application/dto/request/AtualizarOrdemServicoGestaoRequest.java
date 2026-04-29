@@ -21,7 +21,7 @@ public class AtualizarOrdemServicoGestaoRequest {
     // Data de agendamento é opcional - pode ser atualizada junto com status/observações
     private LocalDateTime dataAgendamento;
 
-    @Size(max = 2000, message = "Observações não pode exceder 2000 caracteres")
+    @Size(max = 255, message = "Observações não pode exceder 255 caracteres")
     private String observacoes;
 
     @NotNull(message = "Status é obrigatório")
