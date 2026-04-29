@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentoHojeResponse;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentosHojeListResponse;
 import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
 import com.automotiva.estetica.rick.application.security.OwnershipValidator;
@@ -129,5 +131,22 @@ class OrdemServicoControllerTest {
         assertEquals(1, response.getBody().size());
         assertEquals(LocalTime.of(9, 0), response.getBody().getFirst().inicio());
         verify(ordemServicoUseCase).buscarHorariosDisponiveis(data, servicosIds);
+    }
+
+    @Test
+    @DisplayName("buscarAgendamentosHoje deve delegar para service e retornar 200")
+    void buscarAgendamentosHoje_deveDelegarERetornar200() {
+        AgendamentosHojeListResponse responseMock = AgendamentosHojeListResponse.builder()
+                .data(List.of(AgendamentoHojeResponse.builder().id(1L).build()))
+                .total(1)
+                .build();
+        when(ordemServicoUseCase.buscarAgendamentosHoje()).thenReturn(responseMock);
+
+        var response = ordemServicoController.buscarAgendamentosHoje();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getTotal());
+        verify(ordemServicoUseCase).buscarAgendamentosHoje();
     }
 }

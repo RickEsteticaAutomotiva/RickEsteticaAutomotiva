@@ -3,6 +3,7 @@ package com.automotiva.estetica.rick.application.controller;
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
 import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentosHojeListResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
 import com.automotiva.estetica.rick.application.security.ClienteOnly;
 import com.automotiva.estetica.rick.application.security.OwnershipValidator;
@@ -74,5 +75,11 @@ public class OrdemServicoController {
             @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
             @RequestParam("servicosIds") List<Long> servicosIds) {
         return ResponseEntity.ok(ordemServicoUseCase.buscarHorariosDisponiveis(data, servicosIds));
+    }
+
+    @GetMapping("/hoje")
+    @Operation(summary = "Lista todos os agendamentos do dia atual com detalhes completos para visualização no dashboard")
+    public ResponseEntity<AgendamentosHojeListResponse> buscarAgendamentosHoje() {
+        return ResponseEntity.ok(ordemServicoUseCase.buscarAgendamentosHoje());
     }
 }

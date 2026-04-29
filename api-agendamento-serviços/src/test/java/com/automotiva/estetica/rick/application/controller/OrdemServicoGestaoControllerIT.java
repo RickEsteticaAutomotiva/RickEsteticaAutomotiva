@@ -52,6 +52,77 @@ class OrdemServicoGestaoControllerIT extends AbstractIntegrationTest {
     }
 
     @Test
+    @DisplayName("PATCH /ordem-servicos-gestao/{id} → 200 ao atualizar data, observações e status")
+    void atualizarParaGestao_comTodosCampos_sucesso() throws Exception {
+        String body = "{\"dataAgendamento\":\"2026-05-15T10:30:00\",\"observacoes\":\"Cliente pediu prioridade\",\"status\":2}";
+
+        mockMvc.perform(patch(BASE_PATH + "/ordem-servicos-gestao/1").header("Authorization", bearer(tokenGerente))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", notNullValue()))
+                .andExpect(jsonPath("$.status.id", notNullValue()))
+                .andExpect(jsonPath("$.dataAgendamento", notNullValue()))
+                .andExpect(jsonPath("$.observacoes", notNullValue()));
+    }
+
+    @Test
+    @DisplayName("PATCH /ordem-servicos-gestao/{id} → 200 ao atualizar apenas status")
+    void atualizarParaGestao_apenasStatus_sucesso() throws Exception {
+        String body = "{\"status\":3}";
+
+        mockMvc.perform(patch(BASE_PATH + "/ordem-servicos-gestao/1").header("Authorization", bearer(tokenGerente))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.status.id", notNullValue()));
+    }
+
+    @Test
+    @DisplayName("PATCH /ordem-servicos-gestao/{id} → 200 ao atualizar data e status")
+    void atualizarParaGestao_dataEStatus_sucesso() throws Exception {
+        String body = "{\"dataAgendamento\":\"2026-06-20T14:00:00\",\"status\":1}";
+
+        mockMvc.perform(patch(BASE_PATH + "/ordem-servicos-gestao/1").header("Authorization", bearer(tokenGerente))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.dataAgendamento", notNullValue()));
+    }
+
+    @Test
+    @DisplayName("PATCH /ordem-servicos-gestao/{id} → 200 ao atualizar observações e status")
+    void atualizarParaGestao_observacoesEStatus_sucesso() throws Exception {
+        String body = "{\"observacoes\":\"Novo cliente, primeira vez\",\"status\":1}";
+
+        mockMvc.perform(patch(BASE_PATH + "/ordem-servicos-gestao/1").header("Authorization", bearer(tokenGerente))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.observacoes", notNullValue()));
+    }
+
+    @Test
+    @DisplayName("PATCH /ordem-servicos-gestao/{id} → 400 quando status é nulo")
+    void atualizarParaGestao_statusNulo_erro() throws Exception {
+        String body = "{\"dataAgendamento\":\"2026-04-22T14:30:00\"}";
+
+        mockMvc.perform(patch(BASE_PATH + "/ordem-servicos-gestao/1").header("Authorization", bearer(tokenGerente))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("PATCH /ordem-servicos-gestao/{id} → 400 quando status é inválido")
+    void atualizarParaGestao_statusInvalido_erro() throws Exception {
+        String body = "{\"dataAgendamento\":\"2026-04-22T14:30:00\",\"status\":99}";
+
+        mockMvc.perform(patch(BASE_PATH + "/ordem-servicos-gestao/1").header("Authorization", bearer(tokenGerente))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("PATCH /ordem-servicos-gestao/{id} → 400 quando observações excedem limite")
+    void atualizarParaGestao_observacoesExcedeLimite_erro() throws Exception {
+        String observacoesLongas = "x".repeat(2001);
+        String body = "{\"observacoes\":\"" + observacoesLongas + "\",\"status\":1}";
+
+        mockMvc.perform(patch(BASE_PATH + "/ordem-servicos-gestao/1").header("Authorization", bearer(tokenGerente))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("PATCH /ordem-servicos-gestao/{id} → 403 para cliente")
     void atualizarStatusParaGestao_comClienteDeveNegar() throws Exception {
         String body = "{\"status\":2}";
