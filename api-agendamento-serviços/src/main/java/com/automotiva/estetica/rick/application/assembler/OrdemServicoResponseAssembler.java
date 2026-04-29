@@ -1,6 +1,10 @@
 package com.automotiva.estetica.rick.application.assembler;
 
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoClienteResumoResponse;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentoHojeClienteResponse;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentoHojeResponse;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentoHojeServicoResponse;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentoHojeVeiculoResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoServicoResumoResponse;
@@ -44,6 +48,15 @@ public class OrdemServicoResponseAssembler {
                 .veiculo(toVeiculoResumo(ordemServico)).servicos(toServicosResumo(itens)).build();
     }
 
+    public AgendamentoHojeResponse toAgendamentoHojeResponse(OrdemServico ordemServico, List<ItemServico> itens) {
+        return AgendamentoHojeResponse.builder().id(ordemServico.getId())
+                .dataHora(ordemServico.getDataAgendamento())
+                .status(ordemServico.getStatus() != null ? ordemServico.getStatus().getDescricao() : null)
+                .precoMinimo(ordemServico.getPrecoMinimo()).precoTotal(calcularValorTotal(itens))
+                .observacoes(ordemServico.getObservacoes()).cliente(toAgendamentoHojeCliente(ordemServico))
+                .veiculo(toAgendamentoHojeVeiculo(ordemServico)).servicos(toAgendamentoHojeServicos(itens)).build();
+    }
+
     private BigDecimal calcularValorTotal(List<ItemServico> itens) {
         return itens.stream().map(ItemServico::getPreco).filter(Objects::nonNull).reduce(BigDecimal.ZERO,
                 BigDecimal::add);
@@ -79,5 +92,35 @@ public class OrdemServicoResponseAssembler {
                 .id(item.getServico() != null ? item.getServico().getId() : null)
                 .nome(item.getServico() != null ? item.getServico().getNome() : null).valorAplicado(item.getPreco())
                 .preco(item.getServico() != null ? item.getServico().getPreco() : null).build()).toList();
+    }
+
+    private AgendamentoHojeClienteResponse toAgendamentoHojeCliente(OrdemServico ordemServico) {
+        if (ordemServico.getVeiculo() == null || ordemServico.getVeiculo().getPessoa() == null) {
+            return null;
+        }
+
+        return AgendamentoHojeClienteResponse.builder().id(ordemServico.getVeiculo().getPessoa().getId())
+                .nome(ordemServico.getVeiculo().getPessoa().getNome())
+                .email(ordemServico.getVeiculo().getPessoa().getEmail())
+                .telefone(ordemServico.getVeiculo().getPessoa().getTelefone()).build();
+    }
+
+    private AgendamentoHojeVeiculoResponse toAgendamentoHojeVeiculo(OrdemServico ordemServico) {
+        if (ordemServico.getVeiculo() == null) {
+            return null;
+        }
+
+        return AgendamentoHojeVeiculoResponse.builder().id(ordemServico.getVeiculo().getId())
+                .placa(ordemServico.getVeiculo().getPlaca()).modelo(ordemServico.getVeiculo().getModelo())
+                .marca(ordemServico.getVeiculo().getMarca()).ano(ordemServico.getVeiculo().getAno())
+                .cor(ordemServico.getVeiculo().getCor()).build();
+    }
+
+    private List<AgendamentoHojeServicoResponse> toAgendamentoHojeServicos(List<ItemServico> itens) {
+        return itens.stream().map(item -> AgendamentoHojeServicoResponse.builder()
+                .id(item.getServico() != null ? item.getServico().getId() : null)
+                .nome(item.getServico() != null ? item.getServico().getNome() : null)
+                .descricao(item.getServico() != null ? item.getServico().getDescricao() : null)
+                .preco(item.getPreco()).build()).toList();
     }
 }
