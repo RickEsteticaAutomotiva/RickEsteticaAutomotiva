@@ -10,12 +10,7 @@ import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPa
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
 import com.automotiva.estetica.rick.application.dto.request.PageRequest;
 import com.automotiva.estetica.rick.application.dto.request.ServicoAplicadoRequest;
-import com.automotiva.estetica.rick.application.dto.response.AgendamentoHojeResponse;
-import com.automotiva.estetica.rick.application.dto.response.AgendamentosHojeListResponse;
-import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
-import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
-import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
-import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResponse;
+import com.automotiva.estetica.rick.application.dto.response.*;
 import com.automotiva.estetica.rick.domain.entity.ItemServico;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import com.automotiva.estetica.rick.domain.exception.IntegracaoException;
