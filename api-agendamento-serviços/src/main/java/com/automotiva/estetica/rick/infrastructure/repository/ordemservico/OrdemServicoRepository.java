@@ -167,7 +167,7 @@ public interface OrdemServicoRepository
     @Query("""
                 SELECT o FROM OrdemServicoEntity o
                 WHERE CAST(o.dataAgendamento AS date) = :data
-                ORDER BY o.dataAgendamento ASC, 
+                ORDER BY o.dataAgendamento ASC,
                          CASE WHEN o.status.descricao = 'CANCELADO' THEN 1 ELSE 0 END ASC
             """)
     List<OrdemServicoEntity> buscarAgendamentosDodia(@Param("data") LocalDate data);

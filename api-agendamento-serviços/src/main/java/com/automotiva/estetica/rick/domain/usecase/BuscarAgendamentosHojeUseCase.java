@@ -17,4 +17,3 @@ public class BuscarAgendamentosHojeUseCase {
         return ordemServicoGateway.buscarAgendamentosDodia(data);
     }
 }
-

@@ -19,4 +19,3 @@ public class AgendamentosHojeListResponse {
     private Integer total;
     private LocalDateTime timestamp;
 }
-

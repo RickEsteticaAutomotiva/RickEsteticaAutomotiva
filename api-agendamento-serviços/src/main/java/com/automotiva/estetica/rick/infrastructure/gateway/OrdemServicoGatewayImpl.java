@@ -72,8 +72,7 @@ public class OrdemServicoGatewayImpl implements OrdemServicoGateway {
 
     @Override
     public List<OrdemServico> buscarAgendamentosDodia(LocalDate data) {
-        return ordemServicoRepository.buscarAgendamentosDodia(data).stream()
-                .map(ordemServicoEntityMapper::toDomain)
+        return ordemServicoRepository.buscarAgendamentosDodia(data).stream().map(ordemServicoEntityMapper::toDomain)
                 .toList();
     }
 }

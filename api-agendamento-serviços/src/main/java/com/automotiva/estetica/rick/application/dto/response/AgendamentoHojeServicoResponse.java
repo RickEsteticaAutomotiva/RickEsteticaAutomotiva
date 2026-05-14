@@ -19,4 +19,3 @@ public class AgendamentoHojeServicoResponse {
     private String descricao;
     private BigDecimal preco;
 }
-

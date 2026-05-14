@@ -20,4 +20,3 @@ public class AgendamentoHojeVeiculoResponse {
     private String ano;
     private String cor;
 }
-

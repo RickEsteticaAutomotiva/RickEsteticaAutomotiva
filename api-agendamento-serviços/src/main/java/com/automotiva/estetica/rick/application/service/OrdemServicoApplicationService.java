@@ -100,8 +100,7 @@ public class OrdemServicoApplicationService {
     public OrdemServicoDetalheResponse criarParaGestao(OrdemServicoRequest request) {
         OrdemServico ordemServico = criarOrdemServicoUseCase.execute(request.getDataAgendamento(),
                 request.getPrecoMinimo(), request.getVeiculo(), request.getObservacoes(), request.getServicos());
-        return ordemServicoResponseAssembler.toDetalheGestao(ordemServico,
-                buscarItensPorOrdem(ordemServico.getId()));
+        return ordemServicoResponseAssembler.toDetalheGestao(ordemServico, buscarItensPorOrdem(ordemServico.getId()));
     }
 
     public OrdemServicoResponse buscarPorId(Long id) {
