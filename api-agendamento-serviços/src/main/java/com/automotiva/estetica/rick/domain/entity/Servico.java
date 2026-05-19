@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.domain.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Servico {
+public class Servico implements Serializable {
 
     private Long id;
     private String nome;

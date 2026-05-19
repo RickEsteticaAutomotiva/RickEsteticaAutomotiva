@@ -26,4 +26,3 @@ public class AgendamentoHojeResponse {
     private BigDecimal precoTotal;
     private String observacoes;
 }
-

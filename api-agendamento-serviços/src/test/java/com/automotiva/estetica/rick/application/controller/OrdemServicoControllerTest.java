@@ -137,9 +137,7 @@ class OrdemServicoControllerTest {
     @DisplayName("buscarAgendamentosHoje deve delegar para service e retornar 200")
     void buscarAgendamentosHoje_deveDelegarERetornar200() {
         AgendamentosHojeListResponse responseMock = AgendamentosHojeListResponse.builder()
-                .data(List.of(AgendamentoHojeResponse.builder().id(1L).build()))
-                .total(1)
-                .build();
+                .data(List.of(AgendamentoHojeResponse.builder().id(1L).build())).total(1).build();
         when(ordemServicoUseCase.buscarAgendamentosHoje()).thenReturn(responseMock);
 
         var response = ordemServicoController.buscarAgendamentosHoje();

@@ -1,4 +1,4 @@
- package com.automotiva.estetica.rick.application.security;
+package com.automotiva.estetica.rick.application.security;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -28,4 +28,3 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @PreAuthorize("hasRole('CLIENTE') or hasRole('GERENTE')")
 public @interface ClienteOrGerenteOnly {
 }
-

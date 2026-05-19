@@ -18,7 +18,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AtualizarOrdemServicoGestaoRequest {
 
-    // Data de agendamento é opcional - pode ser atualizada junto com status/observações
+    // Data de agendamento é opcional - pode ser atualizada junto com
+    // status/observações
     private LocalDateTime dataAgendamento;
 
     @Size(max = 255, message = "Observações não pode exceder 255 caracteres")
@@ -29,5 +30,3 @@ public class AtualizarOrdemServicoGestaoRequest {
     @Max(value = 5, message = "Status inválido")
     private Long status;
 }
-
-

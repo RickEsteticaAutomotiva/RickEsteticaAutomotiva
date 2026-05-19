@@ -49,8 +49,7 @@ public class OrdemServicoResponseAssembler {
     }
 
     public AgendamentoHojeResponse toAgendamentoHojeResponse(OrdemServico ordemServico, List<ItemServico> itens) {
-        return AgendamentoHojeResponse.builder().id(ordemServico.getId())
-                .dataHora(ordemServico.getDataAgendamento())
+        return AgendamentoHojeResponse.builder().id(ordemServico.getId()).dataHora(ordemServico.getDataAgendamento())
                 .status(ordemServico.getStatus() != null ? ordemServico.getStatus().getDescricao() : null)
                 .precoMinimo(ordemServico.getPrecoMinimo()).precoTotal(calcularValorTotal(itens))
                 .observacoes(ordemServico.getObservacoes()).cliente(toAgendamentoHojeCliente(ordemServico))
@@ -117,10 +116,12 @@ public class OrdemServicoResponseAssembler {
     }
 
     private List<AgendamentoHojeServicoResponse> toAgendamentoHojeServicos(List<ItemServico> itens) {
-        return itens.stream().map(item -> AgendamentoHojeServicoResponse.builder()
-                .id(item.getServico() != null ? item.getServico().getId() : null)
-                .nome(item.getServico() != null ? item.getServico().getNome() : null)
-                .descricao(item.getServico() != null ? item.getServico().getDescricao() : null)
-                .preco(item.getPreco()).build()).toList();
+        return itens.stream()
+                .map(item -> AgendamentoHojeServicoResponse.builder()
+                        .id(item.getServico() != null ? item.getServico().getId() : null)
+                        .nome(item.getServico() != null ? item.getServico().getNome() : null)
+                        .descricao(item.getServico() != null ? item.getServico().getDescricao() : null)
+                        .preco(item.getPreco()).build())
+                .toList();
     }
 }

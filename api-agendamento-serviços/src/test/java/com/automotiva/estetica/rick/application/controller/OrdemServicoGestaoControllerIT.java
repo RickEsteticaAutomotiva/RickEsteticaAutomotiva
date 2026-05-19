@@ -58,8 +58,7 @@ class OrdemServicoGestaoControllerIT extends AbstractIntegrationTest {
 
         mockMvc.perform(patch(BASE_PATH + "/ordem-servicos-gestao/1").header("Authorization", bearer(tokenGerente))
                 .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", notNullValue()))
-                .andExpect(jsonPath("$.status.id", notNullValue()))
+                .andExpect(jsonPath("$.id", notNullValue())).andExpect(jsonPath("$.status.id", notNullValue()))
                 .andExpect(jsonPath("$.dataAgendamento", notNullValue()))
                 .andExpect(jsonPath("$.observacoes", notNullValue()));
     }

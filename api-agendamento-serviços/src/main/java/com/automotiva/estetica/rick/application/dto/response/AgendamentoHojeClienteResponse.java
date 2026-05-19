@@ -18,4 +18,3 @@ public class AgendamentoHojeClienteResponse {
     private String email;
     private String telefone;
 }
-
