@@ -1,0 +1,76 @@
+name: Publish Docker image on PR approval
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  publish:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    if: >-
+      github.event.review.state == 'approved' &&
+      (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'dev' || github.event.pull_request.base.ref == 'homolog') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Resolve version and environment suffix
+        id: version
+        shell: bash
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          pom = Path("pom.xml")
+          root = ET.parse(pom).getroot()
+          ns = {"m": "http://maven.apache.org/POM/4.0.0"}
+
+          version_node = root.find("m:version", ns)
+          if version_node is None:
+            version_node = root.find("m:parent/m:version", ns)
+          version = version_node.text.strip()
+
+          base_ref = "${{ github.event.pull_request.base.ref }}"
+          if base_ref == "main":
+            suffix = "prod"
+          elif base_ref == "dev":
+            suffix = "dev"
+          elif base_ref == "homolog":
+            suffix = "homolog"
+          else:
+            raise SystemExit(f"Base branch not mapped: {base_ref}")
+
+          print(f"APP_VERSION={version}")
+          print(f"ENV_SUFFIX={suffix}")
+          with open("${GITHUB_ENV}", "a", encoding="utf-8") as env_file:
+            env_file.write(f"APP_VERSION={version}\n")
+            env_file.write(f"ENV_SUFFIX={suffix}\n")
+          PY
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: docker/ambiente
+          file: docker/ambiente/Dockerfile
+          push: true
+          tags: rodrigoapolo/api-rick:${{ env.APP_VERSION }}-${{ env.ENV_SUFFIX }}
+
+
+
