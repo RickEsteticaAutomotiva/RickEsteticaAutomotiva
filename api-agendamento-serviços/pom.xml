@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.automotiva.estetica.rick</groupId>
 	<artifactId>api-agendamento-servicos</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>api-agendamento-servicos</name>
 	<description>Esta API tem como objetivo gerenciar o agendamento de serviços da RICK Estética Automotiva.</description>
 	<url/>
