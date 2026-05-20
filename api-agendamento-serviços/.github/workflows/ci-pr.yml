@@ -27,5 +27,5 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: ./mvnw clean verify
-
+        working-directory: ./api-agendamento-serviços
+        run: mvn clean verify
