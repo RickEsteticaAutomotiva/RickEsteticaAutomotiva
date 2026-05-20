@@ -18,15 +18,26 @@ FROM eclipse-temurin:21-jdk-jammy AS builder
 WORKDIR /build
 
 # Copiar pom.xml e baixar dependências (layer cacheável)
-COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
+COPY ../../pom.xml .
+COPY ../../.mvn .mvn
+COPY ../../mvnw .
 
 # Executar mvnw para validar/preparar sem compilar src/
 RUN ./mvnw dependency:go-offline -B 2>/dev/null || true
 
+# Copiar JAR local do librabbitmq (quando usado)
+# Use build-arg: --build-arg LIBRABBITMQ_JAR=docker/libs/librabbitmq-1.0-SNAPSHOT.jar
+ARG LIBRABBITMQ_JAR=docker/libs/librabbitmq-1.0-SNAPSHOT.jar
+COPY ${LIBRABBITMQ_JAR} /build/librabbitmq-1.0-SNAPSHOT.jar
+RUN ./mvnw -B install:install-file \
+    -Dfile=/build/librabbitmq-1.0-SNAPSHOT.jar \
+    -DgroupId=com.automotiva.estetica.rick \
+    -DartifactId=librabbitmq \
+    -Dversion=1.0-SNAPSHOT \
+    -Dpackaging=jar
+
 # Copiar código-fonte e compilar
-COPY src src
+COPY ../../src src
 RUN ./mvnw clean package -DskipTests -B
 
 # =====================================================
@@ -43,7 +54,7 @@ RUN groupadd -r spring && useradd -r -g spring spring
 COPY --from=builder /build/target/api-agendamento-servicos-*.jar app.jar
 
 # Copiar arquivo de secrets example (apenas referência)
-COPY .env.example .env.example
+COPY ../../.env.example .env.example
 
 # Ajustar permissões (read-only para usuário spring)
 RUN chmod 444 app.jar && chmod 444 .env.example && chown -R spring:spring /app

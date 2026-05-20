@@ -6,7 +6,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.automotiva.estetica.rick.application.dto.request.AdicionarServicosOrdemRequest;
-import com.automotiva.estetica.rick.application.dto.request.AtualizarStatusOrdemRequest;
 import com.automotiva.estetica.rick.application.dto.request.AtualizarValorServicoOrdemRequest;
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPageRequest;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
@@ -65,7 +64,7 @@ class OrdemServicoGestaoControllerTest {
         assertEquals(5L, response.getBody().getId());
         verify(ordemServicoUseCase).buscarDetalheParaGestao(5L);
     }
-
+//TODO arruma
     @Test
     @DisplayName("atualizarStatusParaGestao deve delegar e retornar 200")
     void atualizarStatusParaGestao_deveDelegarERetornar200() {
