@@ -32,10 +32,10 @@ jobs:
             </servers>
             </settings>" > ~/.m2/settings.xml
 
-      #- name: Rodar testes
-      #  working-directory: api-agendamento-serviços
-      #  run: |
-      #    chmod +x mvnw
+      - name: Rodar testes
+        working-directory: api-agendamento-serviços
+        run: |
+          chmod +x mvnw
       #    ./mvnw test -B
 
       - name: Build e Push image
