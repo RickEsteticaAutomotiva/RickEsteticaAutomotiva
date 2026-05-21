@@ -43,7 +43,7 @@ public interface OrdemServicoRepository
                 JOIN item_servico i ON i.ordem_servico_id = o.id
                 JOIN servico s ON s.id = i.servico_id
                 WHERE CAST(o.data_agendamento AS DATE) = :data
-                AND s.id = 2
+                AND o.fk_status = 2
                 GROUP BY o.id, o.data_agendamento
                 ORDER BY o.data_agendamento ASC
             """, nativeQuery = true)

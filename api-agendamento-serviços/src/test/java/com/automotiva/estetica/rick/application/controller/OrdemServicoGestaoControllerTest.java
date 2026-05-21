@@ -5,10 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.automotiva.estetica.rick.application.dto.request.AdicionarServicosOrdemRequest;
-import com.automotiva.estetica.rick.application.dto.request.AtualizarStatusOrdemRequest;
-import com.automotiva.estetica.rick.application.dto.request.AtualizarValorServicoOrdemRequest;
-import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPageRequest;
+import com.automotiva.estetica.rick.application.dto.request.*;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
 import com.automotiva.estetica.rick.application.service.OrdemServicoApplicationService;
@@ -69,16 +66,16 @@ class OrdemServicoGestaoControllerTest {
     @Test
     @DisplayName("atualizarStatusParaGestao deve delegar e retornar 200")
     void atualizarStatusParaGestao_deveDelegarERetornar200() {
-        AtualizarStatusOrdemRequest request = AtualizarStatusOrdemRequest.builder().status(2L).build();
+        AtualizarOrdemServicoGestaoRequest request = AtualizarOrdemServicoGestaoRequest.builder().status(2L).build();
         OrdemServicoDetalheResponse detalhe = OrdemServicoDetalheResponse.builder().id(10L).build();
-        when(ordemServicoUseCase.atualizarStatusParaGestao(10L, request)).thenReturn(detalhe);
+        when(ordemServicoUseCase.atualizarParaGestao(10L, request)).thenReturn(detalhe);
 
-        var response = controller.atualizarStatusParaGestao(10L, request);
+        var response = controller.atualizarParaGestao(10L, request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(10L, response.getBody().getId());
-        verify(ordemServicoUseCase).atualizarStatusParaGestao(10L, request);
+        verify(ordemServicoUseCase).atualizarParaGestao(10L, request);
     }
 
     @Test

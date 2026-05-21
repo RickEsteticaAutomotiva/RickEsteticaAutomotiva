@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS pessoa_roles (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS categoria (
     id   BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100)
+    nome VARCHAR(100) NOT NULL UNIQUE
 );
 
 -- -----------------------------------------------------
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS categoria (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS servico (
     id             BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    nome           VARCHAR(100) NOT NULL,
+    nome           VARCHAR(100) NOT NULL UNIQUE,
     descricao      VARCHAR(255),
     preco          DECIMAL(10, 2) NOT NULL,
     imagem         VARCHAR(512),
