@@ -49,7 +49,20 @@
 		<mysql-connector.version>8.3.0</mysql-connector.version>
 		<flyway.version>10.18.1</flyway.version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/RickEsteticaAutomotiva/librabbitmq-ordem-servico</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
+		<dependency>
+			<groupId>io.awspring.cloud</groupId>
+			<artifactId>spring-cloud-aws-starter-parameter-store</artifactId>
+			<version>3.1.1</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -65,7 +78,7 @@
 		<dependency>
 			<groupId>com.automotiva.estetica.rick</groupId>
 			<artifactId>librabbitmq</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0</version>
 		</dependency>
 		<!-- H2: mantido apenas para testes (profiles test / integration-test) -->
 		<dependency>

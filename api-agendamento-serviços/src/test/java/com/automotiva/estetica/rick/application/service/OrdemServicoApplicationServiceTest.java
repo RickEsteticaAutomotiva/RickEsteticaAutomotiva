@@ -5,13 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.automotiva.estetica.rick.application.assembler.OrdemServicoResponseAssembler;
-import com.automotiva.estetica.rick.application.dto.request.AtualizarStatusOrdemRequest;
-import com.automotiva.estetica.rick.application.dto.request.AtualizarValorServicoOrdemRequest;
-import com.automotiva.estetica.rick.application.dto.request.AdicionarServicosOrdemRequest;
-import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPageRequest;
-import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
-import com.automotiva.estetica.rick.application.dto.request.PageRequest;
-import com.automotiva.estetica.rick.application.dto.request.ServicoAplicadoRequest;
+import com.automotiva.estetica.rick.application.dto.request.*;
 import com.automotiva.estetica.rick.application.dto.response.HorarioDisponivelResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
@@ -293,13 +287,13 @@ class OrdemServicoApplicationServiceTest {
     @DisplayName("Deve atualizar status da ordem no fluxo de gestão")
     void atualizarStatusParaGestao_sucesso() {
         OrdemServico ordem = ordemMock();
-        AtualizarStatusOrdemRequest request = AtualizarStatusOrdemRequest.builder().status(1L).build();
+        AtualizarOrdemServicoGestaoRequest request = AtualizarOrdemServicoGestaoRequest.builder().status(1L).build();
 
-        when(atualizarStatusOrdemServicoUseCase.execute(10L, 1L)).thenReturn(ordem);
+        when(atualizarOrdemServicoUseCase.execute(anyLong(), any(), any(), any(), anyLong(), any())).thenReturn(ordem);
         when(buscarOrdemServicoComDetalhesUseCase.execute(10L)).thenReturn(ordem);
         when(itemServicoGateway.buscarPorOrdemServicoId(10L)).thenReturn(emptyList());
 
-        OrdemServicoDetalheResponse response = ordemServicoApplicationService.atualizarStatusParaGestao(10L, request);
+        OrdemServicoDetalheResponse response = ordemServicoApplicationService.atualizarParaGestao(10L, request);
 
         assertNotNull(response);
         assertEquals(10L, response.getId());
@@ -312,14 +306,14 @@ class OrdemServicoApplicationServiceTest {
     @DisplayName("Deve enviar status nulo quando request for nulo na gestão")
     void atualizarStatusParaGestao_requestNulo_deveEnviarStatusNulo() {
         OrdemServico ordem = ordemMock();
-        when(atualizarStatusOrdemServicoUseCase.execute(10L, null)).thenReturn(ordem);
+        when(atualizarOrdemServicoUseCase.execute(anyLong(), any(), any(), any(), any(), any())).thenReturn(ordem);
         when(buscarOrdemServicoComDetalhesUseCase.execute(10L)).thenReturn(ordem);
         when(itemServicoGateway.buscarPorOrdemServicoId(10L)).thenReturn(emptyList());
 
-        OrdemServicoDetalheResponse response = ordemServicoApplicationService.atualizarStatusParaGestao(10L, null);
+        OrdemServicoDetalheResponse response = ordemServicoApplicationService.atualizarParaGestao(10L, null);
 
         assertEquals(10L, response.getId());
-        verify(atualizarStatusOrdemServicoUseCase).execute(10L, null);
+        verify(atualizarOrdemServicoUseCase).execute(eq(10L), isNull(), isNull(), isNull(), isNull(), isNull());
     }
 
     @Test

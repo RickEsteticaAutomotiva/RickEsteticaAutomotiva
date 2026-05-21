@@ -4,7 +4,6 @@ import com.automotiva.estetica.rick.application.assembler.OrdemServicoResponseAs
 import com.automotiva.estetica.rick.application.PageableFactory;
 import com.automotiva.estetica.rick.application.dto.request.AdicionarServicosOrdemRequest;
 import com.automotiva.estetica.rick.application.dto.request.AtualizarOrdemServicoGestaoRequest;
-import com.automotiva.estetica.rick.application.dto.request.AtualizarStatusOrdemRequest;
 import com.automotiva.estetica.rick.application.dto.request.AtualizarValorServicoOrdemRequest;
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoGestaoPageRequest;
 import com.automotiva.estetica.rick.application.dto.request.OrdemServicoRequest;
@@ -156,17 +155,6 @@ public class OrdemServicoApplicationService {
     public OrdemServicoDetalheResponse buscarDetalheParaGestao(Long ordemServicoId) {
         OrdemServico ordemServico = buscarOrdemServicoComDetalhesUseCase.execute(ordemServicoId);
         return ordemServicoResponseAssembler.toDetalheGestao(ordemServico, buscarItensPorOrdem(ordemServicoId));
-    }
-
-    @Transactional
-    public OrdemServicoDetalheResponse atualizarStatusParaGestao(Long ordemServicoId,
-            AtualizarStatusOrdemRequest request) {
-        Long statusId = request != null ? request.getStatus() : null;
-        OrdemServico ordemServico = atualizarStatusOrdemServicoUseCase.execute(ordemServicoId, statusId);
-        notificarAtualizacaoOrdemServicoUseCase.execute(ordemServico);
-
-        OrdemServico ordemComDetalhes = buscarOrdemPorIdComDetalhes(ordemServicoId);
-        return ordemServicoResponseAssembler.toDetalheGestao(ordemComDetalhes, buscarItensPorOrdem(ordemServicoId));
     }
 
     @Transactional
