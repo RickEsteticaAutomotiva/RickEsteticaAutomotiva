@@ -33,6 +33,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.automotiva.estetica.rick.application.dto.request.CancelarOrdemRequest;
+import com.automotiva.estetica.rick.domain.enums.StatusOrdem;
+import com.automotiva.estetica.rick.domain.exception.CampoInvalidoException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -170,6 +173,34 @@ public class OrdemServicoApplicationService {
                 observacoes, statusId, null);
 
         notificarAtualizacaoOrdemServicoUseCase.execute(ordemServico);
+
+        OrdemServico ordemComDetalhes = buscarOrdemPorIdComDetalhes(ordemServicoId);
+        return ordemServicoResponseAssembler.toDetalheGestao(ordemComDetalhes, buscarItensPorOrdem(ordemServicoId));
+    }
+
+    @Transactional
+    public OrdemServicoDetalheResponse cancelarParaGestao(Long ordemServicoId, CancelarOrdemRequest request) {
+        if (request == null || request.getMotivo() == null) {
+            throw CampoInvalidoException.builder().mensagem("motivo é obrigatório").detalhes("").build();
+        }
+
+        // Buscar ordem com detalhes para validar estado atual
+        OrdemServico ordemServico = buscarOrdemPorIdComDetalhes(ordemServicoId);
+        Long statusAtual = ordemServico.getStatus() != null ? ordemServico.getStatus().getId() : null;
+
+        // Não permitir cancelar se já estiver concluída ou já cancelada
+        if (StatusOrdem.CONCLUIDO.getId().equals(statusAtual) || StatusOrdem.CANCELADO.getId().equals(statusAtual)) {
+            throw CampoInvalidoException.builder().mensagem("ordem de serviço não pode ser cancelada no estado atual")
+                    .detalhes("")
+                    .build();
+        }
+
+        // Atualiza status para CANCELADO e persiste motivo
+        OrdemServico ordemAtualizada = atualizarOrdemServicoUseCase.execute(ordemServicoId, null, null, null,
+                StatusOrdem.CANCELADO.getId(), request.getMotivo());
+
+        // Regra de notificação encapsulada no domínio / use case de notificação
+        notificarAtualizacaoOrdemServicoUseCase.execute(ordemAtualizada);
 
         OrdemServico ordemComDetalhes = buscarOrdemPorIdComDetalhes(ordemServicoId);
         return ordemServicoResponseAssembler.toDetalheGestao(ordemComDetalhes, buscarItensPorOrdem(ordemServicoId));

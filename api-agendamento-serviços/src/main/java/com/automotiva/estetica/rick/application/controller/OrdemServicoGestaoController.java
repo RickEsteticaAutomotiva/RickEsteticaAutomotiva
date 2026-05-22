@@ -78,4 +78,11 @@ public class OrdemServicoGestaoController {
             @PathVariable Long servicoId) {
         return ResponseEntity.ok(ordemServicoUseCase.removerServicoParaGestao(ordemServicoId, servicoId));
     }
+
+    @PostMapping("/{ordemServicoId}/cancel")
+    @Operation(summary = "Cancela uma ordem de serviço com motivo")
+    public ResponseEntity<OrdemServicoDetalheResponse> cancelarParaGestao(@PathVariable Long ordemServicoId,
+            @Valid @RequestBody CancelarOrdemRequest request) {
+        return ResponseEntity.ok(ordemServicoUseCase.cancelarParaGestao(ordemServicoId, request));
+    }
 }
