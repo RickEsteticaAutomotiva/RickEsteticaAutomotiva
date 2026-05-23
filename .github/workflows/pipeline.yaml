@@ -46,6 +46,9 @@ jobs:
 
   deploy:
     needs: build-and-push
+    defaults:
+      run:
+        working-directory: api-agendamento-serviços
     strategy:
       matrix:
         runner: [rea-backend-1, rea-backend-2]
