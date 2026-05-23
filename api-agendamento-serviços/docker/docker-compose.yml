@@ -32,27 +32,6 @@ services:
       --default-time-zone='-03:00'
 
   # -------------------------------------------------------
-  # Redis 7 — cache distribuído
-  # Acesso: localhost:6379
-  # Password (padrão): redis@dev2024
-  # -------------------------------------------------------
-  redis:
-    image: redis:7.4-alpine
-    container_name: rick_redis
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis@dev2024}
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis@dev2024}", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-  # -------------------------------------------------------
   # RabbitMQ 3.13 LTS — mensageria
   # Management UI: http://localhost:15672  (guest/guest)
   # AMQP:          localhost:5672
@@ -80,6 +59,4 @@ volumes:
   mysql_data:
     driver: local
   rabbitmq_data:
-    driver: local
-  redis_data:
     driver: local
