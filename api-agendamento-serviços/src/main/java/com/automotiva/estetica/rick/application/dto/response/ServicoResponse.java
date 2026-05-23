@@ -1,6 +1,5 @@
 package com.automotiva.estetica.rick.application.dto.response;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServicoResponse implements Serializable {
+public class ServicoResponse {
 
     private Long id;
     private String nome;

@@ -181,12 +181,6 @@
 			<artifactId>flyway-mysql</artifactId>
 			<version>${flyway.version}</version>
 		</dependency>
-
-		<!-- Spring Data Redis: Cache distribuído com Redis -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -247,13 +241,9 @@
 								<include>com.automotiva.estetica.rick.*</include>
 							</includes>
 							<excludes>
-								<exclude>*HibernateProxy*</exclude>
-								<exclude>*HibernateInstantiator*</exclude>
 								<exclude>*MockitoMock*</exclude>
 								<exclude>*$auxiliary$*</exclude>
 								<exclude>**/*MapperImpl*</exclude>
-								<exclude>**/*$HibernateProxy*</exclude>
-								<exclude>**/*$HibernateInstantiator*</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -274,8 +264,6 @@
 								<exclude>*MockitoMock*</exclude>
 								<exclude>*$auxiliary$*</exclude>
 								<exclude>**/*MapperImpl*</exclude>
-								<exclude>**/*$HibernateProxy*</exclude>
-								<exclude>**/*$HibernateInstantiator*</exclude>
 							</excludes>
 						</configuration>
 					</execution>
