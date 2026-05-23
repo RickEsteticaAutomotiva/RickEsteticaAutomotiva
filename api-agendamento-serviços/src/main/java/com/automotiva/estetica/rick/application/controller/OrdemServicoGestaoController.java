@@ -1,6 +1,7 @@
 package com.automotiva.estetica.rick.application.controller;
 
 import com.automotiva.estetica.rick.application.dto.request.*;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentosHojeListResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
 import com.automotiva.estetica.rick.application.security.GerenteOnly;
@@ -34,6 +35,12 @@ public class OrdemServicoGestaoController {
     public ResponseEntity<Page<OrdemServicoResumoResponse>> buscarTodosParaGestao(
             @Valid @ModelAttribute OrdemServicoGestaoPageRequest request) {
         return ResponseEntity.ok(ordemServicoUseCase.buscarTodosParaGestao(request));
+    }
+
+    @GetMapping("/hoje")
+    @Operation(summary = "Lista todos os agendamentos do dia atual com detalhes completos para visualização no dashboard")
+    public ResponseEntity<AgendamentosHojeListResponse> buscarAgendamentosHoje() {
+        return ResponseEntity.ok(ordemServicoUseCase.buscarAgendamentosHoje());
     }
 
     @GetMapping("/{ordemServicoId}")

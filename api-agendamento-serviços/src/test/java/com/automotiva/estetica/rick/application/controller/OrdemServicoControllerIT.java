@@ -184,11 +184,4 @@ class OrdemServicoControllerIT extends AbstractIntegrationTest {
         }
     }
 
-    @Test
-    @DisplayName("GET /ordem-servicos/hoje -> 200 com response de dashboard")
-    void buscarAgendamentosHoje_sucesso() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/ordem-servicos/hoje").header("Authorization", bearer(tokenAdmin)))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.data", notNullValue()))
-                .andExpect(jsonPath("$.total", notNullValue())).andExpect(jsonPath("$.timestamp", notNullValue()));
-    }
 }

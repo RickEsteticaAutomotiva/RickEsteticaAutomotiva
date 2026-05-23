@@ -32,6 +32,14 @@ class OrdemServicoGestaoControllerIT extends AbstractIntegrationTest {
     }
 
     @Test
+    @DisplayName("GET /ordem-servicos-gestao/hoje → 200 para gerente")
+    void buscarAgendamentosHoje_sucesso() throws Exception {
+        mockMvc.perform(get(BASE_PATH + "/ordem-servicos-gestao/hoje").header("Authorization", bearer(tokenGerente)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.data", notNullValue()))
+                .andExpect(jsonPath("$.total", notNullValue())).andExpect(jsonPath("$.timestamp", notNullValue()));
+    }
+
+    @Test
     @DisplayName("GET /ordem-servicos-gestao/{id} → 200 e shape esperado")
     void buscarDetalheParaGestao_sucesso() throws Exception {
         mockMvc.perform(get(BASE_PATH + "/ordem-servicos-gestao/1").header("Authorization", bearer(tokenGerente)))
