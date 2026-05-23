@@ -17,6 +17,21 @@ FROM eclipse-temurin:21-jdk-jammy AS builder
 
 WORKDIR /build
 
+# Recebe credenciais como build args
+ARG GH_USERNAME
+ARG GH_TOKEN
+
+# Cria settings.xml com as credenciais
+RUN mkdir -p /root/.m2 && echo "<settings> \
+  <servers> \
+    <server> \
+      <id>github</id> \
+      <username>${GH_USERNAME}</username> \
+      <password>${GH_TOKEN}</password> \
+    </server> \
+  </servers> \
+</settings>" > /root/.m2/settings.xml
+
 # Copiar pom.xml e baixar dependências (layer cacheável)
 COPY pom.xml .
 COPY .mvn .mvn
