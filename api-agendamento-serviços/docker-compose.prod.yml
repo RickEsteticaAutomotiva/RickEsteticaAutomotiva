@@ -72,7 +72,7 @@ services:
   # API — Rick Agendamento de Serviços
   # -------------------------------------------------------
   api:
-    image: rick-api:latest
+    image: ${DOCKER_USERNAME}/rick-api:latest
     container_name: rick_api
     restart: always
     depends_on:

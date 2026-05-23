@@ -73,10 +73,11 @@ jobs:
           cat .env
 
       - name: Deploy
+        working-directory: api-agendamento-serviços
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker compose -f docker-compose.prod.yml pull
-          docker compose -f docker-compose.prod.yml up -d
+          DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} docker compose -f docker-compose.prod.yml pull
+          DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} docker compose -f docker-compose.prod.yml up -d
 
       - name: Limpar imagens antigas no deploy
         if: always()
