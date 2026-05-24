@@ -2,8 +2,6 @@ package com.automotiva.estetica.rick.application.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Testes de ServicoController")
@@ -39,10 +36,10 @@ class ServicoControllerTest {
     private CadastrarServicoUseCase cadastrarServicoUseCase;
 
     @Mock
-    private ListarServicosUseCase listarServicosUseCase;
+    private BuscarServicoPorIdUseCase buscarServicoPorIdUseCase;
 
     @Mock
-    private BuscarServicoPorIdUseCase buscarServicoPorIdUseCase;
+    private ListarServicosUseCase listarServicosUseCase;
 
     @Mock
     private AtualizarServicoUseCase atualizarServicoUseCase;
@@ -61,14 +58,15 @@ class ServicoControllerTest {
     void buscarTodos_deveRetornarPagina() {
         PageRequest request = PageRequest.builder().pagina(0).tamanho(10).filtro("lav").ordenarPor("id").build();
         Servico servico = Servico.builder().id(1L).nome("Lavagem").build();
-        ServicoResponse response = ServicoResponse.builder().id(1L).nome("Lavagem").build();
+        ServicoResponse servicoResponse = ServicoResponse.builder().id(1L).nome("Lavagem").build();
         Page<Servico> pagina = new PageImpl<>(List.of(servico), org.springframework.data.domain.PageRequest.of(0, 10),
                 1);
-        when(listarServicosUseCase.execute(eq("lav"), any(org.springframework.data.domain.Pageable.class)))
+        when(listarServicosUseCase.execute("lav",
+                org.springframework.data.domain.PageRequest.of(0, 10, org.springframework.data.domain.Sort.by("id"))))
                 .thenReturn(pagina);
-        when(servicoDTOMapper.toResponse(servico)).thenReturn(response);
+        when(servicoDTOMapper.toResponse(servico)).thenReturn(servicoResponse);
 
-        ResponseEntity<Page<ServicoResponse>> httpResponse = servicoController.buscarTodos(request);
+        var httpResponse = servicoController.buscarTodos(request);
 
         assertEquals(HttpStatus.OK, httpResponse.getStatusCode());
         assertNotNull(httpResponse.getBody());

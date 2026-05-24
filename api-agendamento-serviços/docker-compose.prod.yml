@@ -17,3 +17,4 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
       AWS_REGION: us-east-1
+
