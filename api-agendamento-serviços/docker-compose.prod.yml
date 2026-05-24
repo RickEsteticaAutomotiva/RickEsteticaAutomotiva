@@ -1,73 +1,10 @@
 # =====================================================
 # docker-compose.prod.yml — Ambiente de Produção na EC2
 # =====================================================
-# PROPÓSITO: Orquestrar API + MySQL + RabbitMQ em produção
-# SEGURANÇA: Variáveis de ambiente externas (.env ou AWS Secrets)
-# 
-# USO:
-# 1. Criar .env ou definir variáveis no SO
-# 2. docker-compose -f docker-compose.prod.yml up -d
-# 
-# REFERÊNCIA: SECRETS_DEPLOYMENT.md
-# =====================================================
 
 version: '3.8'
 
 services:
-
-  # -------------------------------------------------------
-  # MySQL 8 — Banco de Produção
-  # -------------------------------------------------------
-  mysql:
-    image: mysql:8.4
-    container_name: rick_mysql_prod
-    restart: always
-    ports:
-      - "3306:3306"
-    environment:
-      # Variáveis OBRIGATÓRIAS via .env ou SO
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:rick_prod}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-      - mysql_prod_data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    command: >
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci
-      --default-time-zone='-03:00'
-      --max_connections=100
-      --wait_timeout=28800
-
-  # -------------------------------------------------------
-  # RabbitMQ 4.2 LTS — Fila de Mensagens
-  # -------------------------------------------------------
-  rabbitmq:
-    image: rabbitmq:4.2.4-management
-    container_name: rick_rabbitmq_prod
-    restart: always
-    ports:
-      - "5672:5672"    # AMQP
-      - "15672:15672"  # Management UI (acesso restrito em prod)
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
-    volumes:
-      - rabbitmq_prod_data:/var/lib/rabbitmq
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
   # -------------------------------------------------------
   # API — Rick Agendamento de Serviços
   # -------------------------------------------------------
@@ -75,78 +12,9 @@ services:
     image: rick-api:latest
     container_name: rick_api
     restart: always
-    depends_on:
-      mysql:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
-      # Perfil Spring
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:prod}
-
-      # Database (OBRIGATÓRIO)
-      DB_URL: ${DB_URL}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-
-      # JWT Secret (OBRIGATÓRIO)
-      JWT_SECRET: ${JWT_SECRET}
-
-      # Email (OBRIGATÓRIO)
-      MAIL_HOST: ${MAIL_HOST}
-      MAIL_PORT: ${MAIL_PORT}
-      MAIL_USERNAME: ${MAIL_USERNAME}
-      MAIL_PASSWORD: ${MAIL_PASSWORD}
-
-      # RabbitMQ (OBRIGATÓRIO)
-      RABBITMQ_HOST: ${RABBITMQ_HOST:rabbitmq}
-      RABBITMQ_PORT: ${RABBITMQ_PORT:5672}
-      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-
-      # CORS (OBRIGATÓRIO em prod)
-      ALLOWED_CORS_ORIGINS: ${ALLOWED_CORS_ORIGINS}
-
-      # Logging
-      LOGGING_LEVEL_COM_AUTOMOTIVA_ESTETICA_RICK: ${LOGGING_LEVEL:INFO}
-
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/swagger-ui.html"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 60s
-
-    networks:
-      - rick_network
-
-  # -------------------------------------------------------
-  # Nginx — Proxy Reverso (Opcional, recomendado em prod)
-  # -------------------------------------------------------
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: rick_nginx
-  #   restart: always
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-  #     - ./nginx/certs:/etc/nginx/certs:ro
-  #   depends_on:
-  #     - api
-  #   networks:
-  #     - rick_network
-
-volumes:
-  mysql_prod_data:
-    driver: local
-  rabbitmq_prod_data:
-    driver: local
-
-networks:
-  rick_network:
-    driver: bridge
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      AWS_REGION: us-east-1
 
