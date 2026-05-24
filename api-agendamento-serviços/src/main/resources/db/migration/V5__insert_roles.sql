@@ -1,0 +1,4 @@
+INSERT IGNORE INTO role (id, nome) VALUES
+(1, 'ROLE_CLIENTE');
+(2, 'ROLE_ADMIN'),
+(3, 'ROLE_GERENTE'),
