@@ -1,6 +1,7 @@
 package com.automotiva.estetica.rick.application.controller;
 
 import com.automotiva.estetica.rick.application.dto.request.*;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentosHojeListResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
 import com.automotiva.estetica.rick.application.security.GerenteOnly;
@@ -93,7 +94,7 @@ public class OrdemServicoGestaoController {
         return ResponseEntity.ok(ordemServicoUseCase.removerServicoParaGestao(ordemServicoId, servicoId));
     }
 
-    @PostMapping("/{ordemServicoId}/cancel")
+    @PatchMapping("/{ordemServicoId}/cancel")
     @Operation(summary = "Cancela uma ordem de serviço com motivo")
     public ResponseEntity<OrdemServicoDetalheResponse> cancelarParaGestao(@PathVariable Long ordemServicoId,
             @Valid @RequestBody CancelarOrdemRequest request) {

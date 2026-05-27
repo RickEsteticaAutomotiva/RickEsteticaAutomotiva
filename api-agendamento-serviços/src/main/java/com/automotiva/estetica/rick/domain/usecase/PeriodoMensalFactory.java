@@ -9,13 +9,15 @@ public final class PeriodoMensalFactory {
     }
 
     public static PeriodoMensal mesAtual() {
-        LocalDate inicio = LocalDate.now().withDayOfMonth(1);
+        return PeriodoMensal.mesAtual();
+    }
+
+    public static PeriodoMensal ultimos30Dias() {
+        LocalDate inicio = LocalDate.now().minusDays(30);
         return new PeriodoMensal(inicio.atStartOfDay(), LocalDateTime.now());
     }
 
     public static PeriodoMensal mesAnterior() {
-        LocalDate inicio = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-        LocalDate fim = inicio.plusMonths(1).minusDays(1);
-        return new PeriodoMensal(inicio.atStartOfDay(), fim.atTime(23, 59, 59));
+        return PeriodoMensal.mesAnterior();
     }
 }
