@@ -32,6 +32,14 @@ class OrdemServicoGestaoControllerIT extends AbstractIntegrationTest {
     }
 
     @Test
+    @DisplayName("GET /ordem-servicos-gestao/hoje → 200 para gerente")
+    void buscarAgendamentosHoje_sucesso() throws Exception {
+        mockMvc.perform(get(BASE_PATH + "/ordem-servicos-gestao/hoje").header("Authorization", bearer(tokenGerente)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.data", notNullValue()))
+                .andExpect(jsonPath("$.total", notNullValue())).andExpect(jsonPath("$.timestamp", notNullValue()));
+    }
+
+    @Test
     @DisplayName("GET /ordem-servicos-gestao/{id} → 200 e shape esperado")
     void buscarDetalheParaGestao_sucesso() throws Exception {
         mockMvc.perform(get(BASE_PATH + "/ordem-servicos-gestao/1").header("Authorization", bearer(tokenGerente)))
@@ -166,5 +174,46 @@ class OrdemServicoGestaoControllerIT extends AbstractIntegrationTest {
         mockMvc.perform(
                 patch(BASE_PATH + "/ordem-servicos-gestao/1").contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("POST /ordem-servicos-gestao/{id}/cancel → 200 ao cancelar com motivo")
+    void cancelarParaGestao_sucesso() throws Exception {
+        String body = "{\"motivo\":2}";
+
+        mockMvc.perform(post(BASE_PATH + "/ordem-servicos-gestao/1/cancel")
+                .header("Authorization", bearer(tokenGerente)).contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.id", notNullValue()))
+                .andExpect(jsonPath("$.status.id", notNullValue()))
+                .andExpect(jsonPath("$.motivoCancelamento", notNullValue()));
+    }
+
+    @Test
+    @DisplayName("POST /ordem-servicos-gestao/{id}/cancel → 400 quando motivo ausente")
+    void cancelarParaGestao_semMotivo_erro() throws Exception {
+        String body = "{}";
+
+        mockMvc.perform(post(BASE_PATH + "/ordem-servicos-gestao/1/cancel")
+                .header("Authorization", bearer(tokenGerente)).contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("POST /ordem-servicos-gestao/{id}/cancel → 403 para cliente")
+    void cancelarParaGestao_comClienteDeveNegar() throws Exception {
+        String body = "{\"motivo\":1}";
+
+        mockMvc.perform(post(BASE_PATH + "/ordem-servicos-gestao/1/cancel")
+                .header("Authorization", bearer(tokenUser)).contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("POST /ordem-servicos-gestao/{id}/cancel → 401 sem token")
+    void cancelarParaGestao_semToken() throws Exception {
+        String body = "{\"motivo\":1}";
+
+        mockMvc.perform(post(BASE_PATH + "/ordem-servicos-gestao/1/cancel").contentType(MediaType.APPLICATION_JSON)
+                .content(body)).andExpect(status().isUnauthorized());
     }
 }

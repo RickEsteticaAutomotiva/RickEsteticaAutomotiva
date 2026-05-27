@@ -6,6 +6,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.automotiva.estetica.rick.application.dto.request.*;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentoHojeResponse;
+import com.automotiva.estetica.rick.application.dto.response.AgendamentosHojeListResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoDetalheResponse;
 import com.automotiva.estetica.rick.application.dto.response.OrdemServicoResumoResponse;
 import com.automotiva.estetica.rick.application.service.OrdemServicoApplicationService;
@@ -50,9 +52,25 @@ class OrdemServicoGestaoControllerTest {
     }
 
     @Test
+    @DisplayName("buscarAgendamentosHoje deve delegar e retornar 200")
+    void buscarAgendamentosHoje_deveDelegarERetornar200() {
+        AgendamentosHojeListResponse responseMock = AgendamentosHojeListResponse.builder()
+                .data(List.of(AgendamentoHojeResponse.builder().id(1L).build())).total(1).build();
+        when(ordemServicoUseCase.buscarAgendamentosHoje()).thenReturn(responseMock);
+
+        var response = controller.buscarAgendamentosHoje();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getTotal());
+        verify(ordemServicoUseCase).buscarAgendamentosHoje();
+    }
+
+    @Test
     @DisplayName("buscarDetalheParaGestao deve retornar detalhe com status 200")
     void buscarDetalheParaGestao_deveRetornarDetalheComStatus200() {
-        OrdemServicoDetalheResponse detalhe = OrdemServicoDetalheResponse.builder().id(5L).build();
+        OrdemServicoDetalheResponse detalhe = new OrdemServicoDetalheResponse();
+        detalhe.setId(5L);
         when(ordemServicoUseCase.buscarDetalheParaGestao(5L)).thenReturn(detalhe);
 
         var response = controller.buscarDetalheParaGestao(5L);
@@ -67,7 +85,8 @@ class OrdemServicoGestaoControllerTest {
     @DisplayName("atualizarStatusParaGestao deve delegar e retornar 200")
     void atualizarStatusParaGestao_deveDelegarERetornar200() {
         AtualizarOrdemServicoGestaoRequest request = AtualizarOrdemServicoGestaoRequest.builder().status(2L).build();
-        OrdemServicoDetalheResponse detalhe = OrdemServicoDetalheResponse.builder().id(10L).build();
+        OrdemServicoDetalheResponse detalhe = new OrdemServicoDetalheResponse();
+        detalhe.setId(10L);
         when(ordemServicoUseCase.atualizarParaGestao(10L, request)).thenReturn(detalhe);
 
         var response = controller.atualizarParaGestao(10L, request);
@@ -82,7 +101,8 @@ class OrdemServicoGestaoControllerTest {
     @DisplayName("adicionarServicosParaGestao deve retornar 201")
     void adicionarServicosParaGestao_deveRetornar201() {
         AdicionarServicosOrdemRequest request = AdicionarServicosOrdemRequest.builder().servicos(List.of()).build();
-        OrdemServicoDetalheResponse detalhe = OrdemServicoDetalheResponse.builder().id(12L).build();
+        OrdemServicoDetalheResponse detalhe = new OrdemServicoDetalheResponse();
+        detalhe.setId(12L);
         when(ordemServicoUseCase.adicionarServicosParaGestao(12L, request)).thenReturn(detalhe);
 
         var response = controller.adicionarServicosParaGestao(12L, request);
@@ -98,7 +118,8 @@ class OrdemServicoGestaoControllerTest {
     void atualizarValorServicoParaGestao_deveDelegarERetornar200() {
         AtualizarValorServicoOrdemRequest request = AtualizarValorServicoOrdemRequest.builder()
                 .valorAplicado(BigDecimal.TEN).build();
-        OrdemServicoDetalheResponse detalhe = OrdemServicoDetalheResponse.builder().id(13L).build();
+        OrdemServicoDetalheResponse detalhe = new OrdemServicoDetalheResponse();
+        detalhe.setId(13L);
         when(ordemServicoUseCase.atualizarValorServicoParaGestao(13L, 8L, request)).thenReturn(detalhe);
 
         var response = controller.atualizarValorServicoParaGestao(13L, 8L, request);
@@ -112,7 +133,8 @@ class OrdemServicoGestaoControllerTest {
     @Test
     @DisplayName("removerServicoParaGestao deve delegar e retornar 200")
     void removerServicoParaGestao_deveDelegarERetornar200() {
-        OrdemServicoDetalheResponse detalhe = OrdemServicoDetalheResponse.builder().id(14L).build();
+        OrdemServicoDetalheResponse detalhe = new OrdemServicoDetalheResponse();
+        detalhe.setId(14L);
         when(ordemServicoUseCase.removerServicoParaGestao(14L, 3L)).thenReturn(detalhe);
 
         var response = controller.removerServicoParaGestao(14L, 3L);
