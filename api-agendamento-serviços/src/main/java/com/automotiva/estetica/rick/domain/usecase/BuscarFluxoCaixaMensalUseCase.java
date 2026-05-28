@@ -18,12 +18,12 @@ public class BuscarFluxoCaixaMensalUseCase {
     private final DashboardGateway dashboardGateway;
 
     public FluxoCaixaResumo execute() {
-        PeriodoMensal periodo = PeriodoMensalFactory.ultimos30Dias();
+        PeriodoMensal mesAtual = PeriodoMensalFactory.mesAtual();
 
         BigDecimal lucro = defaultValor(
-                dashboardGateway.somarReceitaRecebidaDoPeriodo(periodo.inicio(), periodo.fim()));
+                dashboardGateway.somarReceitaRecebidaDoPeriodo(mesAtual.inicio(), mesAtual.fim()));
         BigDecimal custo = defaultValor(
-                dashboardGateway.somarCustoRealizadoDoPeriodo(periodo.inicio(), periodo.fim()));
+                dashboardGateway.somarCustoRealizadoDoPeriodo(mesAtual.inicio(), mesAtual.fim()));
 
         BigDecimal total = lucro.add(custo);
         BigDecimal percentualLucro = calcularPercentual(lucro, total);

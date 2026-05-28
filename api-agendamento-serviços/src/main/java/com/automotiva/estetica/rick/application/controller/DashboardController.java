@@ -66,7 +66,7 @@ public class DashboardController {
     }
 
     @GetMapping("/fluxo-caixa")
-    @Operation(summary = "Retorna o fluxo de caixa consolidado dos últimos 30 dias")
+    @Operation(summary = "Retorna o fluxo de caixa consolidado do mês atual")
     public ResponseEntity<FluxoCaixaResponse> buscarFluxoCaixa() {
         return ResponseEntity.ok(dashboardUseCase.buscarFluxoCaixa());
     }
