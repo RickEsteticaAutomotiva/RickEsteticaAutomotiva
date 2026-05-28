@@ -45,6 +45,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import com.automotiva.estetica.rick.application.dto.request.CancelarOrdemRequest;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -455,6 +456,44 @@ class OrdemServicoApplicationServiceTest {
 
         assertEquals(10L, response.getId());
         verify(notificarAtualizacaoOrdemServicoUseCase).execute(ordem);
+    }
+
+    @Test
+    @DisplayName("Deve cancelar ordem para gestao com sucesso")
+    void cancelarParaGestao_sucesso() {
+        OrdemServico ordem = ordemMock();
+        CancelarOrdemRequest request = CancelarOrdemRequest.builder().motivo(2L).build();
+
+        when(buscarOrdemServicoComDetalhesUseCase.execute(10L)).thenReturn(ordem);
+        when(atualizarOrdemServicoUseCase.execute(eq(10L), isNull(), isNull(), isNull(), eq(4L), eq(2L)))
+                .thenReturn(ordem);
+        when(itemServicoGateway.buscarPorOrdemServicoId(10L)).thenReturn(emptyList());
+
+        OrdemServicoDetalheResponse response = ordemServicoApplicationService.cancelarParaGestao(10L, request);
+
+        assertNotNull(response);
+        assertEquals(10L, response.getId());
+        verify(atualizarOrdemServicoUseCase).execute(eq(10L), isNull(), isNull(), isNull(), eq(4L), eq(2L));
+        verify(notificarAtualizacaoOrdemServicoUseCase).execute(ordem);
+    }
+
+    @Test
+    @DisplayName("Deve lançar CampoInvalidoException quando motivo ausente no cancelamento")
+    void cancelarParaGestao_semMotivo_deveLancarCampoInvalidoException() {
+        assertThrows(CampoInvalidoException.class,
+                () -> ordemServicoApplicationService.cancelarParaGestao(10L, null));
+    }
+
+    @Test
+    @DisplayName("Deve lançar CampoInvalidoException quando ordem estiver em estado que não permite cancelamento")
+    void cancelarParaGestao_estadoInvalido_deveLancarCampoInvalidoException() {
+        OrdemServico ordem = OrdemServico.builder().id(10L).status(Status.builder().id(5L).build()).build();
+        when(buscarOrdemServicoComDetalhesUseCase.execute(10L)).thenReturn(ordem);
+
+        CancelarOrdemRequest request = CancelarOrdemRequest.builder().motivo(1L).build();
+
+        assertThrows(CampoInvalidoException.class,
+                () -> ordemServicoApplicationService.cancelarParaGestao(10L, request));
     }
 
     @Test

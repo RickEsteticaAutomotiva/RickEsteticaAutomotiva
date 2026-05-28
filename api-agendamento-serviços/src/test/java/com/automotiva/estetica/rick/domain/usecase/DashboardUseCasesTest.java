@@ -1,6 +1,7 @@
 package com.automotiva.estetica.rick.domain.usecase;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -17,6 +18,7 @@ import com.automotiva.estetica.rick.domain.entity.QtdOrdensMensalResumo;
 import com.automotiva.estetica.rick.domain.entity.TicketMedioMensalResumo;
 import com.automotiva.estetica.rick.domain.gateway.DashboardGateway;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,6 +95,25 @@ class DashboardUseCasesTest {
     }
 
     @Test
+    @DisplayName("Qtd ordens mensal: deve usar o mês atual inteiro no período da consulta")
+    void buscarQtdOrdensMensais_deveUsarMesAtualInteiro() {
+        when(dashboardGateway.buscarQtdOrdensDoMes(any(), any())).thenReturn(15, 10);
+
+        LocalDate hoje = LocalDate.now();
+
+        buscarQtdOrdensMensaisUseCase.execute();
+
+        ArgumentCaptor<LocalDateTime> inicioCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+        ArgumentCaptor<LocalDateTime> fimCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+
+        org.mockito.Mockito.verify(dashboardGateway, org.mockito.Mockito.times(2))
+                .buscarQtdOrdensDoMes(inicioCaptor.capture(), fimCaptor.capture());
+
+        assertEquals(hoje.withDayOfMonth(1).atStartOfDay(), inicioCaptor.getAllValues().get(0));
+        assertEquals(hoje.withDayOfMonth(hoje.lengthOfMonth()).atTime(23, 59, 59), fimCaptor.getAllValues().get(0));
+    }
+
+    @Test
     @DisplayName("Qtd ordens mensal: deve retornar variacao zero quando periodo anterior for zero")
     void buscarQtdOrdensMensais_anteriorZero() {
         when(dashboardGateway.buscarQtdOrdensDoMes(any(), any())).thenReturn(5, 0);
@@ -145,16 +168,26 @@ class DashboardUseCasesTest {
     }
 
     @Test
-    @DisplayName("Fluxo caixa mensal: deve calcular totais e percentuais")
+    @DisplayName("Fluxo caixa: deve calcular totais e percentuais dos últimos 30 dias")
     void buscarFluxoCaixaMensal_sucesso() {
         when(dashboardGateway.somarReceitaRecebidaDoPeriodo(any(), any())).thenReturn(BigDecimal.valueOf(12000));
         when(dashboardGateway.somarCustoRealizadoDoPeriodo(any(), any())).thenReturn(BigDecimal.valueOf(4500));
 
+        LocalDateTime antes = LocalDateTime.now();
         FluxoCaixaResumo result = buscarFluxoCaixaMensalUseCase.execute();
+        LocalDateTime depois = LocalDateTime.now();
+
+        ArgumentCaptor<LocalDateTime> inicioCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+        ArgumentCaptor<LocalDateTime> fimCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+
+        org.mockito.Mockito.verify(dashboardGateway).somarReceitaRecebidaDoPeriodo(inicioCaptor.capture(), fimCaptor.capture());
+        org.mockito.Mockito.verify(dashboardGateway).somarCustoRealizadoDoPeriodo(inicioCaptor.getValue(), fimCaptor.getValue());
 
         assertEquals(0, BigDecimal.valueOf(16500).compareTo(result.total()));
         assertEquals(0, new BigDecimal("72.73").compareTo(result.percentualLucro()));
         assertEquals(0, new BigDecimal("27.27").compareTo(result.percentualCusto()));
+        assertEquals(LocalDate.now().minusDays(30).atStartOfDay(), inicioCaptor.getValue());
+        assertTrue(!fimCaptor.getValue().isBefore(antes) && !fimCaptor.getValue().isAfter(depois));
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.automotiva.estetica.rick.application.dto.request.CategoriaRequest;
 import com.automotiva.estetica.rick.application.dto.response.CategoriaResponse;
 import com.automotiva.estetica.rick.domain.entity.Categoria;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
  * Mapper MapStruct para conversão entre DTOs de Application e entidades de
@@ -22,6 +23,7 @@ public interface CategoriaDTOMapper {
     /**
      * Converte DTO de requisição para entidade de domínio.
      */
+    @Mapping(target = "id", ignore = true)
     Categoria toDomain(CategoriaRequest request);
 
     /**
