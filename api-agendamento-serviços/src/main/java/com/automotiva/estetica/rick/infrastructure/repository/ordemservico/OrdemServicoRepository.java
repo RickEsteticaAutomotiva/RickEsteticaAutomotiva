@@ -52,7 +52,6 @@ public interface OrdemServicoRepository
     @Query("""
                 SELECT COALESCE(SUM(o.precoMinimo), 0) FROM OrdemServicoEntity o
                 WHERE o.dataAgendamento BETWEEN :inicio AND :fim
-                  AND o.status.id <> 4
             """)
     BigDecimal somarFaturamentoDoPeriodo(LocalDateTime inicio, LocalDateTime fim);
 
