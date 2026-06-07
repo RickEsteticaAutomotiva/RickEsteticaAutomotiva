@@ -21,7 +21,7 @@ public class SecretsValidator implements InitializingBean {
     private static final List<String> INVALID_SECRET_VALUES = List.of("placeholder", "{{null}}", "#{null}", "test",
             "123456", "rick@dev2024");
 
-    @Value("${JWT_SECRET:#{null}}")
+    @Value("${jwt.secret:#{null}}")
     private String jwtSecret;
 
     @Value("${DB_PASSWORD:#{null}}")
