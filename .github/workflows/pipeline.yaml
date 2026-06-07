@@ -51,7 +51,7 @@ jobs:
         working-directory: api-agendamento-serviços
     strategy:
       matrix:
-        runner: [rea-backend-1, rea-backend-2]
+        runner: [backend-rea-1, backend-rea-2]
       max-parallel: 1
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 10
