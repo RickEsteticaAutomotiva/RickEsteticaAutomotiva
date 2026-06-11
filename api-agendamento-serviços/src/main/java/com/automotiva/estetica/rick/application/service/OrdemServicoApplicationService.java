@@ -127,7 +127,7 @@ public class OrdemServicoApplicationService {
 
     @Transactional(readOnly = true)
     public AgendamentosHojeListResponse buscarAgendamentosHoje() {
-        LocalDate hoje = LocalDate.now(ZONE_ID_SAO_PAULO);
+        LocalDate hoje = LocalDate.now();
         List<OrdemServico> agendamentos = buscarAgendamentosHoje(hoje);
 
         List<AgendamentoHojeResponse> agendamentosResponse = agendamentos.stream()
@@ -136,7 +136,7 @@ public class OrdemServicoApplicationService {
                 .toList();
 
         return AgendamentosHojeListResponse.builder().data(agendamentosResponse).total(agendamentosResponse.size())
-                .timestamp(LocalDateTime.now(ZONE_ID_SAO_PAULO)).build();
+                .timestamp(LocalDateTime.now()).build();
     }
 
     @Transactional
