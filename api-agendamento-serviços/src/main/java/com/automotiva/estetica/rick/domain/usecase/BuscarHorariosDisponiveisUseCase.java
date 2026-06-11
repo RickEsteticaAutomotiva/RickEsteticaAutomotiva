@@ -26,6 +26,7 @@ public class BuscarHorariosDisponiveisUseCase {
     private static final LocalTime INICIO_TRABALHO = LocalTime.of(9, 0);
     private static final LocalTime FIM_TRABALHO = LocalTime.of(17, 0);
     private final LocalDate dataLimiteValida = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
+    LocalTime horarioAtual = LocalTime.now(ZoneId.of("America/Sao_Paulo"));
     private static final int MARGEM_ENTRE_SERVICOS = 10;
 
     private final ServicoGateway servicoGateway;
@@ -38,9 +39,18 @@ public class BuscarHorariosDisponiveisUseCase {
                     .build();
         }
 
-        LocalTime ponteiro = data.equals(dataLimiteValida)
-                ? LocalTime.now(ZoneId.of("America/Sao_Paulo"))
-                : INICIO_TRABALHO;
+        LocalTime ponteiro;
+
+        if (data.equals(dataLimiteValida)) {
+            if (horarioAtual.isBefore(INICIO_TRABALHO)) {
+                ponteiro = INICIO_TRABALHO;
+            } else {
+                ponteiro = horarioAtual;
+            }
+        } else {
+            ponteiro = INICIO_TRABALHO;
+        }
+
         if (ponteiro.isAfter(FIM_TRABALHO)) {
             return emptyList();
         }
