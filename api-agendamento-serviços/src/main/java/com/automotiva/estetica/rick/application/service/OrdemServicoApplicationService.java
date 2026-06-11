@@ -195,8 +195,7 @@ public class OrdemServicoApplicationService {
         // Não permitir cancelar se já estiver concluída ou já cancelada
         if (StatusOrdem.CONCLUIDO.getId().equals(statusAtual) || StatusOrdem.CANCELADO.getId().equals(statusAtual)) {
             throw CampoInvalidoException.builder().mensagem("ordem de serviço não pode ser cancelada no estado atual")
-                    .detalhes("")
-                    .build();
+                    .detalhes("").build();
         }
 
         // Atualiza status para CANCELADO e persiste motivo

@@ -22,8 +22,7 @@ public class BuscarFluxoCaixaMensalUseCase {
 
         BigDecimal lucro = defaultValor(
                 dashboardGateway.somarReceitaRecebidaDoPeriodo(periodo.inicio(), periodo.fim()));
-        BigDecimal custo = defaultValor(
-                dashboardGateway.somarCustoRealizadoDoPeriodo(periodo.inicio(), periodo.fim()));
+        BigDecimal custo = defaultValor(dashboardGateway.somarCustoRealizadoDoPeriodo(periodo.inicio(), periodo.fim()));
 
         BigDecimal total = lucro.add(custo);
         BigDecimal percentualLucro = calcularPercentual(lucro, total);

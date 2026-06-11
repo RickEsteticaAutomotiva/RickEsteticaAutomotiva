@@ -480,8 +480,7 @@ class OrdemServicoApplicationServiceTest {
     @Test
     @DisplayName("Deve lançar CampoInvalidoException quando motivo ausente no cancelamento")
     void cancelarParaGestao_semMotivo_deveLancarCampoInvalidoException() {
-        assertThrows(CampoInvalidoException.class,
-                () -> ordemServicoApplicationService.cancelarParaGestao(10L, null));
+        assertThrows(CampoInvalidoException.class, () -> ordemServicoApplicationService.cancelarParaGestao(10L, null));
     }
 
     @Test

@@ -180,8 +180,10 @@ class DashboardUseCasesTest {
         ArgumentCaptor<LocalDateTime> inicioCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
         ArgumentCaptor<LocalDateTime> fimCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
 
-        org.mockito.Mockito.verify(dashboardGateway).somarReceitaRecebidaDoPeriodo(inicioCaptor.capture(), fimCaptor.capture());
-        org.mockito.Mockito.verify(dashboardGateway).somarCustoRealizadoDoPeriodo(inicioCaptor.getValue(), fimCaptor.getValue());
+        org.mockito.Mockito.verify(dashboardGateway).somarReceitaRecebidaDoPeriodo(inicioCaptor.capture(),
+                fimCaptor.capture());
+        org.mockito.Mockito.verify(dashboardGateway).somarCustoRealizadoDoPeriodo(inicioCaptor.getValue(),
+                fimCaptor.getValue());
 
         assertEquals(0, BigDecimal.valueOf(16500).compareTo(result.total()));
         assertEquals(0, new BigDecimal("72.73").compareTo(result.percentualLucro()));
