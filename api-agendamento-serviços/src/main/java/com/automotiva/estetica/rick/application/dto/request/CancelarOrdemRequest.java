@@ -17,5 +17,3 @@ public class CancelarOrdemRequest {
     @NotNull(message = "O motivo é obrigatório")
     private Long motivo;
 }
-
-
