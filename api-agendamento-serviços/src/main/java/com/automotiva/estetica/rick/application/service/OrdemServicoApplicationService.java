@@ -72,7 +72,8 @@ public class OrdemServicoApplicationService {
     public Page<OrdemServicoResponse> buscarTodos(PageRequest pageRequest) {
         Pageable pageable = PageableFactory.from(pageRequest);
         return listarOrdensServicoUseCase.execute(pageRequest.getFiltro(), pageable)
-                .map(ordem -> ordemServicoResponseAssembler.toResponse(ordem, buscarItensPorOrdem(ordem.getId())));
+                .map(ordem -> ordemServicoResponseAssembler
+                        .toResponse(ordem, buscarItensPorOrdem(ordem.getId())));
     }
 
     @Transactional
