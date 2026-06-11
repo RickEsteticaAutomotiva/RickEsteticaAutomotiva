@@ -9,6 +9,7 @@ import com.automotiva.estetica.rick.domain.gateway.OrdemServicoGateway;
 import com.automotiva.estetica.rick.domain.gateway.ServicoGateway;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,8 @@ public class BuscarHorariosDisponiveisUseCase {
 
     private static final LocalTime INICIO_TRABALHO = LocalTime.of(9, 0);
     private static final LocalTime FIM_TRABALHO = LocalTime.of(17, 0);
+    private final LocalDate dataLimiteValida = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
+    LocalTime horarioAtual = LocalTime.now(ZoneId.of("America/Sao_Paulo"));
     private static final int MARGEM_ENTRE_SERVICOS = 10;
 
     private final ServicoGateway servicoGateway;
@@ -31,12 +34,23 @@ public class BuscarHorariosDisponiveisUseCase {
 
     public List<HorarioDisponivel> execute(LocalDate data, List<Long> servicosIds) {
 
-        if (data.isBefore(LocalDate.now())) {
+        if (data.isBefore(dataLimiteValida)) {
             throw DataInvalidaException.builder().mensagem("A data informada é anterior ao dia atual").detalhes("")
                     .build();
         }
 
-        LocalTime ponteiro = data.equals(LocalDate.now()) ? LocalTime.now() : INICIO_TRABALHO;
+        LocalTime ponteiro;
+
+        if (data.equals(dataLimiteValida)) {
+            if (horarioAtual.isBefore(INICIO_TRABALHO)) {
+                ponteiro = INICIO_TRABALHO;
+            } else {
+                ponteiro = horarioAtual;
+            }
+        } else {
+            ponteiro = INICIO_TRABALHO;
+        }
+
         if (ponteiro.isAfter(FIM_TRABALHO)) {
             return emptyList();
         }

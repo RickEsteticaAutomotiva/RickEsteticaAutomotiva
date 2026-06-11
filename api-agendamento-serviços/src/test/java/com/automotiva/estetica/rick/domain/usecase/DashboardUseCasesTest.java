@@ -168,7 +168,7 @@ class DashboardUseCasesTest {
     }
 
     @Test
-    @DisplayName("Fluxo caixa: deve calcular totais e percentuais dos últimos 30 dias")
+    @DisplayName("Fluxo caixa mensal: deve calcular totais e percentuais")
     void buscarFluxoCaixaMensal_sucesso() {
         when(dashboardGateway.somarReceitaRecebidaDoPeriodo(any(), any())).thenReturn(BigDecimal.valueOf(12000));
         when(dashboardGateway.somarCustoRealizadoDoPeriodo(any(), any())).thenReturn(BigDecimal.valueOf(4500));
@@ -180,8 +180,10 @@ class DashboardUseCasesTest {
         ArgumentCaptor<LocalDateTime> inicioCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
         ArgumentCaptor<LocalDateTime> fimCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
 
-        org.mockito.Mockito.verify(dashboardGateway).somarReceitaRecebidaDoPeriodo(inicioCaptor.capture(), fimCaptor.capture());
-        org.mockito.Mockito.verify(dashboardGateway).somarCustoRealizadoDoPeriodo(inicioCaptor.getValue(), fimCaptor.getValue());
+        org.mockito.Mockito.verify(dashboardGateway).somarReceitaRecebidaDoPeriodo(inicioCaptor.capture(),
+                fimCaptor.capture());
+        org.mockito.Mockito.verify(dashboardGateway).somarCustoRealizadoDoPeriodo(inicioCaptor.getValue(),
+                fimCaptor.getValue());
 
         assertEquals(0, BigDecimal.valueOf(16500).compareTo(result.total()));
         assertEquals(0, new BigDecimal("72.73").compareTo(result.percentualLucro()));

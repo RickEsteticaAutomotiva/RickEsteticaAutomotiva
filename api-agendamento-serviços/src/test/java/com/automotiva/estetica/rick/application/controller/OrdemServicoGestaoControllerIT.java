@@ -203,9 +203,8 @@ class OrdemServicoGestaoControllerIT extends AbstractIntegrationTest {
     void cancelarParaGestao_comClienteDeveNegar() throws Exception {
         String body = "{\"motivo\":1}";
 
-        mockMvc.perform(patch(BASE_PATH + "/ordem-servicos-gestao/1/cancel")
-                .header("Authorization", bearer(tokenUser)).contentType(MediaType.APPLICATION_JSON).content(body))
-                .andExpect(status().isForbidden());
+        mockMvc.perform(patch(BASE_PATH + "/ordem-servicos-gestao/1/cancel").header("Authorization", bearer(tokenUser))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isForbidden());
     }
 
     @Test
