@@ -32,6 +32,7 @@ import com.automotiva.estetica.rick.domain.usecase.BuscarAgendamentosHojeUseCase
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import com.automotiva.estetica.rick.application.dto.request.CancelarOrdemRequest;
 import com.automotiva.estetica.rick.domain.enums.StatusOrdem;
@@ -47,6 +48,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class OrdemServicoApplicationService {
+
+    private static final ZoneId ZONE_ID_SAO_PAULO = ZoneId.of("America/Sao_Paulo");
 
     private final ItemServicoGateway itemServicoGateway;
     private final LimparCarrinhoPessoaUseCase limparCarrinhoPessoaUseCase;
@@ -69,7 +72,8 @@ public class OrdemServicoApplicationService {
     public Page<OrdemServicoResponse> buscarTodos(PageRequest pageRequest) {
         Pageable pageable = PageableFactory.from(pageRequest);
         return listarOrdensServicoUseCase.execute(pageRequest.getFiltro(), pageable)
-                .map(ordem -> ordemServicoResponseAssembler.toResponse(ordem, buscarItensPorOrdem(ordem.getId())));
+                .map(ordem -> ordemServicoResponseAssembler
+                        .toResponse(ordem, buscarItensPorOrdem(ordem.getId())));
     }
 
     @Transactional
@@ -123,7 +127,7 @@ public class OrdemServicoApplicationService {
 
     @Transactional(readOnly = true)
     public AgendamentosHojeListResponse buscarAgendamentosHoje() {
-        LocalDate hoje = LocalDate.now();
+        LocalDate hoje = LocalDate.now(ZONE_ID_SAO_PAULO);
         List<OrdemServico> agendamentos = buscarAgendamentosHoje(hoje);
 
         List<AgendamentoHojeResponse> agendamentosResponse = agendamentos.stream()
@@ -132,7 +136,7 @@ public class OrdemServicoApplicationService {
                 .toList();
 
         return AgendamentosHojeListResponse.builder().data(agendamentosResponse).total(agendamentosResponse.size())
-                .timestamp(LocalDateTime.now()).build();
+                .timestamp(LocalDateTime.now(ZONE_ID_SAO_PAULO)).build();
     }
 
     @Transactional
