@@ -168,7 +168,7 @@ class DashboardUseCasesTest {
     }
 
     @Test
-    @DisplayName("Fluxo caixa: deve calcular totais e percentuais dos últimos 30 dias")
+    @DisplayName("Fluxo caixa mensal: deve calcular totais e percentuais")
     void buscarFluxoCaixaMensal_sucesso() {
         when(dashboardGateway.somarReceitaRecebidaDoPeriodo(any(), any())).thenReturn(BigDecimal.valueOf(12000));
         when(dashboardGateway.somarCustoRealizadoDoPeriodo(any(), any())).thenReturn(BigDecimal.valueOf(4500));
