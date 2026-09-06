@@ -12,6 +12,7 @@ import com.automotiva.estetica.rick.application.dto.request.ServicoAplicadoReque
 import com.automotiva.estetica.rick.application.dto.response.*;
 import com.automotiva.estetica.rick.domain.entity.ItemServico;
 import com.automotiva.estetica.rick.domain.entity.OrdemServico;
+import com.automotiva.estetica.rick.domain.enums.OrigemOrdemServico;
 import com.automotiva.estetica.rick.domain.exception.IntegracaoException;
 import com.automotiva.estetica.rick.domain.gateway.ItemServicoGateway;
 import com.automotiva.estetica.rick.domain.usecase.AdicionarServicosOrdemServicoUseCase;
@@ -105,8 +106,20 @@ public class OrdemServicoApplicationService {
     @Transactional
     public OrdemServicoDetalheResponse criarParaGestao(OrdemServicoRequest request) {
         OrdemServico ordemServico = criarOrdemServicoUseCase.execute(request.getDataAgendamento(),
-                request.getPrecoMinimo(), request.getVeiculo(), request.getObservacoes(), request.getServicos());
+                request.getPrecoMinimo(), request.getVeiculo(), request.getObservacoes(), request.getServicos(),
+                origemOuManual(request.getOrigem()));
         return ordemServicoResponseAssembler.toDetalheGestao(ordemServico, buscarItensPorOrdem(ordemServico.getId()));
+    }
+
+    private OrigemOrdemServico origemOuManual(String origem) {
+        if (origem == null || origem.isBlank()) {
+            return OrigemOrdemServico.MANUAL;
+        }
+        try {
+            return OrigemOrdemServico.valueOf(origem);
+        } catch (IllegalArgumentException e) {
+            return OrigemOrdemServico.MANUAL;
+        }
     }
 
     public OrdemServicoResponse buscarPorId(Long id) {

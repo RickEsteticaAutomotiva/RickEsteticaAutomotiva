@@ -3,6 +3,7 @@ package com.automotiva.estetica.rick.infrastructure.gateway;
 import com.automotiva.estetica.rick.infrastructure.entity.VeiculoEntity;
 import com.automotiva.estetica.rick.infrastructure.mapper.VeiculoEntityMapper;
 import com.automotiva.estetica.rick.infrastructure.repository.veiculo.VeiculoRepository;
+import com.automotiva.estetica.rick.infrastructure.repository.veiculo.VeiculoSpecification;
 import com.automotiva.estetica.rick.domain.entity.Veiculo;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
 import com.automotiva.estetica.rick.domain.gateway.VeiculoGateway;
@@ -37,6 +38,12 @@ public class VeiculoGatewayImpl implements VeiculoGateway {
     @Override
     public List<Veiculo> buscarPorPessoaId(Long pessoaId) {
         return veiculoRepository.findByPessoa_Id(pessoaId).stream().map(veiculoEntityMapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Veiculo> buscarPorTermo(String termo) {
+        return veiculoRepository.findAll(VeiculoSpecification.filtroUnico(termo)).stream()
+                .map(veiculoEntityMapper::toDomain).toList();
     }
 
     @Override

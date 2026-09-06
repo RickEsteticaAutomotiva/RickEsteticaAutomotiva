@@ -1,0 +1,2 @@
+ALTER TABLE ordem_servico
+    ADD COLUMN origem VARCHAR(20) NOT NULL DEFAULT 'MANUAL' AFTER observacoes;

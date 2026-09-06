@@ -37,7 +37,8 @@ public class OrdemServicoResponseAssembler {
                 .dataAgendamento(ordemServico.getDataAgendamento()).dataConclusao(ordemServico.getDtConclusao())
                 .status(toStatusResumo(ordemServico)).observacoes(ordemServico.getObservacoes())
                 .valorTotal(calcularValorTotal(itens)).cliente(toClienteResumo(ordemServico))
-                .veiculo(toVeiculoResumo(ordemServico)).servicos(toServicosResumo(itens)).build();
+                .veiculo(toVeiculoResumo(ordemServico)).servicos(toServicosResumo(itens))
+                .origem(ordemServico.getOrigem()).build();
     }
 
     public OrdemServicoDetalheResponse toDetalheGestao(OrdemServico ordemServico, List<ItemServico> itens) {
@@ -45,7 +46,8 @@ public class OrdemServicoResponseAssembler {
                 .dataAgendamento(ordemServico.getDataAgendamento()).dataConclusao(ordemServico.getDtConclusao())
                 .status(toStatusResumo(ordemServico)).observacoes(ordemServico.getObservacoes())
                 .valorTotal(calcularValorTotal(itens)).cliente(toClienteResumo(ordemServico))
-                .veiculo(toVeiculoResumo(ordemServico)).servicos(toServicosResumo(itens)).build();
+                .veiculo(toVeiculoResumo(ordemServico)).servicos(toServicosResumo(itens))
+                .origem(ordemServico.getOrigem()).build();
     }
 
     public AgendamentoHojeResponse toAgendamentoHojeResponse(OrdemServico ordemServico, List<ItemServico> itens) {
