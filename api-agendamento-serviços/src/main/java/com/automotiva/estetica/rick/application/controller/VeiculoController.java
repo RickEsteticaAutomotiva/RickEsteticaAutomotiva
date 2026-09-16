@@ -11,6 +11,7 @@ import com.automotiva.estetica.rick.domain.usecase.DeletarVeiculoUseCase;
 import com.automotiva.estetica.rick.domain.usecase.ListarVeiculosPorPessoaUseCase;
 import com.automotiva.estetica.rick.domain.usecase.ListarVeiculosUseCase;
 import com.automotiva.estetica.rick.application.security.ClienteOnly;
+import com.automotiva.estetica.rick.application.security.ClienteOrGerenteOnly;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,6 +42,7 @@ public class VeiculoController {
     private final VeiculoDTOMapper veiculoDTOMapper;
 
     @GetMapping
+    @ClienteOrGerenteOnly
     @Operation(summary = "Lista todos os veículos")
     public ResponseEntity<List<VeiculoResponse>> buscarTodos() {
         List<VeiculoResponse> veiculos = listarVeiculosUseCase.execute().stream().map(veiculoDTOMapper::toResponse)
