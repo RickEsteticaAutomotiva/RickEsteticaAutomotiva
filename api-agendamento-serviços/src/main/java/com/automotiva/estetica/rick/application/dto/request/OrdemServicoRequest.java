@@ -32,4 +32,10 @@ public class OrdemServicoRequest {
     private String observacoes;
 
     private Long motivo;
+
+    /**
+     * Origem da criação (ex.: "IMPORTACAO_IA"). Opcional — quando ausente ou
+     * inválida, o backend assume "MANUAL".
+     */
+    private String origem;
 }

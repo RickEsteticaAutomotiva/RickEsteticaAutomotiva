@@ -1,7 +1,10 @@
 package com.automotiva.estetica.rick.infrastructure.entity;
 
+import com.automotiva.estetica.rick.domain.enums.OrigemOrdemServico;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -9,6 +12,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -46,4 +50,9 @@ public class OrdemServicoEntity extends BaseEntity<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_motivo")
     private MotivoCancelamentoEntity motivoCancelamento;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "origem", nullable = false, length = 20)
+    @Builder.Default
+    private OrigemOrdemServico origem = OrigemOrdemServico.MANUAL;
 }
