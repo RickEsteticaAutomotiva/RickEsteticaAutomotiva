@@ -4,6 +4,7 @@ import com.automotiva.estetica.rick.domain.entity.OrdemServico;
 import com.automotiva.estetica.rick.domain.entity.Servico;
 import com.automotiva.estetica.rick.domain.entity.Status;
 import com.automotiva.estetica.rick.domain.entity.Veiculo;
+import com.automotiva.estetica.rick.domain.enums.OrigemOrdemServico;
 import com.automotiva.estetica.rick.domain.exception.CampoInvalidoException;
 import com.automotiva.estetica.rick.domain.exception.RecursoJaExisteException;
 import com.automotiva.estetica.rick.domain.exception.RecursoNaoEncontradoException;
@@ -29,6 +30,11 @@ public class CriarOrdemServicoUseCase {
 
     public OrdemServico execute(LocalDateTime dataAgendamento, BigDecimal precoMinimo, Long veiculoId,
             String observacoes, List<Long> servicoIds) {
+        return execute(dataAgendamento, precoMinimo, veiculoId, observacoes, servicoIds, null);
+    }
+
+    public OrdemServico execute(LocalDateTime dataAgendamento, BigDecimal precoMinimo, Long veiculoId,
+            String observacoes, List<Long> servicoIds, OrigemOrdemServico origem) {
         if (ordemServicoGateway.existePorVeiculoIdEDataAgendamento(veiculoId, dataAgendamento)) {
             throw RecursoJaExisteException.builder().mensagem("um agendamento já existe nessa hora e data").detalhes("")
                     .build();
@@ -41,7 +47,7 @@ public class CriarOrdemServicoUseCase {
 
         OrdemServico ordemServico = OrdemServico.builder().dataAgendamento(dataAgendamento).precoMinimo(precoMinimo)
                 .veiculo(Veiculo.builder().id(veiculoId).build()).status(Status.builder().id(1L).build())
-                .observacoes(observacoes).build();
+                .observacoes(observacoes).origem(origem != null ? origem : OrigemOrdemServico.MANUAL).build();
 
         ordemServico = ordemServicoGateway.salvar(ordemServico);
 

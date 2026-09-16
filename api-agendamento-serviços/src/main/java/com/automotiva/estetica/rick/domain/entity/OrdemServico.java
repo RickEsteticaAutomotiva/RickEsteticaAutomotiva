@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.domain.entity;
 
+import com.automotiva.estetica.rick.domain.enums.OrigemOrdemServico;
 import com.automotiva.estetica.rick.domain.enums.StatusOrdem;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,6 +25,9 @@ public class OrdemServico {
     private String observacoes;
     private LocalDateTime dtConclusao;
     private MotivoCancelamento motivoCancelamento;
+
+    @Builder.Default
+    private OrigemOrdemServico origem = OrigemOrdemServico.MANUAL;
 
     public void atualizar(LocalDateTime dataAgendamento, BigDecimal precoMinimo, String observacoes, Long statusId,
             Long motivoId) {

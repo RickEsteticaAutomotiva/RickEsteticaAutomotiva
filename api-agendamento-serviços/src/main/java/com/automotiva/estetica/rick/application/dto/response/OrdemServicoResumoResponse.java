@@ -1,5 +1,6 @@
 package com.automotiva.estetica.rick.application.dto.response;
 
+import com.automotiva.estetica.rick.domain.enums.OrigemOrdemServico;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,4 +26,5 @@ public class OrdemServicoResumoResponse {
     private OrdemServicoClienteResumoResponse cliente;
     private OrdemServicoVeiculoResumoResponse veiculo;
     private List<OrdemServicoServicoResumoResponse> servicos;
+    private OrigemOrdemServico origem;
 }

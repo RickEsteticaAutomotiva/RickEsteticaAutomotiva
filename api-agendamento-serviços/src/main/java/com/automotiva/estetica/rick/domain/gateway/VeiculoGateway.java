@@ -14,6 +14,9 @@ public interface VeiculoGateway {
 
     List<Veiculo> buscarPorPessoaId(Long pessoaId);
 
+    /** Busca por termo livre em placa, modelo, marca ou nome do dono. */
+    List<Veiculo> buscarPorTermo(String termo);
+
     boolean existePorId(Long id);
 
     void deletarPorId(Long id);
